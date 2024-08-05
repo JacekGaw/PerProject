@@ -1,7 +1,15 @@
+import "dotenv/config";
 import { drizzle } from 'drizzle-orm/mysql2';
 import mysql from 'mysql2/promise'
 
-const pool = mysql.createPool(process.env.DB_URL);
+// Ensure the DB_URL is defined
+const dbUrl = process.env.DB_URL;
+
+if (!dbUrl) {
+  throw new Error('DB_URL environment variable is not defined');
+}
+
+const pool = mysql.createPool(dbUrl);
 
 const db = drizzle(pool);
 
