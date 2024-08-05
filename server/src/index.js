@@ -2,6 +2,8 @@ import "dotenv/config";
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors"; 
+import { testDbConnection } from './database/db.js';
+testDbConnection();
 
 const app = express();
 app.use(bodyParser.json());
