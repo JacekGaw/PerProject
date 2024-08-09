@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: ./server
+    environment:
+      DB_URL: ${DB_URL}
+      PORT: ${PORT}
+    ports:
+      - "3001:3001"
+    depends_on:
+      - db
+
+  frontend:
+    build: ./client
+    ports:
+      - "8088:80"
+
+volumes:
+  pgdata:
