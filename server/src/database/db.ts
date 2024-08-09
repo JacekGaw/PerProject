@@ -1,26 +1,27 @@
 import "dotenv/config";
-import { drizzle } from 'drizzle-orm/mysql2';
-import mysql from 'mysql2/promise'
+import pkg from "pg";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { migrate } from 'drizzle-orm/node-postgres/migrator';
+const { Pool } = pkg;
+import * as schema from "./schemas.js";
 
-// Ensure the DB_URL is defined
-const dbUrl = process.env.DB_URL;
+const pool = new Pool({
+  connectionString: process.env.DB_URL,
+});
 
-if (!dbUrl) {
-  throw new Error('DB_URL environment variable is not defined');
-}
+const db = drizzle(pool, {schema});
 
-const pool = mysql.createPool(dbUrl);
-
-const db = drizzle(pool);
-
-export async function testDbConnection() {
+export const runDB = async () => {
   try {
-    const connection = await pool.getConnection();
-    await connection.ping();
-    console.log('Database connection successful');
-    connection.release();
-  } catch (error) {
-    console.error('Database connection failed:', error);
+    const res = await pool.query('SELECT 1');
+    console.log('Database connection successful:', res.rows[0]);
+    console.log('Migration started');
+    await migrate(db, { migrationsFolder: 'drizzle' });
+    console.log('Migration completed');
+  } catch (err) {
+    console.error("Error during connection or migration database: ", err);
+  } finally {
+    await pool.end()
   }
 }
 
