@@ -1,5 +1,5 @@
 # Use an official Node.js runtime as a parent image
-FROM node:18 AS build
+FROM node:18-alpine AS build
 
 # Set the working directory
 WORKDIR /app
@@ -17,7 +17,7 @@ COPY / .
 RUN npm run build
 
 # Use a smaller image for the final stage
-FROM node:18-slim
+FROM node:18-alpine
 
 # Set the working directory
 WORKDIR /app
