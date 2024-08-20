@@ -27,7 +27,7 @@ export const projects = pgTable('projects', {
     createdAt: timestamp('createdAt').defaultNow(),
     authorId: integer('authorId').notNull().references(() => users.id),
     projectManager: integer('projectManager').notNull().references(() => users.id),
-    companyId: integer('companyId').references(() => companies.id)
+    companyId: integer('companyId').notNull().references(() => companies.id)
 });
 
 export const projectUsers = pgTable('projectUsers', {
