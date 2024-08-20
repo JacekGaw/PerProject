@@ -20,8 +20,6 @@ export const runDB = async () => {
     console.log('Migration completed');
   } catch (err) {
     console.error("Error during connection or migration database: ", err);
-  } finally {
-    await pool.end()
   }
 }
 

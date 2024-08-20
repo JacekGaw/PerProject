@@ -5,7 +5,7 @@ export const userRoleEnum = pgEnum("role", ["Developer", "Tester", "Product Owne
 export const users = pgTable('users', {
     id: serial('id').primaryKey(),
     email: varchar('email', {length: 100}).notNull().unique(),
-    password: varchar('password', {length: 50}).notNull(),
+    password: varchar('password', {length: 200}).notNull(),
     createdAt: timestamp('createdAt').defaultNow(),
     active: boolean('active').notNull().default(false),
     name: varchar('name', {length: 20}),
