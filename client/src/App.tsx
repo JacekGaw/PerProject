@@ -7,7 +7,6 @@ const App = () => {
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <RootLayout />,
       children: [
         {
           path: "/login",
