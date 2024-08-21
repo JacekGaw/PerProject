@@ -5,18 +5,19 @@ import RootLayout from './RootLayout';
 
 const App = () => {
   const router = createBrowserRouter([
+    // {
+    //   path: "/",
+    //   children: [
+        
+    //   ]
+    // },
     {
-      path: "/",
-      children: [
-        {
-          path: "/login",
-          element: <Login />
-        },
-        {
-          path: "/signup",
-          element: <SignUp />
-        }
-      ]
+      path: "/login",
+      element: <Login />
+    },
+    {
+      path: "/signup",
+      element: <SignUp />
     }
   ]);
 

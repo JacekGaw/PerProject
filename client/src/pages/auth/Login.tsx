@@ -6,20 +6,21 @@ import axios from "axios";
 const handleSubmit = async (event:React.SyntheticEvent<HTMLFormElement>) => {
   event.preventDefault()
   const formData = new FormData(event.currentTarget);
+  const data = {
+    email: formData.get("email"),
+    password: formData.get("password"),
+  };
   await axios({
     method: "POST",
     url: "http://localhost:3002/auth/login",
-    data: formData,
-    headers: {
-      "Content-Type": "multipart/form-data"
-    }
+    data
   })
 }
 
 const Login:React.FC = () => {
   return (
     <section className="w-full min-h-screen flex justify-center items-center">
-      <div className="bg-blue-950 rounded-xl shadow-xl p-10 flex flex-col justify-center items-center gap-5">
+      <div className="bg-neutral-800 rounded-xl shadow-xl p-10 flex flex-col justify-center items-center gap-5">
         <header>
           <h1 className="font-[300] text-2xl tracking-wider">LogIn to PerProject</h1>
         </header>

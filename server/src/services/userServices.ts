@@ -30,6 +30,18 @@ export const getUsersFromDB = async (userId?: number): Promise<{}> => {
   }
 };
 
+export const getUserByEmail = async (userEmail:string) => {
+  try {
+    const user = db.query.users.findFirst({
+      where: eq(users.email, userEmail)
+    })
+    return user;
+  } catch (err) {
+    console.error("Error getting user by email: ", err);
+    throw err;
+  }
+}
+
 export const createUserInDB = async (
   email: string,
   password: string,

@@ -25,8 +25,8 @@ export const projects = pgTable('projects', {
     startDate: date('startDate'),
     endDate: date('endDate'),
     createdAt: timestamp('createdAt').defaultNow(),
-    authorId: integer('authorId').notNull().references(() => users.id),
-    projectManager: integer('projectManager').notNull().references(() => users.id),
+    authorId: integer('authorId').references(() => users.id, { onDelete: "set null" }),  // Set to NULL on user deletion
+    projectManager: integer('projectManager').references(() => users.id, { onDelete: 'set null' }),  // Set to NULL on user deletion
     companyId: integer('companyId').notNull().references(() => companies.id)
 });
 
@@ -60,8 +60,8 @@ export const tasks = pgTable('tasks', {
     priority: taskPriorityEnum('priority').notNull().default("Low"),
     estimatedTime: integer('estimatedTime').default(0),
     status: taskStatusesEnum("status").notNull().default("To Do"),
-    assignedTo: integer('assignedTo').references(() => users.id),
-    projectId: integer('projectId').references(() => projects.id)
+    assignedTo: integer('assignedTo').references(() => users.id, { onDelete: 'set null' }),  // Set to NULL on user deletion
+    projectId: integer('projectId').references(() => projects.id, { onDelete: 'cascade' }) 
 });
 
 export const subTasks = pgTable('subTasks', {
