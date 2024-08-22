@@ -1,8 +1,11 @@
-import { RouterProvider, createBrowserRouter } from 'react-router-dom'
-import Login from './pages/auth/Login';
-import SignUp from './pages/auth/SignUp';
-import ErrorPage from './pages/ErrorPage';
-import RootLayout from './RootLayout';
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import Login from "./pages/auth/Login";
+import SignUp from "./pages/auth/SignUp";
+import ErrorPage from "./pages/ErrorPage";
+import RootLayout from "./RootLayout";
+import { AuthProvider } from "./store/AuthContext";
+import ProtectedRoute from "./components/UI/ProtectedRoute";
+import DashboardRoot from "./pages/dashboard/DashboardRoot";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -12,20 +15,31 @@ const App = () => {
       children: [
         {
           path: "/login",
-          element: <Login />
+          element: <Login />,
         },
         {
           path: "/signup",
-          element: <SignUp />
+          element: <SignUp />,
+        },
+        {
+          path: "/dashboard",
+          element: <ProtectedRoute />,
+          children: [
+            {
+              path: "/dashboard",
+              element: <DashboardRoot />
+            }
+          ]
         }
-      ]
+      ],
     },
-    
   ]);
 
   return (
-    <RouterProvider router={router} />
-  )
-}
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  );
+};
 
-export default App
+export default App;
