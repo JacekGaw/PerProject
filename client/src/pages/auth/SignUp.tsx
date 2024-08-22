@@ -1,21 +1,39 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "../../components/UI/Button";
 import axios from "axios";
 
-const handleSubmit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
-  event.preventDefault();
-  const formData = new FormData(event.currentTarget);
-  await axios({
-    method: "POST",
-    url: "http://localhost:3002/auth/signup",
-    data: formData,
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
-};
+
 
 const SignUp: React.FC = () => {
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
+  const handleSubmit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
+    setErrorMessage("");
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const data = {
+      email: formData.get("email"),
+      password: formData.get("password"),
+      repeatPassword: formData.get("password-repeat"),
+      name: formData.get("name"),
+      surname: formData.get("surname"),
+    };
+    if(data.password?.toString().trim() !== data.repeatPassword?.toString().trim()) {
+      setErrorMessage("Passwords do not match!");
+      return;
+    }
+    await axios({
+      method: "POST",
+      url: "http://localhost:3002/auth/signup",
+      data
+    }).then((response) => {
+      console.log(response.data);
+    }).catch((err) => {
+      setErrorMessage(err.response.data.message);
+      console.log(err.response.data.message);
+    })
+  };
+
   return (
     <section className="w-full min-h-screen flex justify-center items-center">
       <div className="bg-blue-950 rounded-xl shadow-xl p-10 flex flex-col justify-center items-center gap-5">
@@ -101,7 +119,7 @@ const SignUp: React.FC = () => {
               className="bg-inherit border border-slate-500 group-hover:border-slate-200 transition-all duration-200 rounded-md p-2 text-sm"
             />
           </div>
-
+          <p className="text-xs font-[600] text-red-700">{errorMessage}</p>
           <Button type="submit">Sign Up</Button>
         </form>
       </div>
