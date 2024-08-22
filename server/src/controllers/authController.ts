@@ -1,6 +1,9 @@
 import { RequestHandler } from "express";
 import { getUserByEmail, createUserInDB } from "../services/userServices.js";
 import { comparePasswords } from "../utils/passwordUtils.js";
+import jwt, { Secret } from 'jsonwebtoken';
+import "dotenv/config";
+
 
 interface UserSingUpCredentials {
   email: string;
@@ -30,10 +33,18 @@ export const logIn: RequestHandler = async (req, res) => {
     if (!passwordMatch) {
       return res.status(401).json({ message: "Wrong password for this user" });
     }
+    const JWT_ACCESS_SECRET: Secret = process.env.JWT_ACCESS_SECRET || '';
+    const JWT_REFRESH_SECRET: Secret = process.env.JWT_REFRESH_SECRET || '';
+
+    const accessToken = jwt.sign(user, JWT_ACCESS_SECRET, {expiresIn: process.env.JWT_ACCESS_EXPIRATION_TIME});
+    const refreshToken = jwt.sign(user, JWT_REFRESH_SECRET, {expiresIn: process.env.JWT_REFRESH_EXPIRATION_TIME});
+
     console.log("Successfully logged in");
     return res.status(200).json({
       message: "Successfully logged in",
       user,
+      accessToken,
+      refreshToken
     });
   } catch (err) {
     console.error("Error during login:", err);

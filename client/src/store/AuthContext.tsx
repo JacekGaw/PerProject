@@ -36,11 +36,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   useEffect(() => {
     const checkAuthStatus = async () => {
-      const token = localStorage.getItem("accessToken");
+      const token = await localStorage.getItem("accessToken");
+      console.log(token);
       if (!token) {
         setIsAuthenticated(false);
       }
-      setIsAuthenticated(true);
+      else {
+        setIsAuthenticated(true);
+      }
     };
 
     checkAuthStatus();
@@ -52,9 +55,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         "http://localhost:3002/auth/login",
         userData
       );
-      const data = response.data;
-      console.log(data);
-      // localStorage.setItem("accessToken", data.accessToken);
+      const {accessToken, refreshToken} = response.data;
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
 
       setIsAuthenticated(true);
       return { success: true, message: "Login successful!" };
@@ -82,8 +85,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         "http://localhost:3002/auth/signup",
         newUserData
       );
-      const data = response.data;
-      console.log(data);
       return { success: true, message: "Successfully created an user" };
     } catch (err: any) {
       let errMessage = "Did not created new user";
