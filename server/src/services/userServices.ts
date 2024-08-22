@@ -45,7 +45,9 @@ export const getUserByEmail = async (userEmail:string) => {
 export const createUserInDB = async (
   email: string,
   password: string,
-  role: "Developer" | "Tester" | "Product Owner" | "Project Manager" | "Other"
+  role: "Developer" | "Tester" | "Product Owner" | "Project Manager" | "Other",
+  name?: string,
+  surname?: string
 ): Promise<{}> => {
   try {
     const hashedPassword = await hashPassword(password);
@@ -53,6 +55,8 @@ export const createUserInDB = async (
       email: email,
       password: hashedPassword,
       role: role,
+      name: name,
+      surname: surname
     };
     const newUser = await db.insert(users).values(params).returning();
     return newUser;

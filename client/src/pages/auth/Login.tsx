@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import Button from "../../components/UI/Button";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 const Login:React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -42,6 +43,7 @@ const Login:React.FC = () => {
           </div>
           <p className="text-xs font-[600] text-red-700">{errorMessage}</p>
           <Button type="submit">LogIn</Button>
+          <Link to="/signup" className="text-xs font-[700] text-slate-400 hover:text-slate-100">Don't have account yet? Sign Up!</Link>
         </form>
       </div>
     </section>

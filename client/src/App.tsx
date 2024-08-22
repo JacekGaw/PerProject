@@ -8,16 +8,19 @@ const App = () => {
   const router = createBrowserRouter([
     {
       path: "/",
-      errorElement: <ErrorPage />
+      errorElement: <ErrorPage />,
+      children: [
+        {
+          path: "/login",
+          element: <Login />
+        },
+        {
+          path: "/signup",
+          element: <SignUp />
+        }
+      ]
     },
-    {
-      path: "/login",
-      element: <Login />
-    },
-    {
-      path: "/signup",
-      element: <SignUp />
-    }
+    
   ]);
 
   return (

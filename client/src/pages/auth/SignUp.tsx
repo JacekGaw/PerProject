@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import Button from "../../components/UI/Button";
 import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
 
 
 
 const SignUp: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
     setErrorMessage("");
@@ -15,6 +17,7 @@ const SignUp: React.FC = () => {
       email: formData.get("email"),
       password: formData.get("password"),
       repeatPassword: formData.get("password-repeat"),
+      role: "Developer",
       name: formData.get("name"),
       surname: formData.get("surname"),
     };
@@ -28,6 +31,7 @@ const SignUp: React.FC = () => {
       data
     }).then((response) => {
       console.log(response.data);
+      navigate("/login");
     }).catch((err) => {
       setErrorMessage(err.response.data.message);
       console.log(err.response.data.message);
@@ -36,8 +40,8 @@ const SignUp: React.FC = () => {
 
   return (
     <section className="w-full min-h-screen flex justify-center items-center">
-      <div className="bg-blue-950 rounded-xl shadow-xl p-10 flex flex-col justify-center items-center gap-5">
-        <header>
+      <div className="bg-neutral-800 rounded-xl shadow-xl p-10 flex flex-col justify-center items-center gap-5">
+      <header>
           <h1 className="font-[300] text-2xl tracking-wider">
             SignUp to PerProject
           </h1>
@@ -121,6 +125,7 @@ const SignUp: React.FC = () => {
           </div>
           <p className="text-xs font-[600] text-red-700">{errorMessage}</p>
           <Button type="submit">Sign Up</Button>
+          <Link to="/login" className="text-xs font-[700] text-slate-400 hover:text-slate-100">Already have an account? Log In!</Link>
         </form>
       </div>
     </section>
