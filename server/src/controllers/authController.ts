@@ -35,7 +35,6 @@ export const logIn: RequestHandler = async (req, res) => {
     }
     const JWT_ACCESS_SECRET: Secret = process.env.JWT_ACCESS_SECRET || '';
     const JWT_REFRESH_SECRET: Secret = process.env.JWT_REFRESH_SECRET || '';
-
     const accessToken = jwt.sign(user, JWT_ACCESS_SECRET, {expiresIn: process.env.JWT_ACCESS_EXPIRATION_TIME});
     const refreshToken = jwt.sign(user, JWT_REFRESH_SECRET, {expiresIn: process.env.JWT_REFRESH_EXPIRATION_TIME});
 
@@ -88,3 +87,41 @@ export const signUp: RequestHandler = async (req, res) => {
     });
   }
 };
+
+export const refreshToken: RequestHandler = async (req, res) => {
+    const { refreshToken } = req.body;
+  
+    if (!refreshToken) {
+      return res.status(400).json({ message: "Refresh token is required" });
+    }
+  
+    try {
+      const JWT_REFRESH_SECRET: Secret = process.env.JWT_REFRESH_SECRET || '';
+      const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET) as jwt.JwtPayload;
+  
+      if (!decoded || !decoded.email) {
+        return res.status(401).json({ message: "Invalid refresh token" });
+      }
+  
+      const user = await getUserByEmail(decoded.email);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+  
+      const JWT_ACCESS_SECRET: Secret = process.env.JWT_ACCESS_SECRET || '';
+      const accessToken = jwt.sign(user, JWT_ACCESS_SECRET, {
+        expiresIn: process.env.JWT_ACCESS_EXPIRATION_TIME
+      });
+
+      return res.status(200).json({
+        message: "Token refreshed successfully",
+        accessToken
+      });
+    } catch (err) {
+      console.error("Error generating new access token:", err);
+      res.status(500).json({
+        message: "Error",
+        error: (err as Error).message || "Unknown error",
+      });
+    }
+  };

@@ -61,7 +61,7 @@ api.interceptors.response.use(
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         processQueue(err, null);
-        window.location.href = '/login'; // Redirect to login page or handle error appropriately
+        window.location.href = '/login';
         return Promise.reject(err);
       } finally {
         isRefreshing = false;

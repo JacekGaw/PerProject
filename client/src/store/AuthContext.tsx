@@ -1,5 +1,6 @@
 import { ReactNode, createContext, useEffect, useState } from "react";
 import axios from "axios";
+import api from "../api/api";
 
 interface AuthContextProps {
   isAuthenticated: boolean;
@@ -62,6 +63,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       setIsAuthenticated(true);
       return { success: true, message: "Login successful!" };
     } catch (err: any) {
+        console.log(err);
       setIsAuthenticated(false);
       let errorMessage = "An error occurred during login.";
 
