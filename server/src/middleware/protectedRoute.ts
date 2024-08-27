@@ -2,7 +2,7 @@ import { RequestHandler, Request } from "express";
 import jwt, { Secret } from "jsonwebtoken";
 import "dotenv/config";
 
-interface CustomRequest extends Request {
+export interface CustomRequest extends Request {
   user?: any;
 }
 

@@ -1,8 +1,10 @@
-import { RequestHandler } from "express";
+import { RequestHandler, Response } from "express";
 import { getUserByEmail, createUserInDB } from "../services/userServices.js";
 import { comparePasswords } from "../utils/passwordUtils.js";
 import jwt, { Secret } from 'jsonwebtoken';
 import "dotenv/config";
+import { CustomRequest } from "../middleware/protectedRoute.js";
+
 
 
 interface UserSingUpCredentials {
@@ -125,3 +127,11 @@ export const refreshToken: RequestHandler = async (req, res) => {
       });
     }
   };
+
+export const verifyToken: RequestHandler = (req: CustomRequest, res: Response) => {
+  console.log(req.user);
+  if(!req.user) {
+    return res.status(401).json({ message: "User not found", error: "Unauthorized" });
+  }
+  return res.status(200).send({ message: "Token verified successfully", user: req.user });
+}

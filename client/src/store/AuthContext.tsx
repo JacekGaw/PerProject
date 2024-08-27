@@ -4,6 +4,7 @@ import api from "../api/api";
 
 interface AuthContextProps {
   isAuthenticated: boolean;
+  isLoading: boolean;
   login: (
     userData: LoginCredentials
   ) => Promise<{ success: boolean; message: string }>;
@@ -34,17 +35,35 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [user, setUser] = useState<object>();
 
   useEffect(() => {
     const checkAuthStatus = async () => {
-      const token = await localStorage.getItem("accessToken");
+      const token = localStorage.getItem("accessToken");
       console.log(token);
-      if (!token) {
-        setIsAuthenticated(false);
+      if (token) {
+        try {
+          // Verify the token with your backend
+          const response = await axios.get("http://localhost:3002/auth/verifyToken", {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (response.data) {
+            console.log(response.data);
+            setIsAuthenticated(true);
+          } else {
+            // If the token is invalid, remove it
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
+          }
+        } catch (error) {
+          console.error("Error verifying token:", error);
+          // If there's an error, assume the token is invalid
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("refreshToken");
+        }
       }
-      else {
-        setIsAuthenticated(true);
-      }
+      setIsLoading(false);
     };
 
     checkAuthStatus();
@@ -99,6 +118,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   const ctxValue = {
     isAuthenticated,
+    isLoading,
     login,
     logOut,
     signup,
