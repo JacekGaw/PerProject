@@ -33,7 +33,7 @@ const Login: React.FC = () => {
 
   return (
     <section className="w-full min-h-screen flex justify-center items-center">
-      <div className="bg-neutral-800 rounded-xl shadow-xl p-10 flex flex-col justify-center items-center gap-5">
+      <div className="bg-darkest-blue rounded-xl shadow-xl p-10 flex flex-col justify-center items-center gap-5">
         <header>
           <h1 className="font-[600] text-2xl tracking-wider">
             LogIn to PerProject
