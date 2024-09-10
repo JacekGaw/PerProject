@@ -11,7 +11,7 @@ const MainRoot: React.FC = () => {
         )
     }
     return (
-        <Navigate to="start" />
+        <Navigate to="/start" />
     )
     
     return ( 

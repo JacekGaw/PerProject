@@ -13,7 +13,8 @@ const TermsStep: React.FC<TermsStepProps> = ({ nextAction }) => {
       <header>
         <h2 className="font-[400] text-xl">Let's get started!</h2>
       </header>
-      <p className="font-[200] text-justify text-base leading-7">
+      <p  className="font-[200] text-justify text-base leading-7"
+      >
         Hello from PerProject Team! It seems that you have just started and we
         are very happy that you choose our solutions! We believe, that we can be
         your only and best project management tool, that you would use with
@@ -27,10 +28,16 @@ const TermsStep: React.FC<TermsStepProps> = ({ nextAction }) => {
         product. If you alreary did this, accept them and we can move on!
       </p>
       <div className="flex gap-5 justify-center items-center">
-        <label htmlFor="accept">I have read and accepted Terms And Conditions of the PerProject</label>
-        <input type="checkbox" onChange={() => setButtonDisabled((prevState) => !prevState)} />
+        <label htmlFor="accept">
+          I have read and accepted Terms And Conditions of the PerProject
+        </label>
+        <input
+          id="accept"
+          type="checkbox"
+          onChange={() => setButtonDisabled((prevState) => !prevState)}
+        />
       </div>
-      <div className="flex gap-5 justify-between items-center">
+      <div className="w-full flex gap-5 justify-end items-center">
         <Button onClick={nextAction} disabled={buttonDisabled}>
           Next
         </Button>
