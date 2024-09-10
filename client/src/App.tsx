@@ -6,6 +6,8 @@ import RootLayout from "./RootLayout";
 import { AuthProvider } from "./store/AuthContext";
 import ProtectedRoute from "./components/UI/ProtectedRoute";
 import DashboardRoot from "./pages/dashboard/DashboardRoot";
+import MainRoot, {loader as mainLoader} from "./pages/main/MainRoot";
+import InitialOnboardingRoot from "./pages/initialOnboarding/InitialOnboardingRoot";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -14,12 +16,21 @@ const App = () => {
       errorElement: <ErrorPage />,
       children: [
         {
+          path: "/",
+          loader: mainLoader,
+          element: <MainRoot />
+        },
+        {
           path: "/login",
           element: <Login />,
         },
         {
           path: "/signup",
           element: <SignUp />,
+        },
+        {
+          path: "/start",
+          element: <InitialOnboardingRoot />
         },
         {
           path: "/dashboard",

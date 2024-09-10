@@ -26,7 +26,7 @@ app.use(errorHandler);
 app.use("/api/", userRouter);
 app.use("/api/", projectRouter);
 app.use("/auth/", authRouter);
-app.use("/api/", projectRouter);
+app.use("/api/", companyRouter);
 
 app.listen(PORT, () => {
   console.log("Server is running on port ", PORT);
