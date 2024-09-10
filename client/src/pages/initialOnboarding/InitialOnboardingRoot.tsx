@@ -3,9 +3,11 @@ import TermsStep from "./TermsStep";
 import InfoForm from "./InfoForm";
 import Button from "../../components/UI/Button";
 import { motion, AnimatePresence } from "framer-motion";
+import UserForm from "./UserForm";
 
 const InitialOnboardingRoot: React.FC = () => {
   const [onboardingStep, setOnboardingStep] = useState<number>(0);
+  const [newCompanyId, setNewCompanyId] = useState<number>(0);
 
   const goToNextStep = () => setOnboardingStep((prevState) => prevState + 1);
   const goToPreviousStep = () =>
@@ -17,6 +19,13 @@ const InitialOnboardingRoot: React.FC = () => {
       key={"infoForm"}
       previousAction={goToPreviousStep}
       nextAction={goToNextStep}
+      setCompanyKey={setNewCompanyId}
+    />,
+    <UserForm
+      key={"userForm"}
+      previousAction={goToPreviousStep}
+      nextAction={goToNextStep}
+      companyId={newCompanyId}
     />,
   ];
   return (

@@ -11,7 +11,8 @@ export const users = pgTable('users', {
     name: varchar('name', {length: 20}),
     surname: varchar('surname', {length: 30}),
     phone: integer('phone'),
-    role: userRoleEnum('role').notNull()
+    role: userRoleEnum('role').notNull(),
+    admin: boolean('admin').notNull().default(false)
 });
 
 export const projectStatusesEnum = pgEnum('projectStatuses', ["Active", "On Hold", "Completed", "Archive", "Maintaining"]);
@@ -42,6 +43,14 @@ export const companies = pgTable('companies', {
     description: text('description'),
     createdAt: timestamp('createdAt').defaultNow()
 });
+
+export const companyUsers = pgTable('companyUsers', {
+    id: serial('id').primaryKey(),
+    userId: integer('userId').notNull().references(() => users.id),
+    companyId: integer('companyId').notNull().references(() => companies.id),
+    joinDate: timestamp('joinDate').defaultNow(),
+    active: boolean('active').default(true),
+})
 
 export const taskStatusesEnum = pgEnum("taskStatuses", ["To Do", "In Progress", "On Hold", "Done"]);
 

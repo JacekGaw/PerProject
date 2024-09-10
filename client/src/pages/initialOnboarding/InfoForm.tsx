@@ -6,6 +6,7 @@ import axios from "axios";
 interface InfoFormStepProps {
   nextAction: () => void;
   previousAction: () => void;
+  setCompanyKey: (arg0: number) => void;
 }
 
 interface CompanyDataInterface {
@@ -21,6 +22,7 @@ interface responseMessageInterface {
 const InfoForm: React.FC<InfoFormStepProps> = ({
   nextAction,
   previousAction,
+  setCompanyKey
 }) => {
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(true);
   const [inputsDisabled, setInputsDisabled] = useState<boolean>(false);
@@ -55,6 +57,7 @@ const InfoForm: React.FC<InfoFormStepProps> = ({
           "http://localhost:3002/api/company",
           companyData
         );
+        setCompanyKey(response.data.company[0].id)
         setResponseMessage({
           type: "success",
           message: response.data.message,
