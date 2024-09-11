@@ -22,7 +22,7 @@ interface responseMessageInterface {
 const InfoForm: React.FC<InfoFormStepProps> = ({
   nextAction,
   previousAction,
-  setCompanyKey
+  setCompanyKey,
 }) => {
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(true);
   const [inputsDisabled, setInputsDisabled] = useState<boolean>(false);
@@ -57,7 +57,7 @@ const InfoForm: React.FC<InfoFormStepProps> = ({
           "http://localhost:3002/api/company",
           companyData
         );
-        setCompanyKey(response.data.company[0].id)
+        setCompanyKey(response.data.company[0].id);
         setResponseMessage({
           type: "success",
           message: response.data.message,

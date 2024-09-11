@@ -4,6 +4,7 @@ import {
   createUserInDB,
   deleteUserFromDb,
   updateUserInDB,
+  assignUserToCompany,
 } from "../services/userServices.js";
 // import { asyncHandler } from '../utils/asyncHandler.js';
 
@@ -53,7 +54,7 @@ export const createUser: RequestHandler = async (req, res) => {
   try {
     const { email, password, role } = req.body;
     if (!email || !password || !role) {
-      res.status(400).json({
+      return res.status(400).json({
         message: "Did not provide all requested user informations",
       });
     }
@@ -68,12 +69,12 @@ export const createUser: RequestHandler = async (req, res) => {
         | "Other"
     );
     console.log("Created user", newUser);
-    res.status(200).json({
+    return res.status(200).json({
       message: "Created single user",
       user: newUser,
     });
   } catch (err) {
-    res.status(500).json({
+    return res.status(500).json({
       message: "Error",
       error: (err as Error).message || "Unknown error",
     });
@@ -108,6 +109,32 @@ export const updateUser: RequestHandler = async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({
+      message: "Error",
+      error: (err as Error).message || "Unknown error",
+    });
+  }
+};
+
+export const addUserToCompany: RequestHandler = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { companyId } = req.body;
+    if (!companyId) {
+      return res.status(400).json({
+        message: "Did not provide all requested informations",
+      });
+    }
+    const newAssignment = await assignUserToCompany(
+      parseInt(id),
+      parseInt(companyId)
+    );
+    console.log("Created assignment", newAssignment);
+    return res.status(200).json({
+      message: "Created assignment user to company",
+      data: newAssignment,
+    });
+  } catch (err) {
+    return res.status(500).json({
       message: "Error",
       error: (err as Error).message || "Unknown error",
     });

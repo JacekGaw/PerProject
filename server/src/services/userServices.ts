@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import db from "../database/db.js";
-import { users } from "../database/schemas.js";
+import { users, companyUsers } from "../database/schemas.js";
 import { hashPassword } from "../utils/passwordUtils.js";
 
 interface UserUpdateData {
@@ -11,6 +11,15 @@ interface UserUpdateData {
   surname?: string;
   phone?: number;
   active?: boolean;
+}
+
+interface NewUser {
+  id: number;
+  email: string;
+  password: string;
+  role: "Developer" | "Tester" | "Product Owner" | "Project Manager" | "Other";
+  name?: string;
+  surname?: string;
 }
 
 export const getUsersFromDB = async (userId?: number): Promise<{}> => {
@@ -30,17 +39,17 @@ export const getUsersFromDB = async (userId?: number): Promise<{}> => {
   }
 };
 
-export const getUserByEmail = async (userEmail:string) => {
+export const getUserByEmail = async (userEmail: string) => {
   try {
     const user = db.query.users.findFirst({
-      where: eq(users.email, userEmail)
-    })
+      where: eq(users.email, userEmail),
+    });
     return user;
   } catch (err) {
     console.error("Error getting user by email: ", err);
     throw err;
   }
-}
+};
 
 export const createUserInDB = async (
   email: string,
@@ -48,7 +57,7 @@ export const createUserInDB = async (
   role: "Developer" | "Tester" | "Product Owner" | "Project Manager" | "Other",
   name?: string,
   surname?: string
-): Promise<{}> => {
+): Promise<NewUser> => {
   try {
     const hashedPassword = await hashPassword(password);
     const params = {
@@ -56,10 +65,10 @@ export const createUserInDB = async (
       password: hashedPassword,
       role: role,
       name: name,
-      surname: surname
+      surname: surname,
     };
-    const newUser = await db.insert(users).values(params).returning();
-    return newUser;
+    const [newUser] = await db.insert(users).values(params).returning();
+    return newUser as NewUser;
   } catch (err) {
     console.error("Error adding user to the database:", err);
     throw err;
@@ -96,6 +105,26 @@ export const updateUserInDB = async (
     return updatedUser;
   } catch (err) {
     console.error("Error updating user to the database:", err);
+    throw err;
+  }
+};
+
+export const assignUserToCompany = async (
+  userId: number,
+  companyId: number
+): Promise<{}> => {
+  try {
+    const params = {
+      userId,
+      companyId,
+    };
+    const newAssignment = await db
+      .insert(companyUsers)
+      .values(params)
+      .returning();
+    return newAssignment;
+  } catch (err) {
+    console.error("Error assigning user to company:", err);
     throw err;
   }
 };

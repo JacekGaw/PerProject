@@ -67,13 +67,21 @@ const UserForm: React.FC<UserFormStepProps> = ({
               try {
                 setInputsDisabled(true);
                 setButtonDisabled(true);
-                const response = await axios.post(
+                const userResponse = await axios.post(
                   "http://localhost:3002/api/users",
                   userData
                 );
+                const createdUser = userResponse.data.user;
+                console.log(createdUser);
+                const assignmentResponse = await axios.post(
+                    `http://localhost:3002/api/users/${createdUser.id}/assign-company`,
+                  {companyId: companyId}
+                )
+                const createdAssignment = assignmentResponse.data;
+                console.log(createdAssignment);
                 setResponseMessage({
                   type: "success",
-                  message: response.data.message,
+                  message: "Created user and added it to the company!",
                 });
                 setTimeout(() => nextAction(), 1000);
               } catch (err) {
@@ -85,8 +93,6 @@ const UserForm: React.FC<UserFormStepProps> = ({
                 });
               }
         }
-
-      
     }
   };
 
