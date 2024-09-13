@@ -1,23 +1,28 @@
-import React, { useState, useContext } from "react";
-import { AuthContext } from "../../store/AuthContext";
+import React, { useState } from "react";
+import { useAuth } from "../../store/AuthContext";
 import Button from "../../components/UI/Button";
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 
 const Login: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const { login } = useContext(AuthContext);
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
     setErrorMessage("");
-    
-
     const formData = new FormData(event.currentTarget);
+    const email = formData.get("email") as string | null;
+    const password = formData.get("password") as string | null;
+
+    if (!email || !password) {
+      setErrorMessage("Email and password are required.");
+      return;
+    }
+
     const data = {
-      email: formData.get("email"),
-      password: formData.get("password"),
+      email,
+      password,
     };
 
     if (login) {

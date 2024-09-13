@@ -1,25 +1,43 @@
-import React, { useState, useContext } from "react";
-import { AuthContext } from "../../store/AuthContext";
+import React, { useState } from "react";
+import { useAuth } from "../../store/AuthContext";
 import Button from "../../components/UI/Button";
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+
+interface SignUpCredentials {
+  email: string,
+  password: string,
+  repeatPassword: string,
+  role: "Developer" | "Tester" | "Product Owner" | "Project Manager" | "Other",
+  name: string,
+  surname: string
+}
+
 
 const SignUp: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const { signup } = useContext(AuthContext);
+  const { signup } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
     setErrorMessage("");
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const data = {
-      email: formData.get("email"),
-      password: formData.get("password"),
-      repeatPassword: formData.get("password-repeat"),
+    const email = formData.get("email") as string | null;
+    const password = formData.get("password") as string | null;
+    const repeatPassword = formData.get("password-repeat") as string | null;
+    const name = formData.get("name") as string | null;
+    const surname = formData.get("surname") as string | null;
+    if(!formData || !email || !password || !repeatPassword || !name || !surname) {
+      setErrorMessage("Did not provided all required informations.");
+      return;
+    }
+    const data: SignUpCredentials = {
+      email,
+      password,
+      repeatPassword,
       role: "Developer",
-      name: formData.get("name"),
-      surname: formData.get("surname"),
+      name,
+      surname
     };
     if (
       data.password?.toString().trim() !==

@@ -1,6 +1,5 @@
 import React, { useState, useRef } from "react";
 import Button from "../../components/UI/Button";
-import api from "../../api/api";
 import axios from "axios";
 
 interface InfoFormStepProps {

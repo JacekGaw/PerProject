@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import TermsStep from "./TermsStep";
 import InfoForm from "./InfoForm";
 import Summary from "./Summary";
-import Button from "../../components/UI/Button";
 import { motion, AnimatePresence } from "framer-motion";
 import UserForm from "./UserForm";
 

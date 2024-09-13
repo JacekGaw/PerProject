@@ -1,9 +1,10 @@
-import React, { useContext } from "react";
-import { AuthContext } from "../../store/AuthContext";
+import Reacr from "react";
 import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "../../store/AuthContext";
+import Spinner from "./Spinner";
 
 const ProtectedRoute: React.FC = () => {
-    const authContext = useContext(AuthContext);
+    const authContext = useAuth();
     
     if (!authContext) {
         throw new Error("AuthContext is undefined");
@@ -12,7 +13,9 @@ const ProtectedRoute: React.FC = () => {
     const { isAuthenticated, isLoading } = authContext;
 
     if (isLoading) {
-        return <div>Loading...</div>; // Or a loading spinner component
+        return  <div className="w-full h-full min-h-screen flex justify-center items-center">
+            <Spinner />
+        </div>
     }
 
     if (!isAuthenticated) {

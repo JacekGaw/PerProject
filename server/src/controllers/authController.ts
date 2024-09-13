@@ -40,10 +40,11 @@ export const logIn: RequestHandler = async (req, res) => {
     const accessToken = jwt.sign(user, JWT_ACCESS_SECRET, {expiresIn: process.env.JWT_ACCESS_EXPIRATION_TIME});
     const refreshToken = jwt.sign(user, JWT_REFRESH_SECRET, {expiresIn: process.env.JWT_REFRESH_EXPIRATION_TIME});
 
+    const { password, ...returnedUser } = user;
     console.log("Successfully logged in");
     return res.status(200).json({
       message: "Successfully logged in",
-      user,
+      user: returnedUser,
       accessToken,
       refreshToken
     });

@@ -13,12 +13,6 @@ const MainRoot: React.FC = () => {
     return (
         <Navigate to="/start" />
     )
-    
-    return ( 
-        <> 
-            <h1>Hello</h1>
-        </>
-    );
 }
 
 export const loader = async (): Promise<[] | Error> => {
