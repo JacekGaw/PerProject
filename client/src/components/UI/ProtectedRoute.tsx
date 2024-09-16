@@ -1,9 +1,9 @@
-import Reacr from "react";
+import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../../store/AuthContext";
 import Spinner from "./Spinner";
 
-const ProtectedRoute: React.FC = () => {
+const ProtectedRoute: React.FC<object> = () => {
     const authContext = useAuth();
     
     if (!authContext) {

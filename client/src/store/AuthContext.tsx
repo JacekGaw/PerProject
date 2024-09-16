@@ -1,5 +1,6 @@
 import { ReactNode, createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
+import api from "../api/api";
 
 interface UserObj {
   id: number;
@@ -64,7 +65,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       const token = localStorage.getItem("accessToken");
       if (token) {
         try {
-          const response = await axios.get("http://localhost:3002/auth/verifyToken", {
+          const response = await api.get("http://localhost:3002/auth/verifyToken", {
             headers: { Authorization: `Bearer ${token}` }
           });
           if (response.data) {
@@ -90,7 +91,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const login = async (userData: LoginCredentials) => {
     try {
       setIsLoading(true);
-      const response = await axios.post(
+      const response = await api.post(
         "http://localhost:3002/auth/login",
         userData
       );
