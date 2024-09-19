@@ -22,7 +22,7 @@ export const projects = pgTable('projects', {
     name: varchar('name', {length: 50}).notNull(),
     alias: varchar('alias', {length: 4}).notNull().unique(),
     description: text('description'),
-    status: projectStatusesEnum('status').notNull(),
+    status: projectStatusesEnum('status').notNull().default("Active"),
     startDate: date('startDate'),
     endDate: date('endDate'),
     createdAt: timestamp('createdAt').defaultNow(),
