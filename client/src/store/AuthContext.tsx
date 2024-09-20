@@ -17,6 +17,7 @@ interface UserObj {
 interface AuthContextProps {
   isAuthenticated: boolean;
   isLoading: boolean;
+  setIsAuthenticated: (par: boolean) => void;
   login: (
     userData: LoginCredentials
   ) => Promise<{ success: boolean; message: string }>;
@@ -145,6 +146,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   const ctxValue = {
     isAuthenticated,
+    setIsAuthenticated,
     isLoading,
     login,
     logOut,

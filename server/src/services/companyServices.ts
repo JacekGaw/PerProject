@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import db from "../database/db.js";
-import { companies } from "../database/schemas.js";
+import { companies, companyUsers } from "../database/schemas.js";
 
 interface CompanyUpdateData {
   name?: string;
@@ -23,6 +23,28 @@ export const getCompaniesFromDB = async (companyId?: number): Promise<{}> => {
     throw err;
   }
 };
+
+export const getCompanyByUserId = async (userId: number): Promise<{}> => {
+  try {
+    const company = await db
+    .select({
+      companyId: companies.id,
+      name: companies.name,
+      description: companies.description,
+      createdAt: companies.createdAt,
+      joinDate: companyUsers.joinDate,
+      active: companyUsers.active
+    })
+    .from(companies)
+    .innerJoin(companyUsers, eq(companyUsers.companyId, companies.id)) // Join companyUsers with companies
+    .where(eq(companyUsers.userId, userId));    
+    console.log(company);
+    return company;
+  } catch (err) {
+    console.error("Error getting company by userId from the database:", err);
+    throw err;
+  }
+}
 
 export const createNewCompanyInDB = async (
   name: string,

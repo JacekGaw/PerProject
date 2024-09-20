@@ -7,7 +7,7 @@ import tasksImg from "../../assets/img/tasks.svg";
 import homeImg from "../../assets/img/home.svg";
 import NavigationItem from "./NavigationItem";
 import NavigationSettings from "./NavigationSettings";
-import companyImg from "../../assets/img/company.svg"
+import companyImg from "../../assets/img/company.svg";
 
 const navigationTabs = [
   {
@@ -41,8 +41,10 @@ const Navigation: React.FC = () => {
   const [selected, setSelected] = useState<number>(0);
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" />;
-
-  const userInitials = `${user.name[0].toUpperCase()}${user.surname[0].toUpperCase()}`;
+  if (user.name && user.surname) {
+    const userInitials = `${user.name[0].toUpperCase()}${user.surname[0].toUpperCase()}`;
+  }
+  const userInitials = "PP"
 
   return (
     <>

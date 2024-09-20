@@ -3,7 +3,8 @@ import {
     getCompaniesFromDB,
     createNewCompanyInDB,
     updateCompanyInDB,
-    deleteCompanyFromDb
+    deleteCompanyFromDb,
+    getCompanyByUserId
 } from "../services/companyServices.js";
 
 
@@ -22,6 +23,21 @@ export const getCompanies: RequestHandler = async (req, res) => {
     });
   }
 };
+
+export const getUserCompany: RequestHandler = async (req, res) => {
+  try {
+    const company = await getCompanyByUserId(parseInt(req.params.userId));
+    if(!company) {
+      throw new Error("Cannot get company by userId");
+    }
+    return res.status(200).json({message: "Getting company by userID", data: company});
+  } catch (err) {
+    return res.status(500).json({
+      message: "Error",
+      error: (err as Error).message || "Unknown error",
+    });
+  }
+}
 
 export const createCompany: RequestHandler = async (req, res) => {
   try {

@@ -1,63 +1,63 @@
-import { boolean, date, integer, pgEnum, pgTable, serial,text, timestamp, uniqueIndex, varchar } from 'drizzle-orm/pg-core';
+import { boolean, date, integer, pgEnum, pgTable, serial, text, timestamp, uniqueIndex, varchar } from 'drizzle-orm/pg-core';
 
 export const userRoleEnum = pgEnum("role", ["Developer", "Tester", "Product Owner", "Project Manager", "Other"]);
 
 export const users = pgTable('users', {
     id: serial('id').primaryKey(),
-    email: varchar('email', {length: 100}).notNull().unique(),
-    password: varchar('password', {length: 200}).notNull(),
+    email: varchar('email', { length: 100 }).notNull().unique(),
+    password: varchar('password', { length: 200 }).notNull(),
     createdAt: timestamp('createdAt').defaultNow(),
     active: boolean('active').notNull().default(false),
-    name: varchar('name', {length: 20}),
-    surname: varchar('surname', {length: 30}),
-    phone: integer('phone'),
+    name: varchar('name', { length: 20 }),
+    surname: varchar('surname', { length: 30 }),
+    phone: varchar('phone', { length: 20 }), // Changed to varchar
     role: userRoleEnum('role').notNull(),
     admin: boolean('admin').notNull().default(false)
 });
 
 export const projectStatusesEnum = pgEnum('projectStatuses', ["Active", "On Hold", "Completed", "Archive", "Maintaining"]);
 
+export const companies = pgTable('companies', {
+    id: serial('id').primaryKey(),
+    name: varchar('name', { length: 50 }).notNull(),
+    description: text('description'),
+    createdAt: timestamp('createdAt').defaultNow()
+});
+
 export const projects = pgTable('projects', {
     id: serial('id').primaryKey(),
-    name: varchar('name', {length: 50}).notNull(),
-    alias: varchar('alias', {length: 4}).notNull().unique(),
+    name: varchar('name', { length: 50 }).notNull(),
+    alias: varchar('alias', { length: 4 }).notNull().unique(),
     description: text('description'),
     status: projectStatusesEnum('status').notNull().default("Active"),
     startDate: date('startDate'),
     endDate: date('endDate'),
     createdAt: timestamp('createdAt').defaultNow(),
-    authorId: integer('authorId').references(() => users.id, { onDelete: "set null" }),  // Set to NULL on user deletion
-    projectManager: integer('projectManager').references(() => users.id, { onDelete: 'set null' }),  // Set to NULL on user deletion
-    companyId: integer('companyId').notNull().references(() => companies.id)
-});
-
-export const projectUsers = pgTable('projectUsers', {
-    id: serial('id').primaryKey(),
-    projectId: integer('projectId').notNull().references(() => projects.id),
-    userId: integer('userId').notNull().references(() => users.id), 
-});
-
-export const companies = pgTable('companies', {
-    id: serial('id').primaryKey(),
-    name: varchar('name', {length: 50}).notNull(),
-    description: text('description'),
-    createdAt: timestamp('createdAt').defaultNow()
+    authorId: integer('authorId').references(() => users.id, { onDelete: "set null" }),
+    projectManagerId: integer('projectManagerId').references(() => users.id, { onDelete: 'set null' }),
+    companyId: integer('companyId').notNull().references(() => companies.id, { onDelete: 'cascade' })
 });
 
 export const companyUsers = pgTable('companyUsers', {
     id: serial('id').primaryKey(),
-    userId: integer('userId').notNull().references(() => users.id),
-    companyId: integer('companyId').notNull().references(() => companies.id),
+    userId: integer('userId').notNull().references(() => users.id, { onDelete: 'cascade' }),
+    companyId: integer('companyId').notNull().references(() => companies.id, { onDelete: 'cascade' }),
     joinDate: timestamp('joinDate').defaultNow(),
     active: boolean('active').default(true),
-})
+});
+
+export const projectUsers = pgTable('projectUsers', {
+    id: serial('id').primaryKey(),
+    projectId: integer('projectId').notNull().references(() => projects.id, { onDelete: 'cascade' }),
+    userId: integer('userId').notNull().references(() => users.id, { onDelete: 'cascade' }),
+    role: userRoleEnum('role').notNull(),
+    joinDate: timestamp('joinDate').defaultNow(),
+    active: boolean('active').default(true),
+});
 
 export const taskStatusesEnum = pgEnum("taskStatuses", ["To Do", "In Progress", "On Hold", "Done"]);
-
 export const taskPriorityEnum = pgEnum('taskPriority', ["Low", "Medium", "High"]);
-
 export const taskTypeEnum = pgEnum('taskType', ["Task", "Story", "Error"]);
-
 
 export const tasks = pgTable('tasks', {
     id: serial('id').primaryKey(),
@@ -69,8 +69,8 @@ export const tasks = pgTable('tasks', {
     priority: taskPriorityEnum('priority').notNull().default("Low"),
     estimatedTime: integer('estimatedTime').default(0),
     status: taskStatusesEnum("status").notNull().default("To Do"),
-    assignedTo: integer('assignedTo').references(() => users.id, { onDelete: 'set null' }),  // Set to NULL on user deletion
-    projectId: integer('projectId').references(() => projects.id, { onDelete: 'cascade' }) 
+    assignedTo: integer('assignedTo').references(() => users.id, { onDelete: 'set null' }),
+    projectId: integer('projectId').references(() => projects.id, { onDelete: 'cascade' })
 });
 
 export const subTasks = pgTable('subTasks', {
@@ -82,16 +82,16 @@ export const subTasks = pgTable('subTasks', {
     priority: taskPriorityEnum('priority').notNull().default("Low"),
     estimatedTime: integer('estimatedTime').default(0),
     status: taskStatusesEnum("status").notNull().default("To Do"),
-    assignedTo: integer('assignedTo').references(() => users.id),
-    taskId: integer('taskId').references(() => tasks.id)
+    assignedTo: integer('assignedTo').references(() => users.id, { onDelete: 'set null' }),
+    taskId: integer('taskId').references(() => tasks.id, { onDelete: 'cascade' })
 });
 
 export const taskHistory = pgTable('taskHistory', {
     id: serial('id').primaryKey(),
-    taskId: integer('taskId').notNull().references(() => tasks.id),
-    userId: integer('userId').notNull().references(() => users.id),
-    changeType: varchar('changeType', {length: 50}).notNull(), 
+    taskId: integer('taskId').notNull().references(() => tasks.id, { onDelete: 'cascade' }),
+    userId: integer('userId').notNull().references(() => users.id, { onDelete: 'cascade' }),
+    changeType: varchar('changeType', { length: 50 }).notNull(),
     oldValue: text('oldValue'),
     newValue: text('newValue'),
     createdAt: timestamp('createdAt').defaultNow()
-  });
+});

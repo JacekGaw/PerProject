@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import db from "../database/db.js";
-import { projects } from "../database/schemas.js";
+import { projects, projectStatusesEnum } from "../database/schemas.js";
 
 interface ProjectUpdateData {
   name?: string;
@@ -9,10 +9,21 @@ interface ProjectUpdateData {
   description?: string;
   startDate?: string;
   endDate?: string;
-  createdAt?: Date;
   authorId?: number;
   projectManager?: number;
   companyId?: number;
+}
+
+export interface CreateProjectBody {
+  name: string;
+  alias: string;
+  description?: string;
+  status?: typeof projectStatusesEnum.enumValues[number];
+  startDate?: string; // Change this to string
+  endDate?: string; // Change this to string
+  authorId?: number;
+  projectManagerId?: number;
+  companyId: number;
 }
 
 export const getProjectsFromDB = async (projectId?: number): Promise<{}> => {
@@ -33,26 +44,13 @@ export const getProjectsFromDB = async (projectId?: number): Promise<{}> => {
 };
 
 export const createNewProjectInDB = async (
-  name: string,
-  alias: string,
-  status: "Active" | "On Hold" | "Completed" | "Archive" | "Maintaining",
-  authorId: number,
-  projectManager: number,
-  companyId: number
-): Promise<{}> => {
+  params: CreateProjectBody
+): Promise<typeof projects.$inferSelect> => {
   try {
-    const params = {
-      name: name,
-      alias: alias,
-      status: status,
-      authorId: authorId,
-      projectManager: projectManager,
-      companyId: companyId,
-    };
-    const newProject = await db.insert(projects).values(params).returning();
+    const [newProject] = await db.insert(projects).values(params).returning();
     return newProject;
   } catch (err) {
-    console.error("Error getting projects from the database:", err);
+    console.error("Error inserting project into the database:", err);
     throw err;
   }
 };
@@ -84,6 +82,17 @@ export const updateProjectInDB = async (
     return updatedUser;
   } catch (err) {
     console.error("Error updating project to the database:", err);
+    throw err;
+  }
+};
+
+
+export const checkProjectExists = async (alias: string): Promise<boolean> => {
+  try {
+    const existingProject = await db.select().from(projects).where(eq(projects.alias, alias)).limit(1);
+    return existingProject.length > 0;
+  } catch (err) {
+    console.error("Error checking if project exists:", err);
     throw err;
   }
 };

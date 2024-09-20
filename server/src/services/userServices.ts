@@ -9,7 +9,7 @@ interface UserUpdateData {
   role?: "Developer" | "Tester" | "Product Owner" | "Project Manager" | "Other";
   name?: string;
   surname?: string;
-  phone?: number;
+  phone?: string;
   active?: boolean;
 }
 

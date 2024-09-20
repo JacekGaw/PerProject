@@ -1,6 +1,8 @@
 import { RequestHandler } from "express";
 import {
   getProjectsFromDB,
+  CreateProjectBody,
+  checkProjectExists,
   createNewProjectInDB,
   deleteProjectFromDb,
   updateProjectInDB,
@@ -40,36 +42,54 @@ export const getProject: RequestHandler = async (req, res) => {
 
 export const createProject: RequestHandler = async (req, res) => {
   try {
-    const { name, alias, status, authorId, projectManager, companyId } =
-      req.body;
-    if (
-      !name ||
-      !alias ||
-      !status ||
-      !authorId ||
-      !projectManager ||
-      !companyId
-    ) {
-      res.status(400).json({
-        message: "Did not provide all requested data for new company",
-      });
-    }
-    const newProject = await createNewProjectInDB(
+    const {
       name,
       alias,
+      description,
       status,
+      startDate,
+      endDate,
       authorId,
-      projectManager,
-      companyId
-    );
-    res.status(200).json({
+      projectManagerId,
+      companyId,
+    } = req.body as CreateProjectBody;
+
+    // Validate required fields
+    if (!name || !alias || !companyId) {
+      return res.status(400).json({
+        message: "Name, alias, and companyId are required",
+      });
+    }
+
+    // Check if project with this alias already exists
+    const projectExists = await checkProjectExists(alias);
+    if (projectExists) {
+      return res.status(409).json({
+        message: "A project with this alias already exists",
+      });
+    }
+
+    const newProject = await createNewProjectInDB({
+      name,
+      alias,
+      description,
+      status,
+      startDate,
+      endDate,
+      authorId,
+      projectManagerId,
+      companyId,
+    });
+
+    res.status(201).json({
       message: "Created new project",
       project: newProject,
     });
   } catch (err) {
+    console.error("Error creating new project:", err);
     res.status(500).json({
-      message: "Error",
-      error: (err as Error).message || "Unknown error",
+      message: "An error occurred while creating the project",
+      error: (err as Error).message,
     });
   }
 };
