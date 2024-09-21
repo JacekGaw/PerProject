@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import db from "../database/db.js";
-import { companies, companyUsers } from "../database/schemas.js";
+import { companies, companyUsers, users } from "../database/schemas.js";
 
 interface CompanyUpdateData {
   name?: string;
@@ -26,20 +26,45 @@ export const getCompaniesFromDB = async (companyId?: number): Promise<{}> => {
 
 export const getCompanyByUserId = async (userId: number): Promise<{}> => {
   try {
-    const company = await db
-    .select({
-      companyId: companies.id,
+    const companyData = await db
+    .select(
+      {
+      id: companies.id,
       name: companies.name,
       description: companies.description,
-      createdAt: companies.createdAt,
-      joinDate: companyUsers.joinDate,
-      active: companyUsers.active
-    })
+      createdAt: companies.createdAt
+      // joinDate: companyUsers.joinDate,
+      // active: companyUsers.active
+    }
+    )
     .from(companies)
     .innerJoin(companyUsers, eq(companyUsers.companyId, companies.id)) // Join companyUsers with companies
-    .where(eq(companyUsers.userId, userId));    
+    .where(eq(companyUsers.userId, userId));
+    const company = companyData[0];
+    console.log(company);   
+    if (!company) {
+      throw new Error(`No company found for userId ${userId}`);
+    }
+    const companyUsersArr = await db
+      .select({
+        id: users.id,
+        name: users.name,
+        surname: users.surname,
+        email: users.email,
+        role: users.role,
+        active: companyUsers.active,
+        joinDate: companyUsers.joinDate,
+      })
+      .from(users)
+      .innerJoin(companyUsers, eq(companyUsers.userId, users.id))
+      .where(eq(companyUsers.companyId, company.id));
+
+    console.log(companyUsersArr);
     console.log(company);
-    return company;
+    return {
+      company,
+      users: companyUsersArr,
+    };
   } catch (err) {
     console.error("Error getting company by userId from the database:", err);
     throw err;

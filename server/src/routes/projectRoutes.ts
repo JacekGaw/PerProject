@@ -9,9 +9,9 @@ import {
 } from "../controllers/projectController.js";
 
 router.get("/projects/", getProjects);
-router.get("/projects/:id", getProject);
-router.post("/projects/", createProject);
-router.patch("/projects/:id", updateProject);
-router.delete("/projects/:id", deleteProject);
+router.get("/project/:id", getProject);
+router.post("/project/", createProject);
+router.patch("/project/:id", updateProject);
+router.delete("/project/:id", deleteProject);
 
 export default router;

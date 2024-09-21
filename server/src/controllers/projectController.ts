@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import {
   getProjectsFromDB,
+  getProjectFromDB,
   CreateProjectBody,
   checkProjectExists,
   createNewProjectInDB,
@@ -10,7 +11,9 @@ import {
 
 export const getProjects: RequestHandler = async (req, res) => {
   try {
-    const projects = await getProjectsFromDB();
+    const companyId = req.query.companyId as string | undefined;
+    
+    const projects = await getProjectsFromDB(companyId);
     console.log("All projects ", projects);
     res.status(200).json({
       message: "Getting all projects",
@@ -26,7 +29,7 @@ export const getProjects: RequestHandler = async (req, res) => {
 
 export const getProject: RequestHandler = async (req, res) => {
   try {
-    const projects = await getProjectsFromDB(parseInt(req.params.id));
+    const projects = await getProjectFromDB(parseInt(req.params.id));
     console.log("All projects ", projects);
     res.status(200).json({
       message: "Getting project",

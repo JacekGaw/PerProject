@@ -26,19 +26,35 @@ export interface CreateProjectBody {
   companyId: number;
 }
 
-export const getProjectsFromDB = async (projectId?: number): Promise<{}> => {
+export const getProjectsFromDB = async (companyId?: string | undefined): Promise<{}> => {
   try {
-    let projectsList = {};
-    if (projectId) {
+    let projectsList = [];
+    if(companyId){
       projectsList = await db.query.projects.findMany({
-        where: eq(projects.id, projectId),
+        where: eq(projects.companyId, parseInt(companyId)),
       });
-    } else {
+    }
+    else {
       projectsList = await db.query.projects.findMany();
     }
     return projectsList;
   } catch (err) {
     console.error("Error getting projects from the database:", err);
+    throw err;
+  }
+};
+
+export const getProjectFromDB = async (projectId: number): Promise<{}> => {
+  try {
+    
+    
+    const project = await db.query.projects.findMany({
+        where: eq(projects.id, projectId),
+      });
+    
+    return project;
+  } catch (err) {
+    console.error("Error getting project from the database:", err);
     throw err;
   }
 };
