@@ -1,10 +1,8 @@
-import React, { useRef, useEffect, useState} from "react";
+import React, { useRef} from "react";
 import { motion } from "framer-motion";
 import plusIcon from "../../assets/img/plus.svg";
 import Modal, { ModalRef } from "../../components/UI/Modal";
 import AddNewProjectForm from "./AddNewProjectForm";
-import axios from "axios";
-import { useProjectCtx } from "../../store/ProjectsContext";
 import ProjectsList from "./ProjectsList";
 
 const ProjectsRoot: React.FC = () => {

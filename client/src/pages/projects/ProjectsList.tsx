@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useProjectCtx, Project } from "../../store/ProjectsContext";
 import ProjectListItem from "./ProjectListItem";
-import { delay, motion } from "framer-motion";
+import {  motion } from "framer-motion";
 
 const container = {
   hidden: { opacity: 0 },

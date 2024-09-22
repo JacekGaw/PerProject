@@ -4,7 +4,6 @@ import { useCompanyCtx } from "../../store/CompanyContext";
 import { CompanyUserType } from "../../store/CompanyContext";
 import { useAuth } from "../../store/AuthContext";
 import { useProjectCtx } from "../../store/ProjectsContext";
-import { Navigate } from "react-router-dom";
 
 interface Params {
   exit: () => void
@@ -32,7 +31,7 @@ const AddNewProjectForm: React.FC<Params> = ({exit}) => {
     if(!name || !alias || !description){
       return setErrorMessage("You didn't provided all required data");
     }
-    if(!user){
+    if(!user || !company){
       return logOut();
     }
     const data = {

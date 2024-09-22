@@ -1,12 +1,7 @@
 import {
     ReactNode,
-    createContext,
-    useContext,
-    useEffect,
-    useState,
-  } from "react";
-  import { useAuth } from "./AuthContext";
-  import axios from "axios";
+    createContext  } from "react";
+
 
   
   interface TasksContextProps {

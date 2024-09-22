@@ -27,7 +27,7 @@ interface CompanyType {
 
 interface CompanyContextProps {
   isLoading: boolean;
-  company: CompanyType;
+  company: CompanyType | undefined;
   companyUsers: CompanyUserType[];
 }
 

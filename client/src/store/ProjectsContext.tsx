@@ -1,9 +1,7 @@
 import {
   ReactNode,
   createContext,
-  useContext,
-  useEffect,
-  useState,
+  useContext
 } from "react";
 import { useCompanyCtx } from "./CompanyContext";
 import axios from "axios";
@@ -53,11 +51,11 @@ export const useProjectCtx = () : ProjectsContextProps => {
 export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const { company} = useCompanyCtx();
+  const { company } = useCompanyCtx();
 
   const addNewProject = async (data: NewProjectType) =>  {
     try {
-      const response = await axios.post("http://localhost:3002/api/project", data);
+      const response = await axios.post("http://localhost:3002/api/project",  data);
       if(response.status == 200 || response.status == 201) {
         return {status: "Success", text: "Project Created"}
       }
@@ -73,10 +71,15 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
 
   const getCompanyProjects = async () => {
     try {
+      if(company == undefined){
+        return {status: "Error", text: "Company is not defined"};
+      }
+      else {
       const response = await axios.get(`http://localhost:3002/api/projects?companyId=${company.id}`);
       const data = response.data;
       console.log(data);
       return data.projects;
+      }
     } catch (err: any) {
       console.log(err);
       const errMessage = err.response?.data.message || err.message

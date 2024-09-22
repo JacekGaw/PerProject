@@ -1,12 +1,8 @@
 import {
     ReactNode,
-    createContext,
-    useContext,
-    useEffect,
-    useState,
+    createContext
   } from "react";
-  import { useAuth } from "./AuthContext";
-  import axios from "axios";
+
 
   
   interface NotesContextProps {

@@ -3,10 +3,7 @@ import { createPortal } from 'react-dom';
 import closeIcon from "../../assets/img/close.svg"
 import { motion } from 'framer-motion';
 
-const buttonMotion = {
-  rest: {backgroundOpacity: 0, x: 0, y: 0},
-  hover: {backgroundOpacity: 1, x: -5, y: -5}
-}
+
 
 interface ModalProps {
   className?: string;

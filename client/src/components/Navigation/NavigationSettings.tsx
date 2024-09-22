@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../store/AuthContext";
-import { motion, AnimatePresence, transform, delay } from "framer-motion";
+import { motion } from "framer-motion";
 import settingsImg from "../../assets/img/settings.svg";
 import logoutImg from "../../assets/img/logout.svg";
 
