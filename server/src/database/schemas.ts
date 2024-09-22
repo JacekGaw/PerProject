@@ -70,6 +70,7 @@ export const tasks = pgTable('tasks', {
     estimatedTime: integer('estimatedTime').default(0),
     status: taskStatusesEnum("status").notNull().default("To Do"),
     assignedTo: integer('assignedTo').references(() => users.id, { onDelete: 'set null' }),
+    authorId: integer('authorId').references(() => users.id, {onDelete: 'set null'}),
     projectId: integer('projectId').references(() => projects.id, { onDelete: 'cascade' })
 });
 
@@ -83,6 +84,7 @@ export const subTasks = pgTable('subTasks', {
     estimatedTime: integer('estimatedTime').default(0),
     status: taskStatusesEnum("status").notNull().default("To Do"),
     assignedTo: integer('assignedTo').references(() => users.id, { onDelete: 'set null' }),
+    authorId: integer('authorId').references(() => users.id, {onDelete: 'set null'}),
     taskId: integer('taskId').references(() => tasks.id, { onDelete: 'cascade' })
 });
 

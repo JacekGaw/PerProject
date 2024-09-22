@@ -4,8 +4,7 @@ import {
     createNewCompanyInDB,
     updateCompanyInDB,
     deleteCompanyFromDb,
-    getCompanyByUserId
-} from "../services/companyServices.js";
+    getCompanyByUserId} from "../services/companyServices.js";
 
 
 export const getCompanies: RequestHandler = async (req, res) => {
@@ -38,6 +37,7 @@ export const getUserCompany: RequestHandler = async (req, res) => {
     });
   }
 }
+
 
 export const createCompany: RequestHandler = async (req, res) => {
   try {

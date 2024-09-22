@@ -1,6 +1,9 @@
 import { eq } from "drizzle-orm";
 import db from "../database/db.js";
-import { projects, projectStatusesEnum } from "../database/schemas.js";
+import { projects, projectStatusesEnum, tasks } from "../database/schemas.js";
+
+type Project = typeof projects.$inferSelect;
+type Task = typeof tasks.$inferSelect;
 
 interface ProjectUpdateData {
   name?: string;
@@ -18,7 +21,7 @@ export interface CreateProjectBody {
   name: string;
   alias: string;
   description?: string;
-  status?: typeof projectStatusesEnum.enumValues[number];
+  status?: (typeof projectStatusesEnum.enumValues)[number];
   startDate?: string; // Change this to string
   endDate?: string; // Change this to string
   authorId?: number;
@@ -26,15 +29,16 @@ export interface CreateProjectBody {
   companyId: number;
 }
 
-export const getProjectsFromDB = async (companyId?: string | undefined): Promise<{}> => {
+export const getProjectsFromDB = async (
+  companyId?: string | undefined
+): Promise<{}> => {
   try {
     let projectsList = [];
-    if(companyId){
+    if (companyId) {
       projectsList = await db.query.projects.findMany({
         where: eq(projects.companyId, parseInt(companyId)),
       });
-    }
-    else {
+    } else {
       projectsList = await db.query.projects.findMany();
     }
     return projectsList;
@@ -46,15 +50,44 @@ export const getProjectsFromDB = async (companyId?: string | undefined): Promise
 
 export const getProjectFromDB = async (projectId: number): Promise<{}> => {
   try {
-    
-    
     const project = await db.query.projects.findMany({
-        where: eq(projects.id, projectId),
-      });
-    
+      where: eq(projects.id, projectId),
+    });
+
     return project;
   } catch (err) {
     console.error("Error getting project from the database:", err);
+    throw err;
+  }
+};
+
+export const getProjectByAlias = async (
+  projectAlias: string
+): Promise<Project | null> => {
+  try {
+    const project = await db
+      .select()
+      .from(projects)
+      .where(eq(projects.alias, projectAlias))
+      .limit(1);
+    return project[0] || null;
+  } catch (err) {
+    console.error("Error getting company by alias from the database:", err);
+    throw err;
+  }
+};
+
+export const getTasksFromProject = async (
+  projectId: number
+): Promise<Task[] | null> => {
+  try {
+    const projectTasks = await db
+      .select()
+      .from(tasks)
+      .where(eq(tasks.projectId, projectId));
+    return projectTasks;
+  } catch (err) {
+    console.error("Error getting tasks from project with provided id: ", err);
     throw err;
   }
 };
@@ -102,10 +135,12 @@ export const updateProjectInDB = async (
   }
 };
 
-
 export const checkProjectExists = async (alias: string): Promise<boolean> => {
   try {
-    const existingProject = await db.select().from(projects).where(eq(projects.alias, alias)).limit(1);
+    const existingProject = await db
+      .select()
+      .from(projects)
+      .where(eq(projects.alias, alias));
     return existingProject.length > 0;
   } catch (err) {
     console.error("Error checking if project exists:", err);

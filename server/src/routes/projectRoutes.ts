@@ -6,10 +6,12 @@ import {
   createProject,
   deleteProject,
   updateProject,
+  getProjectAndTasks
 } from "../controllers/projectController.js";
 
 router.get("/projects/", getProjects);
 router.get("/project/:id", getProject);
+router.get("/project/:alias/tasks", getProjectAndTasks);
 router.post("/project/", createProject);
 router.patch("/project/:id", updateProject);
 router.delete("/project/:id", deleteProject);

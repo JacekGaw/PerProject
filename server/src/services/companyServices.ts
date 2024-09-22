@@ -71,6 +71,8 @@ export const getCompanyByUserId = async (userId: number): Promise<{}> => {
   }
 }
 
+
+
 export const createNewCompanyInDB = async (
   name: string,
   description: string

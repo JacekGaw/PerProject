@@ -11,6 +11,7 @@ import ProjectsRoot from "./pages/projects/ProjectsRoot";
 import NotesRoot from "./pages/notes/NotesRoot";
 import TasksRoot from "./pages/tasks/TasksRoot";
 import CompanyRoot from "./pages/company/CompanyRoot";
+import ProjectRoot, {projectLoader} from "./pages/project/ProjectRoot";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -46,6 +47,11 @@ const App = () => {
                 {
                   path: "/dashboard/projects",
                   element: <ProjectsRoot />
+                },
+                {
+                  path: "/dashboard/projects/:alias",
+                  loader: projectLoader,
+                  element: <ProjectRoot />
                 },
                 {
                   path: "/dashboard/notes",

@@ -7,6 +7,8 @@ import {
   createNewProjectInDB,
   deleteProjectFromDb,
   updateProjectInDB,
+  getProjectByAlias,
+  getTasksFromProject
 } from "../services/projectServices.js";
 
 export const getProjects: RequestHandler = async (req, res) => {
@@ -42,6 +44,23 @@ export const getProject: RequestHandler = async (req, res) => {
     });
   }
 };
+
+export const getProjectAndTasks: RequestHandler = async (req, res) => {
+  try {
+    const project = await getProjectByAlias(req.params.alias);
+    if(!project) {
+      return res.status(404).json({message: "Could not find project with provided alias"})
+    }
+    const tasks = await getTasksFromProject(project.id);
+    console.log(project, tasks);
+    return res.status(201).json({message: "Getting project and tasks", data: {project, tasks}});
+  } catch (err) {
+    return res.status(500).json({
+      message: "Error",
+      error: (err as Error).message || "Unknown error"
+    });
+  }
+}
 
 export const createProject: RequestHandler = async (req, res) => {
   try {

@@ -1,12 +1,40 @@
 import {
+  Dispatch,
   ReactNode,
+  SetStateAction,
   createContext,
-  useContext
+  useContext,
+  useState
 } from "react";
 import { useCompanyCtx } from "./CompanyContext";
 import axios from "axios";
+import { Task } from "../pages/project/ProjectRoot";
 
-interface NewProjectType {
+type ProjectStatus =
+  | "Active"
+  | "On Hold"
+  | "Completed"
+  | "Archive"
+  | "Maintaining";
+type TaskStatus = "To Do" | "In Progress" | "On Hold" | "Done";
+type TaskPriority = "Low" | "Medium" | "High";
+type TaskType = "Task" | "Story" | "Error";
+
+export interface Task {
+  id: number;
+  taskText: string;
+  description: string | null;
+  type: TaskType;
+  createdAt: Date;
+  updatedAt: Date | null;
+  priority: TaskPriority;
+  estimatedTime: number | null;
+  status: TaskStatus;
+  assignedTo: number | null;
+  projectId: number;
+}
+
+export interface NewProjectType {
   name: string;
   alias: string;
   description: string;
@@ -20,20 +48,24 @@ interface NewProjectType {
 export interface Project {
   id: number;
   name: string;
-  createdAt: string;
   alias: string;
-  description: string;
-  startDate?: string | null;
-  endDate?: string | null;
-  projectManagerId: number;
-  authorId: number;
+  description: string | null;
+  status: ProjectStatus;
+  startDate: Date | null;
+  endDate: Date | null;
+  createdAt: Date;
+  authorId: number | null;
+  projectManagerId: number | null;
   companyId: number;
-  status: "Active" | "On Hold" | "Completed" | "Archive" | "Maintaining";
 }
 
 interface ProjectsContextProps {
   addNewProject: (data: NewProjectType) => Promise<{status: string, text: string}>,
-  getCompanyProjects: () => Promise<Project[]>
+  getCompanyProjects: () => Promise<Project[]>,
+  setProject: Dispatch<SetStateAction<Project | undefined>>,
+  project: Project | undefined,
+  setTasks: Dispatch<SetStateAction<Task[]>>,
+  tasks: Task[] | undefined
 }
 
 export const ProjectsContext = createContext<ProjectsContextProps | undefined>(
@@ -52,6 +84,10 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const { company } = useCompanyCtx();
+  const [project, setProject] = useState<Project | undefined>();
+  const [tasks, setTasks] = useState<Task[]>([]);
+
+
 
   const addNewProject = async (data: NewProjectType) =>  {
     try {
@@ -89,7 +125,11 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
 
   const ctxValue = {
     addNewProject,
-    getCompanyProjects
+    getCompanyProjects,
+    setProject,
+    project,
+    setTasks,
+    tasks
   };
 
   return (
