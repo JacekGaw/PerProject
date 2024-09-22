@@ -65,7 +65,8 @@ interface ProjectsContextProps {
   setProject: Dispatch<SetStateAction<Project | undefined>>,
   project: Project | undefined,
   setTasks: Dispatch<SetStateAction<Task[]>>,
-  tasks: Task[] | undefined
+  tasks: Task[] | undefined,
+  changeTaskStatus: (taskId: number, newStatus: string) => Promise<object>
 }
 
 export const ProjectsContext = createContext<ProjectsContextProps | undefined>(
@@ -87,7 +88,16 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
   const [project, setProject] = useState<Project | undefined>();
   const [tasks, setTasks] = useState<Task[]>([]);
 
-
+  const changeTaskStatus = async (taskId: number, newStatus: string) => {
+    try {
+      const response = await axios.patch(`http://localhost:3002/api/task/${taskId}`, {status: newStatus});
+      return {status: "Success", text: response.data.message}
+    } catch (err: any) {
+      console.log(err);
+      const errMessage = err.response?.data.message || err.message
+      return {status: "Error", text: errMessage};
+    }
+  }
 
   const addNewProject = async (data: NewProjectType) =>  {
     try {
@@ -129,7 +139,8 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
     setProject,
     project,
     setTasks,
-    tasks
+    tasks,
+    changeTaskStatus
   };
 
   return (

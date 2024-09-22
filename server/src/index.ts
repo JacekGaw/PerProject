@@ -6,6 +6,7 @@ import { runDB } from "./database/db.js";
 import userRouter from "./routes/userRoutes.js";
 import projectRouter from "./routes/projectRoutes.js";
 import authRouter from "./routes/authRoutes.js";
+import taskRouter from "./routes/taskRoutes.js"
 import companyRouter from "./routes/companyRoutes.js"
 import { errorHandler } from "./middleware/errorHandler.js";
 runDB();
@@ -27,6 +28,7 @@ app.use("/api/", userRouter);
 app.use("/api/", projectRouter);
 app.use("/auth/", authRouter);
 app.use("/api/", companyRouter);
+app.use("/api/", taskRouter);
 
 app.listen(PORT, () => {
   console.log("Server is running on port ", PORT);

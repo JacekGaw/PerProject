@@ -84,7 +84,7 @@ export const getTasksFromProject = async (
     const projectTasks = await db
       .select()
       .from(tasks)
-      .where(eq(tasks.projectId, projectId));
+      .where(eq(tasks.projectId, projectId)).orderBy(tasks.createdAt);
     return projectTasks;
   } catch (err) {
     console.error("Error getting tasks from project with provided id: ", err);
