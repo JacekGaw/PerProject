@@ -1,5 +1,6 @@
 import "dotenv/config";
 import express from "express";
+import cors from "cors";
 import bodyParser from "body-parser";
 import { runDB } from "./database/db.js";
 import userRouter from "./routes/userRoutes.js";
@@ -12,6 +13,7 @@ runDB();
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
 
 const PORT = process.env.PORT;
 

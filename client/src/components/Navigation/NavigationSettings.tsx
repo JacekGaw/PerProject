@@ -12,9 +12,7 @@ interface NavigationSettingsProps {
 
 const childrenVariants = {
     initial: { height: 0, opacity: 0, paddingBottom: 0},
-    hover: { height: "auto", opacity: 1, paddingBottom: 10},
-    transform: {delay: 1}
-}
+    hover: { height: "auto", opacity: 1, paddingBottom: 10}}
 
 const NavigationSettings: React.FC<NavigationSettingsProps> = ({initials}: NavigationSettingsProps) => {
     const { logOut } = useAuth();
