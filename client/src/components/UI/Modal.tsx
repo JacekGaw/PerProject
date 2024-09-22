@@ -21,7 +21,6 @@ export interface ModalRef {
 
 const Modal = forwardRef<ModalRef, ModalProps>(({ className = '', children, onClose }, ref) => {
   const dialog = useRef<HTMLDialogElement>(null);
-  const button = useRef<HTMLButtonElement>(null);
 
   useImperativeHandle(ref, () => ({
     open() {
@@ -30,8 +29,8 @@ const Modal = forwardRef<ModalRef, ModalProps>(({ className = '', children, onCl
       }
     },
     close() {
-      if (button.current) {
-        button.current.click();
+      if (dialog.current) {
+        dialog.current.click();
       }
     }
   }));

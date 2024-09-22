@@ -35,17 +35,17 @@ const ProjectsRoot: React.FC = () => {
         <AddNewProjectForm exit={closeModal} />
         </div>
     </Modal>
-    <section className="w-full max-w-screen-xl mx-auto">
+    <section className="w-full max-w-screen-xl mx-auto gap-10 flex flex-col">
       <header className="w-full border-b py-5 flex justify-between gap-2 items-center">
-        <h1 className="font-[300] text-xl">Projects</h1>
+        <h1 className="font-[800] text-slate-200 text-2xl">Projects</h1>
         <motion.button
           initial={{ scale: 1 }}
           whileHover={{ scale: 1.1 }}
           onClick={openModal}
-          className="bg-dark-blue p-2 rounded-full"
+          className="bg-gradient-to-r from-normal-orange to-vibrant-orange p-2 rounded-full w-8 h-8 flex justify-center items-center"
         >
           <img src={plusIcon} alt="Add New Project" className="w-4" />
-        </motion.button>
+        </motion.button> 
       </header>
       <ProjectsList />
     </section>

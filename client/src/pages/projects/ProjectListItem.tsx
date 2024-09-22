@@ -20,7 +20,7 @@ const ProjectListItem: React.FC<ProjectListItemProps> = ({ name, alias, createdA
 
     return (
         <motion.li key={alias} variants={listItem} whileHover={{scale: 1.01, y:-2}}>
-            <Link to={`/dashboard/projects/${alias}`} className='grid grid-cols-4 gap-4 justify-between items-center border border-slate-800 *:px-2 *:py-4 *:font-[200]'>
+            <Link to={`/dashboard/projects/${alias}`} className='grid grid-cols-4 gap-4 justify-between items-center border border-slate-800 rounded-sm *:px-2 *:py-4 *:font-[200] bg-darkest-blue bg-opacity-40'>
             <h3 className="text-left ">{name}</h3>
             <p className="text-left ">{alias}</p>
             <p className="text-left ">{status}</p>

@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom"; // Import useLocation to get the current route
 import { useAuth } from "../../store/AuthContext";
-import { Navigate, Link } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import projectsImg from "../../assets/img/projects.svg";
 import notesImg from "../../assets/img/notes.svg";
 import tasksImg from "../../assets/img/tasks.svg";
@@ -40,31 +41,36 @@ const navigationTabs = [
 const Navigation: React.FC = () => {
   const [selected, setSelected] = useState<number>(0);
   const { user } = useAuth();
+  const location = useLocation(); // Get current route
+
+  // Set the selected tab based on the current route
+  useEffect(() => {
+    const currentTabIndex = navigationTabs.findIndex(tab => tab.link === location.pathname);
+    if (currentTabIndex !== -1) {
+      setSelected(currentTabIndex);
+    }
+  }, [location.pathname]); // Run this effect when the route changes
+
   if (!user) return <Navigate to="/login" />;
-  if (user.name && user.surname) {
-    const userInitials = `${user.name[0].toUpperCase()}${user.surname[0].toUpperCase()}`;
-  }
-  const userInitials = "PP"
+  const userInitials = "PP"; // Placeholder for user initials
 
   return (
     <>
-      <nav className="h-screen sticky py-5 flex flex-col justify-between items-center bg-darkest-blue">
+      <nav className="h-screen fixed w-[60px] py-5 flex flex-col justify-between items-center bg-darkest-blue">
         <header>
           <h1>PerP</h1>
         </header>
         <ul>
-          {navigationTabs.map((item, index) => {
-            return (
-              <NavigationItem
-                key={item.title}
-                link={item.link}
-                image={item.tabImage}
-                title={item.title}
-                selected={selected == index}
-                onClick={() => setSelected(index)}
-              />
-            );
-          })}
+          {navigationTabs.map((item, index) => (
+            <NavigationItem
+              key={item.title}
+              link={item.link}
+              image={item.tabImage}
+              title={item.title}
+              selected={selected === index}
+              onClick={() => setSelected(index)} // Handle clicking on nav items
+            />
+          ))}
         </ul>
         <NavigationSettings initials={userInitials} />
       </nav>

@@ -25,7 +25,7 @@ const DashboardRoot: React.FC = () => {
               <TasksProvider>
                 <div className="flex">
                   <Navigation />
-                  <main className="p-5 w-full">
+                  <main className="p-5 w-full ml-[60px]">
                     <Outlet />
                   </main>
                 </div>
