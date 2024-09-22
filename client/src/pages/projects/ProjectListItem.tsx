@@ -10,7 +10,7 @@ const listItem = {
 interface ProjectListItemProps {
     name: string;
     alias: string;
-    createdAt: string;
+    createdAt: Date;
     status: "Active" | "On Hold" | "Completed" | "Archive" | "Maintaining";
 }
 

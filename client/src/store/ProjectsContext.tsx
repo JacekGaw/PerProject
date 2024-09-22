@@ -8,7 +8,6 @@ import {
 } from "react";
 import { useCompanyCtx } from "./CompanyContext";
 import axios from "axios";
-import { Task } from "../pages/project/ProjectRoot";
 
 type ProjectStatus =
   | "Active"
