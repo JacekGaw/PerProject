@@ -45,3 +45,13 @@ export const changeTaskInDB = async (
       throw err;
     }
   }
+
+export const deleteTaskFromDB = async (id: number): Promise<typeof tasks.$inferSelect> => {
+    try {
+        const deletedTask = await db.delete(tasks).where(eq(tasks.id, id)).returning();
+        return deletedTask[0];
+    } catch (err) {
+        console.error("Error trying to add task to db", err);
+      throw err;
+    }
+}
