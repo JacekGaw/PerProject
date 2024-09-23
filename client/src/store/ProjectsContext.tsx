@@ -65,7 +65,8 @@ interface ProjectsContextProps {
   project: Project | undefined,
   setTasks: Dispatch<SetStateAction<Task[]>>,
   tasks: Task[] | undefined,
-  changeTaskStatus: (taskId: number, newStatus: string) => Promise<object>
+  changeTaskStatus: (taskId: number, newStatus: string) => Promise<object>,
+  addNewTask: (data: Partial<Task>) => Promise<{status: string, text: string}>
 }
 
 export const ProjectsContext = createContext<ProjectsContextProps | undefined>(
@@ -114,6 +115,22 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
     }
   }
 
+  const addNewTask = async (data: Partial<Task> ) => {
+    try {
+      const response = await axios.post("http://localhost:3002/api/task",  data);
+      console.log(response);
+      if(response.data.data){
+        setTasks((prevState) => [...prevState, response.data.data])
+      }
+      
+      return {status: "Success", text: "Added task"};
+    } catch (err: any) {
+      console.log(err);
+      const errMessage = err.response?.data.message || err.message
+      return {status: "Error", text: errMessage};
+    }
+  } 
+
   const getCompanyProjects = async () => {
     try {
       if(company == undefined){
@@ -139,7 +156,8 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
     project,
     setTasks,
     tasks,
-    changeTaskStatus
+    changeTaskStatus,
+    addNewTask
   };
 
   return (

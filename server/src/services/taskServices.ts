@@ -7,7 +7,7 @@ type Task = typeof tasks.$inferSelect;
 export interface NewTaskType {
     taskText: string;
     description?: string;
-    type: "Task" | "Story" | "Error";  // Use string literals here
+    type?: "Task" | "Story" | "Error";  // Use string literals here
     priority?: "Low" | "Medium" | "High";  // Match your DB enums
     estimatedTime?: number;
     status?: "To Do" | "In Progress" | "On Hold" | "Done";  // Match DB enums
@@ -32,3 +32,16 @@ export const changeTaskInDB = async (
       throw err;
     }
   };
+
+
+  export const addNewTaskToDB = async (
+    newTask: NewTaskType
+  ): Promise<typeof tasks.$inferSelect> => {
+    try {
+        const newTaskAdded = await db.insert(tasks).values(newTask).returning();
+        return newTaskAdded[0];
+    } catch (err) {
+        console.error("Error trying to add task to db", err);
+      throw err;
+    }
+  }
