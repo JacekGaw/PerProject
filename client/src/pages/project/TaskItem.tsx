@@ -5,6 +5,7 @@ import errorIcon from "../../assets/img/errorIcon.svg";
 import taskIcon from "../../assets/img/taskIcon.svg";
 import storyIcon from "../../assets/img/storyIcon.svg";
 import { useProjectCtx } from '../../store/ProjectsContext';
+import { Link } from 'react-router-dom';
 
 interface taskType {
     type: string,
@@ -23,6 +24,7 @@ const TaskItem: React.FC<TaskItemProps> = ({item}) => {
     const {companyUsers} = useCompanyCtx();
     const { changeTaskStatus } = useProjectCtx();
     const statusRef = useRef<HTMLSelectElement>(null);
+    const selectRef = useRef<HTMLSelectElement>(null);
 
     const assignedUser = companyUsers.filter(user => user.id == item.assignedTo)[0];
     let initials = "PP";
@@ -43,15 +45,21 @@ const TaskItem: React.FC<TaskItemProps> = ({item}) => {
         }
     }   
 
+    const openSelect = () => {
+        if(selectRef.current){
+            selectRef.current.focus();
+        }
+    }
+
     return (    
         <>
             <li className='flex gap-2 w-full items-center justify-between p-1  bg-darkest-blue bg-opacity-50 rounded-sm'>
-                <div className={` w-20 border border-slate-800 flex justify-left items-center gap-1 text-xs p-2`}>
+                <div onClick={openSelect} className={`relative w-20 border border-slate-800 flex justify-left items-center gap-1 text-xs p-2`}>
                     <img src={taskType.icon} className='max-w-4 fill-slate-100' />
                     <p className='font-[200]'>{taskType.type}</p>
                 </div>
-                <p className='text-left w-full font-[300] px-5 py-2'>{item.taskText}</p>
-                <select defaultValue={item.status} onChange={changeStatus} ref={statusRef}  className='bg-darkest-blue text-sm p-2 rounded-sm'>
+                <Link to={`task/${item.id}`} className='text-left w-full font-[300] px-5 py-2'>{item.taskText}</Link>
+                <select defaultValue={item.status} onChange={changeStatus} ref={statusRef}   className='bg-darkest-blue text-sm p-2 rounded-sm'>
                     {taskStatuses.map((status) => (
                         <option key={status} value={status}>{status}</option>
                     ))}

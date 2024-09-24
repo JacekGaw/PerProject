@@ -1,7 +1,21 @@
 import { RequestHandler } from "express";
 import { NewTaskType } from "../services/taskServices.js";
-import { changeTaskInDB, addNewTaskToDB, deleteTaskFromDB } from "../services/taskServices.js";
+import { getTaskFromDB, changeTaskInDB, addNewTaskToDB, deleteTaskFromDB } from "../services/taskServices.js";
 
+
+export const getTask: RequestHandler = async (req,res) => {
+    try {
+        const {id: taskId} = req.params;
+        const data = await getTaskFromDB(parseInt(taskId));
+        console.log(data);
+        return res.status(200).json({message: "Getting task data", data: data});
+    } catch (err) {
+    return res.status(500).json({
+      message: "Error",
+      error: (err as Error).message || "Unknown error"
+    });
+  }
+}
 
 export const createTask: RequestHandler = async (req,res) => {
     try {

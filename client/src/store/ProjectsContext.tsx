@@ -66,7 +66,8 @@ interface ProjectsContextProps {
   setTasks: Dispatch<SetStateAction<Task[]>>,
   tasks: Task[] | undefined,
   changeTaskStatus: (taskId: number, newStatus: string) => Promise<object>,
-  addNewTask: (data: Partial<Task>) => Promise<{status: string, text: string}>
+  addNewTask: (data: Partial<Task>) => Promise<{status: string, text: string}>,
+  deleteTask: (id: number) => Promise<{status: string, text: string}>
 }
 
 export const ProjectsContext = createContext<ProjectsContextProps | undefined>(
@@ -149,6 +150,23 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
     }
   }
 
+  const deleteTask = async (id: number) => {
+    try {
+      if(!id) {
+        return {status: "Error", text: "Did not provide task id"};
+      }
+        const response = await axios.delete(`http://localhost:3002/api/task/${id}`);
+        const deletedTask = response.data.data;
+        console.log(deletedTask);
+        setTasks((prevTasks) => prevTasks.filter((task) => task.id !== deletedTask.id));
+        return {status: "Success", text: "Task deleted"}
+    } catch (err: any) {
+      console.log(err);
+      const errMessage = err.response?.data.message || err.message
+      return {status: "Error", text: errMessage};
+    }
+  }
+
   const ctxValue = {
     addNewProject,
     getCompanyProjects,
@@ -157,7 +175,8 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
     setTasks,
     tasks,
     changeTaskStatus,
-    addNewTask
+    addNewTask,
+    deleteTask
   };
 
   return (

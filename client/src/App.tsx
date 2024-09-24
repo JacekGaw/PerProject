@@ -12,6 +12,7 @@ import NotesRoot from "./pages/notes/NotesRoot";
 import TasksRoot from "./pages/tasks/TasksRoot";
 import CompanyRoot from "./pages/company/CompanyRoot";
 import ProjectRoot, {projectLoader} from "./pages/project/ProjectRoot";
+import TaskModal, {taskLoader} from "./pages/project/TaskModal";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -51,7 +52,14 @@ const App = () => {
                 {
                   path: "/dashboard/projects/:alias",
                   loader: projectLoader,
-                  element: <ProjectRoot />
+                  element: <ProjectRoot />,
+                  children: [
+                    {
+                      path: "task/:id",
+                      loader: taskLoader,
+                      element: <TaskModal />
+                    }
+                  ]
                 },
                 {
                   path: "/dashboard/notes",

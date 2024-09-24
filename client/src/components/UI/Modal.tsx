@@ -34,7 +34,7 @@ const Modal = forwardRef<ModalRef, ModalProps>(({ className = '', children, onCl
 
   const handleClose = () => {
     if (onClose) onClose();
-    if (dialog.current) dialog.current.close();
+    if (dialog.current) dialog.current.click();
   };
 
   return createPortal(

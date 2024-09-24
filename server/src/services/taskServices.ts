@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import db from "../database/db.js";
-import { tasks, taskPriorityEnum, taskStatusesEnum, taskTypeEnum} from "../database/schemas.js";
+import { tasks, taskPriorityEnum, taskStatusesEnum, taskTypeEnum, subTasks} from "../database/schemas.js";
 
 type Task = typeof tasks.$inferSelect;
 
@@ -14,6 +14,20 @@ export interface NewTaskType {
     assignedTo?: number | null;
     authorId: number;
     projectId: number;
+}
+
+export const getTaskFromDB = async (id: number): Promise<object> => {
+    try {
+        const taskToReturn = await db.select().from(tasks).where(eq(tasks.id, id));
+        const subtasks = await db.select().from(subTasks).where(eq(subTasks.taskId, id));
+        return {
+            task: taskToReturn[0],
+            subtasks: subtasks
+        }
+    } catch (err) {
+        console.error("Error trying to add task to db", err);
+      throw err;
+    }
 }
 
 export const changeTaskInDB = async (

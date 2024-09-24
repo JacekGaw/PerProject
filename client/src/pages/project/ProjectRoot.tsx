@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, {useEffect, useState} from "react";
-import { LoaderFunctionArgs, useLoaderData } from "react-router-dom";
+import { LoaderFunctionArgs, Outlet, useLoaderData } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useProjectCtx } from "../../store/ProjectsContext";
 import TaskList from "./TaskList";
@@ -78,7 +78,9 @@ const ProjectRoot: React.FC = () => {
                 ) : (
                     <TaskList />
                 )}
+                
             </section>
+            <Outlet />
         </>
   );
 };
