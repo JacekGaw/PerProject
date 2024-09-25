@@ -19,6 +19,22 @@ type TaskStatus = "To Do" | "In Progress" | "On Hold" | "Done";
 type TaskPriority = "Low" | "Medium" | "High";
 type TaskType = "Task" | "Story" | "Error";
 
+
+export interface SubtaskType {
+  id: number;
+  taskText: string;
+  description?: string;
+  createdAt: Date;
+  updatedAt: Date | null;
+  type: "Task" | "Story" | "Error"; // Use string literals here
+  priority: "Low" | "Medium" | "High"; // Match your DB enums
+  estimatedTime: number | null;
+  status: "To Do" | "In Progress" | "On Hold" | "Done"; // Match DB enums
+  assignedTo: number;
+  authorId: number;
+  taskId: number;
+}
+
 export interface Task {
   id: number;
   taskText: string;
@@ -64,9 +80,11 @@ interface ProjectsContextProps {
   setProject: Dispatch<SetStateAction<Project | undefined>>,
   project: Project | undefined,
   setTasks: Dispatch<SetStateAction<Task[]>>,
+  setSubtasksArr: Dispatch<SetStateAction<SubtaskType[]>>,
   tasks: Task[] | undefined,
-  changeTaskStatus: (taskId: number, newStatus: string) => Promise<object>,
-  addNewTask: (data: Partial<Task>) => Promise<{status: string, text: string}>,
+  subtasksArr: SubtaskType[] | undefined,
+  changeTask: (taskId: number, data: Partial<Task>) => Promise<object>,
+  addNewTask: (type: "task" | "subtask", data: Partial<Task>) => Promise<{status: string, text: string}>,
   deleteTask: (id: number) => Promise<{status: string, text: string}>
 }
 
@@ -88,10 +106,16 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
   const { company } = useCompanyCtx();
   const [project, setProject] = useState<Project | undefined>();
   const [tasks, setTasks] = useState<Task[]>([]);
-
-  const changeTaskStatus = async (taskId: number, newStatus: string) => {
+  const [subtasksArr, setSubtasksArr] = useState<SubtaskType[]>([]);
+  const changeTask = async (taskId: number, data: Partial<Task>) => {
     try {
-      const response = await axios.patch(`http://localhost:3002/api/task/${taskId}`, {status: newStatus});
+      
+      const response = await axios.patch(`http://localhost:3002/api/task/${taskId}`, data);
+      setTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          task.id === taskId ? { ...task, ...data } : task
+        )
+      );
       return {status: "Success", text: response.data.message}
     } catch (err: any) {
       console.log(err);
@@ -116,13 +140,22 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
     }
   }
 
-  const addNewTask = async (data: Partial<Task> ) => {
+  const addNewTask = async (type: "task" | "subtask" ,data: Partial<Task> ) => {
     try {
-      const response = await axios.post("http://localhost:3002/api/task",  data);
+      const url = type === "task" ? "http://localhost:3002/api/task" : "http://localhost:3002/api/subtask";
+      const response = await axios.post(url,  data);
       console.log(response);
-      if(response.data.data){
-        setTasks((prevState) => [...prevState, response.data.data])
+      if(type === "task"){
+        if(response.data.data){
+          setTasks((prevState) => [...prevState, response.data.data])
+        }
       }
+      else {
+        if(response.data.data){
+          setSubtasksArr((prevState) => [...prevState, response.data.data])
+        }
+      }
+      
       
       return {status: "Success", text: "Added task"};
     } catch (err: any) {
@@ -173,8 +206,10 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
     setProject,
     project,
     setTasks,
+    setSubtasksArr,
     tasks,
-    changeTaskStatus,
+    subtasksArr,
+    changeTask,
     addNewTask,
     deleteTask
   };

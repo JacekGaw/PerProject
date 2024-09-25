@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import { NewTaskType } from "../services/taskServices.js";
-import { getTaskFromDB, changeTaskInDB, addNewTaskToDB, deleteTaskFromDB } from "../services/taskServices.js";
+import { getTaskFromDB, changeTaskInDB, addNewTaskToDB, deleteTaskFromDB, addNewSubtaskToDB } from "../services/taskServices.js";
 
 
 export const getTask: RequestHandler = async (req,res) => {
@@ -22,6 +22,20 @@ export const createTask: RequestHandler = async (req,res) => {
         const newTask = req.body as NewTaskType
         const addedTask = await addNewTaskToDB(newTask);
         return res.status(200).json({message: "Added new task", data: addedTask});
+    } catch (err) {
+        console.log(err);
+    return res.status(500).json({
+      message: "Error",
+      error: (err as Error).message || "Unknown error"
+    });
+  }
+}
+
+export const createSubtask: RequestHandler = async (req,res) => {
+    try {
+        const newSubtask = req.body as NewTaskType
+        const addedSubtask = await addNewSubtaskToDB(newSubtask);
+        return res.status(200).json({message: "Added new subtask", data: addedSubtask});
     } catch (err) {
         console.log(err);
     return res.status(500).json({

@@ -34,10 +34,11 @@ export const changeTaskInDB = async (
     taskId: number,
     changeTask: Partial<NewTaskType>
   ): Promise<typeof tasks.$inferSelect> => {
+    const date = new Date();
     try {
       const changedTask = await db
         .update(tasks)
-        .set(changeTask)  // Now changeTask matches the DB types correctly
+        .set({...changeTask, updatedAt: date })  // Now changeTask matches the DB types correctly
         .where(eq(tasks.id, taskId))
         .returning();  // Ensure you return the updated task
       return changedTask[0];  // Return the first result (usually only 1)
@@ -56,6 +57,18 @@ export const changeTaskInDB = async (
         return newTaskAdded[0];
     } catch (err) {
         console.error("Error trying to add task to db", err);
+      throw err;
+    }
+  }
+
+  export const addNewSubtaskToDB = async (
+    newTask: NewTaskType
+  ): Promise<typeof subTasks.$inferSelect> => {
+    try {
+        const newSubtaskAdded = await db.insert(subTasks).values(newTask).returning();
+        return newSubtaskAdded[0];
+    } catch (err) {
+        console.error("Error trying to add subtask to db", err);
       throw err;
     }
   }
