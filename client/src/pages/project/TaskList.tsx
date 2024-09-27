@@ -1,20 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import TaskItem from "./TaskItem";
 import { useProjectCtx } from "../../store/ProjectsContext";
-import { motion } from "framer-motion";
-import plusIcon from "../../assets/img/plus.svg";
-import { useAuth } from "../../store/AuthContext";
 import AddButton from "../../components/UI/AddButton";
 
-const button = {
-  open: { scale: 1, borderRadius: "50%" },
-  close: { scale: 1, borderRadius: "0%" },
-  hover: {scale: 1.05 }
-};
-const icon = {
-  open: { rotate: 0 },
-  close: { rotate: 45 },
-};
 
 const TaskList: React.FC = () => {
   const { tasks} = useProjectCtx();

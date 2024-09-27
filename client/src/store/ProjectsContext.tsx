@@ -23,14 +23,14 @@ type TaskType = "Task" | "Story" | "Error";
 export interface SubtaskType {
   id: number;
   taskText: string;
-  description?: string;
+  description?: string | null; // Allowing `null` as well
   createdAt: Date;
   updatedAt: Date | null;
-  type: "Task" | "Story" | "Error"; // Use string literals here
-  priority: "Low" | "Medium" | "High"; // Match your DB enums
+  type: "Task" | "Story" | "Error";
+  priority: "Low" | "Medium" | "High";
   estimatedTime: number | null;
-  status: "To Do" | "In Progress" | "On Hold" | "Done"; // Match DB enums
-  assignedTo: number;
+  status: "To Do" | "In Progress" | "On Hold" | "Done";
+  assignedTo: number | null;
   authorId: number;
   taskId: number;
 }
@@ -47,6 +47,7 @@ export interface Task {
   status: TaskStatus;
   assignedTo: number | null;
   projectId: number;
+  authorId: number;
 }
 
 export interface NewProjectType {
@@ -83,7 +84,7 @@ interface ProjectsContextProps {
   setSubtasksArr: Dispatch<SetStateAction<SubtaskType[]>>,
   tasks: Task[] | undefined,
   subtasksArr: SubtaskType[] | undefined,
-  changeTask: (taskId: number, data: Partial<Task>) => Promise<object>,
+  changeTask: (type: "subtask" | "task", taskId: number, data: Partial<Task>) => Promise<object>,
   addNewTask: (type: "task" | "subtask", data: Partial<Task>) => Promise<{status: string, text: string}>,
   deleteTask: (id: number) => Promise<{status: string, text: string}>
 }
@@ -107,15 +108,24 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
   const [project, setProject] = useState<Project | undefined>();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [subtasksArr, setSubtasksArr] = useState<SubtaskType[]>([]);
-  const changeTask = async (taskId: number, data: Partial<Task>) => {
+
+  const changeTask = async (type: "task" | "subtask", taskId: number, data: Partial<Task> | Partial<SubtaskType>) => {
     try {
-      
-      const response = await axios.patch(`http://localhost:3002/api/task/${taskId}`, data);
-      setTasks((prevTasks) =>
-        prevTasks.map((task) =>
-          task.id === taskId ? { ...task, ...data } : task
-        )
-      );
+      const response = await axios.patch(`http://localhost:3002/api/${type}/${taskId}`, data);
+      if(type === "task") {
+        setTasks((prevTasks) =>
+          prevTasks.map((task) =>
+            task.id === taskId ? { ...task, ...data } : task
+          )
+        );
+      }
+      else {
+        setSubtasksArr((prevSubTasks) =>
+          prevSubTasks.map((subtask) =>
+            subtask.id === taskId ? { ...subtask, ...data } : subtask
+          )
+        );
+      }
       return {status: "Success", text: response.data.message}
     } catch (err: any) {
       console.log(err);

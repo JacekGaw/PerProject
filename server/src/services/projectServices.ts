@@ -35,9 +35,7 @@ export const getProjectsFromDB = async (
   try {
     let projectsList = [];
     if (companyId) {
-      projectsList = await db.query.projects.findMany({
-        where: eq(projects.companyId, parseInt(companyId)),
-      });
+      projectsList = await db.select().from(projects).where(eq(projects.companyId, parseInt(companyId))).orderBy(projects.createdAt);
     } else {
       projectsList = await db.query.projects.findMany();
     }

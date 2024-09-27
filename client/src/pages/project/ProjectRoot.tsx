@@ -41,6 +41,7 @@ export interface Task {
   status: TaskStatus;
   assignedTo: number | null;
   projectId: number;
+  authorId: number;
 }
 
 type LoaderData = {

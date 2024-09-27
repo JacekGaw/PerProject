@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
-import { NewTaskType } from "../services/taskServices.js";
-import { getTaskFromDB, changeTaskInDB, addNewTaskToDB, deleteTaskFromDB, addNewSubtaskToDB } from "../services/taskServices.js";
+import { NewTaskType, NewSubtaskType } from "../services/taskServices.js";
+import { getTaskFromDB, changeTaskInDB, addNewTaskToDB, deleteTaskFromDB, addNewSubtaskToDB, changeSubtaskInDB } from "../services/taskServices.js";
 
 
 export const getTask: RequestHandler = async (req,res) => {
@@ -51,6 +51,20 @@ export const changeTask: RequestHandler = async (req,res) => {
         const changeTask = req.body as Partial<NewTaskType>
         const changedTask = await changeTaskInDB(parseInt(taskId), changeTask);
         return res.status(200).json({message: "Changed task", data: changedTask});
+    } catch (err) {
+    return res.status(500).json({
+      message: "Error",
+      error: (err as Error).message || "Unknown error"
+    });
+  }
+}
+
+export const changeSubtask: RequestHandler = async (req,res) => {
+    try {
+        const {id: taskId} = req.params;
+        const changeSubtask = req.body as Partial<NewSubtaskType>
+        const changedSubtask = await changeSubtaskInDB(parseInt(taskId), changeSubtask);
+        return res.status(200).json({message: "Changed subtask", data: changedSubtask});
     } catch (err) {
     return res.status(500).json({
       message: "Error",

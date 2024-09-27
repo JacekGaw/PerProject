@@ -1,11 +1,11 @@
 import React, {useRef} from 'react';
 import { Task } from './ProjectRoot';
-import { useCompanyCtx } from '../../store/CompanyContext';
 import errorIcon from "../../assets/img/errorIcon.svg";
 import taskIcon from "../../assets/img/taskIcon.svg";
 import storyIcon from "../../assets/img/storyIcon.svg";
 import { useProjectCtx } from '../../store/ProjectsContext';
 import { Link } from 'react-router-dom';
+import ChangeUser from '../../components/UI/ChangeUser';
 
 interface taskType {
     type: string,
@@ -23,17 +23,12 @@ const taskStatuses = ["To Do", "In Progress", "On Hold", "Done"];
 const taskTypes: taskType[] = [{type: "Task", icon: taskIcon}, {type: "Story", icon: storyIcon}, {type: "Error", icon: errorIcon}];
 // const taskPriority = ["Low", "Medium", "High"];
 
-const TaskItem: React.FC<TaskItemProps> = ({item}) => {
-    const {companyUsers} = useCompanyCtx();
-    const { changeTask, tasks } = useProjectCtx();
+const TaskItem: React.FC<TaskItemProps > = ({item}) => {
+    const { changeTask } = useProjectCtx();
     const statusRef = useRef<HTMLSelectElement>(null);
     const selectRef = useRef<HTMLSelectElement>(null);
 
-    const assignedUser = companyUsers.filter(user => user.id == item.assignedTo)[0];
-    let initials = "PP";
-    if(assignedUser.name && assignedUser.surname){
-        initials = `${assignedUser.name[0]}${assignedUser.surname[0]}`
-    }
+    
     const taskType: taskType = taskTypes.filter((typeFromArr) => item.type == typeFromArr.type)[0];
 
     const changeStatus: () => Promise<void> = async () => {
@@ -47,18 +42,14 @@ const TaskItem: React.FC<TaskItemProps> = ({item}) => {
             return;
           }
         try {
-            const response = await changeTask(item.id, {status: newStatus});
+            const response = await changeTask("task", item.id, {status: newStatus});
             console.log(response);
         } catch (err) {
             console.log(err);
         }
     }   
 
-    const openSelect = () => {
-        if(selectRef.current){
-            selectRef.current.focus();
-        }
-    }
+    const openSelect = () => selectRef.current && selectRef.current.focus();
 
     return (    
         <>
@@ -73,8 +64,7 @@ const TaskItem: React.FC<TaskItemProps> = ({item}) => {
                         <option key={status} value={status}>{status}</option>
                     ))}
                 </select>
-                <div className='w-10 h-10 p-2 flex justify-center items-center bg-darkest-blue rounded-full'><p className='p-2'>{initials}</p></div>
-                
+                <ChangeUser item={item} type='task' />
             </li>
         </>
     )

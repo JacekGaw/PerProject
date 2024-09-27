@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect } from "react";
 import {
   useParams,
   useNavigate,
@@ -10,8 +10,9 @@ import closeIcon from "../../assets/img/close.svg";
 import axios from "axios";
 import { useProjectCtx, Task, SubtaskType } from "../../store/ProjectsContext";
 import deleteIcon from "../../assets/img/delete.svg";
-import { useCompanyCtx } from "../../store/CompanyContext";
-import AddButton from "../../components/UI/AddButton";
+import { CompanyUserType, useCompanyCtx } from "../../store/CompanyContext";
+import SubtasksList from "./SubtasksList";
+import UserAvatar from "../../components/UI/UserAvatar";
 
 
 const TaskModal: React.FC = () => {
@@ -68,7 +69,7 @@ const TaskModal: React.FC = () => {
   const handleChange = async (event: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = event.target;
     try {
-      await changeTask(task.id, { [name]: value });
+      await changeTask("task", task.id, { [name]: value });
     } catch (error) {
       console.error("Error updating task:", error);
     }
@@ -123,7 +124,7 @@ const TaskModal: React.FC = () => {
               </p>
             )}
           </header>
-          <div className="flex gap-5 justify-center items-center">
+          <div className="flex gap-5 justify-center items-center bg-darkest-blue p-5 rounded-md">
             <div className="flex-1 group hover:cursor-pointer flex flex-col gap-1">
               <label
                 className="font-[100] group-hover:translate-x-2 group-focus-within:translate-x-2 group-focus-within:font-[500] transition-all duration-200"
@@ -183,47 +184,23 @@ const TaskModal: React.FC = () => {
               </select>
             </div>
           </div>
-          <div className="w-full bg-darkest-blue p-2 flex flex-col gap-2">
-            <h2>People</h2>
-            <div>
-              <h3>
-                Author:{" "}
-                <p>
-                  {
-                    companyUsers.find(
-                      (companyUsers) => companyUsers.id == task.authorId
-                    )?.email
-                  }
-                </p>
-              </h3>
+          <div className="w-full flex justify-start px-2 gap-10 items-center">
+            <div className="flex gap-2 items-center">
+                <p>Author</p>
+                <UserAvatar user={companyUsers.find(
+                      (companyUsers: CompanyUserType) => companyUsers.id == task.authorId
+                    )} />
             </div>
-            <div>
-              <h3>
-                Assigned:{" "}
-                <p>
-                  {
-                    companyUsers.find(
+            <div className="flex gap-2 items-center">
+                <p>Assigned</p>
+                <UserAvatar user={companyUsers.find(
                       (companyUsers) => companyUsers.id == task.assignedTo
-                    )?.email
-                  }
-                </p>
-              </h3>
+                    )} />
             </div>
           </div>
           <div>
-            <header className="w-full flex gap-5 justify-between items-center p-2 border-b border-normal-blue">
-              <h3 className="">Subtasks ({subtasks.length}):</h3>
-              <div className="relative flex items-center">
-              <AddButton type="subtask" placeholder="Add subtask" taskId={task.id} />
-              </div>
-            </header>
-            {subtasksArr.length > 0 && 
-            <ul>
-                {subtasksArr.map((subtask) => (
-                    <li key={subtask.id}>{subtask.taskText}</li>
-                ))}
-            </ul>
-            }
+            {subtasksArr && <SubtasksList subtasks={subtasksArr} taskId={task.id} />}
+          
           </div>
         </div>
       </dialog>
