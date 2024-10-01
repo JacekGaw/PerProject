@@ -21,11 +21,11 @@ const navigationTabs = [
     title: "Projects",
     tabImage: projectsImg,
   },
-  {
-    link: "/dashboard/notes",
-    title: "Notes",
-    tabImage: notesImg,
-  },
+  // {
+  //   link: "/dashboard/notes",
+  //   title: "Notes",
+  //   tabImage: notesImg,
+  // },
   {
     link: "/dashboard/tasks",
     title: "Tasks",

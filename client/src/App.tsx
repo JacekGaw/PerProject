@@ -61,10 +61,10 @@ const App = () => {
                     }
                   ]
                 },
-                {
-                  path: "/dashboard/notes",
-                  element: <NotesRoot />
-                },
+                // {
+                //   path: "/dashboard/notes",
+                //   element: <NotesRoot />
+                // },
                 {
                   path: "/dashboard/tasks",
                   element: <TasksRoot />
