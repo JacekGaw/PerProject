@@ -187,13 +187,13 @@ const TaskModal: React.FC = () => {
           <div className="w-full flex justify-start px-2 gap-10 items-center">
             <div className="flex gap-2 items-center">
                 <p>Author</p>
-                <UserAvatar user={companyUsers.find(
+                <UserAvatar orientation="bottom" user={companyUsers.find(
                       (companyUsers: CompanyUserType) => companyUsers.id == task.authorId
                     )} />
             </div>
             <div className="flex gap-2 items-center">
                 <p>Assigned</p>
-                <UserAvatar user={companyUsers.find(
+                <UserAvatar orientation="bottom" user={companyUsers.find(
                       (companyUsers) => companyUsers.id == task.assignedTo
                     )} />
             </div>

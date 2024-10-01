@@ -41,15 +41,18 @@ const ChangeUser: React.FC<ChangeUserProps> = ({ item, type }) => {
 
   return (
     <div className="relative" ref={ref}>
-      <UserAvatar onClick={() => setListOpen((prev) => !prev)} user={assignedUser} />
+      <UserAvatar orientation={"left"} onClick={() => setListOpen((prev) => !prev)} user={assignedUser} />
       {listOpen && (
         <div className="border border-normal-blue absolute right-[100%] bottom-0  flex flex-col rounded-xl bg-darkest-blue">
         <h4 className="text-sm text-center p-2 border-b border-slate-600">Company Users:</h4>
         <ul className=" max-h-64 overflow-y-auto ">
           {companyUsers.map((user) => (
             <li onClick={() => handleChangeAssignedUser(user.id)} key={user.id} className="cursor-pointer p-2 gap-2 flex items-center">
-              <UserAvatar user={user} />
+              <UserAvatar user={user} details={false}  />
+              <div className="flex flex-col gap-1">
               <p className="text-sm font-[300]">{user.email}</p>
+              <p className="text-xs font-[600] text-slate-600">{user.role}</p>
+              </div>
             </li>
           ))}
         </ul>
