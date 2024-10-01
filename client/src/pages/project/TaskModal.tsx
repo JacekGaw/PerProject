@@ -13,7 +13,9 @@ import deleteIcon from "../../assets/img/delete.svg";
 import { CompanyUserType, useCompanyCtx } from "../../store/CompanyContext";
 import SubtasksList from "./SubtasksList";
 import UserAvatar from "../../components/UI/UserAvatar";
-
+import DescriptionComponent from "./DescriptionComponent";
+import TitleComponent from "./TitleComponent";
+import EstimatedTime from "./EstimatedTime";
 
 const TaskModal: React.FC = () => {
   const { alias } = useParams();
@@ -23,9 +25,10 @@ const TaskModal: React.FC = () => {
   };
   const modalRef = useRef<HTMLDialogElement>(null);
   const navigate = useNavigate();
-  const { deleteTask, changeTask, setSubtasksArr, subtasksArr } = useProjectCtx();
+  const { deleteTask, changeTask, setSubtasksArr, subtasksArr } =
+    useProjectCtx();
   const { companyUsers } = useCompanyCtx();
-  
+
   const createdAtDate = new Date(task.createdAt);
   const formattedCreatedAt = `${createdAtDate.toLocaleDateString()} ${createdAtDate.toLocaleTimeString()}`;
   let formattedUpdatedAt = "";
@@ -38,8 +41,8 @@ const TaskModal: React.FC = () => {
     if (modalRef.current) {
       modalRef.current.showModal();
     }
-    if(subtasks){
-        setSubtasksArr(subtasks);
+    if (subtasks) {
+      setSubtasksArr(subtasks);
     }
     const handleBackdropClick = (event: MouseEvent) => {
       if (modalRef.current && event.target === modalRef.current) {
@@ -51,7 +54,7 @@ const TaskModal: React.FC = () => {
     }
   }, [alias, navigate]);
 
-  const handleClose = () =>  navigate(`/dashboard/projects/${alias}`);
+  const handleClose = () => navigate(`/dashboard/projects/${alias}`);
 
   const handleDeleteTask = async () => {
     try {
@@ -74,7 +77,6 @@ const TaskModal: React.FC = () => {
       console.error("Error updating task:", error);
     }
   };
-
 
   return (
     <div className="relative">
@@ -106,7 +108,9 @@ const TaskModal: React.FC = () => {
           </div>
           <header className=" flex flex-col gap-2">
             <div className="flex justify-between items-center gap-5">
-              <h1 className="font-[500] text-2xl">{task.taskText}</h1>
+              {/* <h1 className="font-[500] text-2xl">{task.taskText}</h1> */}
+              <div className="w-full"><TitleComponent task={task} /></div>
+              
               <button
                 onClick={handleDeleteTask}
                 className="flex w-4 h-4 justify-center items-center"
@@ -114,15 +118,8 @@ const TaskModal: React.FC = () => {
                 <img src={deleteIcon} className="w-full" />
               </button>
             </div>
-            {task.description ? (
-              <p className="font-[200] text-sm p-2 border-b">
-                {task.description}
-              </p>
-            ) : (
-              <p className="font-[200] text-sm p-2 border-b">
-                No task description
-              </p>
-            )}
+            <DescriptionComponent task={task} />
+            
           </header>
           <div className="flex gap-5 justify-center items-center bg-darkest-blue p-5 rounded-md">
             <div className="flex-1 group hover:cursor-pointer flex flex-col gap-1">
@@ -184,23 +181,35 @@ const TaskModal: React.FC = () => {
               </select>
             </div>
           </div>
-          <div className="w-full flex justify-start px-2 gap-10 items-center">
+          <div className="w-full flex justify-between px-2 gap-10 items-center">
             <div className="flex gap-2 items-center">
-                <p>Author</p>
-                <UserAvatar orientation="bottom" user={companyUsers.find(
-                      (companyUsers: CompanyUserType) => companyUsers.id == task.authorId
-                    )} />
+              <p>Author</p>
+              <UserAvatar
+                orientation="bottom"
+                user={companyUsers.find(
+                  (companyUsers: CompanyUserType) =>
+                    companyUsers.id == task.authorId
+                )}
+              />
             </div>
             <div className="flex gap-2 items-center">
-                <p>Assigned</p>
-                <UserAvatar orientation="bottom" user={companyUsers.find(
-                      (companyUsers) => companyUsers.id == task.assignedTo
-                    )} />
+              <p>Assigned</p>
+              <UserAvatar
+                orientation="bottom"
+                user={companyUsers.find(
+                  (companyUsers) => companyUsers.id == task.assignedTo
+                )}
+              />
+            </div>
+            <div className="flex gap-2 items-center">
+              <p>Estimated Time</p>
+              <EstimatedTime task={task} />
             </div>
           </div>
           <div>
-            {subtasksArr && <SubtasksList subtasks={subtasksArr} taskId={task.id} />}
-          
+            {subtasksArr && (
+              <SubtasksList subtasks={subtasksArr} taskId={task.id} />
+            )}
           </div>
         </div>
       </dialog>
