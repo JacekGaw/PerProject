@@ -8,13 +8,15 @@ import {
   deleteProjectFromDb,
   updateProjectInDB,
   getProjectByAlias,
-  getTasksFromProject
+  getTasksFromProject,
+  createBookmarkInDB,
+  deleteBookmarkInDB
 } from "../services/projectServices.js";
 
 export const getProjects: RequestHandler = async (req, res) => {
   try {
     const companyId = req.query.companyId as string | undefined;
-    
+
     const projects = await getProjectsFromDB(companyId);
     console.log("All projects ", projects);
     res.status(200).json({
@@ -48,19 +50,23 @@ export const getProject: RequestHandler = async (req, res) => {
 export const getProjectAndTasks: RequestHandler = async (req, res) => {
   try {
     const project = await getProjectByAlias(req.params.alias);
-    if(!project) {
-      return res.status(404).json({message: "Could not find project with provided alias"})
+    if (!project) {
+      return res
+        .status(404)
+        .json({ message: "Could not find project with provided alias" });
     }
     const tasks = await getTasksFromProject(project.id);
     console.log(project, tasks);
-    return res.status(201).json({message: "Getting project and tasks", data: {project, tasks}});
+    return res
+      .status(201)
+      .json({ message: "Getting project and tasks", data: { project, tasks } });
   } catch (err) {
     return res.status(500).json({
       message: "Error",
-      error: (err as Error).message || "Unknown error"
+      error: (err as Error).message || "Unknown error",
     });
   }
-}
+};
 
 export const createProject: RequestHandler = async (req, res) => {
   try {
@@ -116,6 +122,24 @@ export const createProject: RequestHandler = async (req, res) => {
   }
 };
 
+export const createBookmark: RequestHandler = async (req, res) => {
+  const { projectId, userId } = req.params;
+  try {
+    const bookmark = createBookmarkInDB(parseInt(projectId), parseInt(userId));
+    console.log("Added bookmark to db: ", bookmark);
+    res.status(201).json({
+      message: "Added new bookmark",
+      data: bookmark,
+    });
+  } catch (err) {
+    console.error("Error creating new bookmark:", err);
+    res.status(500).json({
+      message: "An error occurred while creating new bookmark",
+      error: (err as Error).message,
+    });
+  }
+};
+
 export const updateProject: RequestHandler = async (req, res) => {
   try {
     const data = req.body;
@@ -149,6 +173,24 @@ export const deleteProject: RequestHandler = async (req, res) => {
     res.status(500).json({
       message: "Error",
       error: (err as Error).message || "Unknown error",
+    });
+  }
+};
+
+export const deleteBookmark: RequestHandler = async (req, res) => {
+  const { projectId, userId } = req.params;
+  try {
+    const deletedBookmark = deleteBookmarkInDB(parseInt(projectId), parseInt(userId));
+    console.log("Deleted bookmark from db: ", deletedBookmark);
+    res.status(201).json({
+      message: "Deleted bookmark",
+      data: deletedBookmark,
+    });
+  } catch (err) {
+    console.error("Error deleting bookmark:", err);
+    res.status(500).json({
+      message: "An error occurred while deleting bookmark",
+      error: (err as Error).message,
     });
   }
 };

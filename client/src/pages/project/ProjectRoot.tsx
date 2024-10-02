@@ -72,6 +72,7 @@ const ProjectRoot: React.FC = () => {
                     <Link to="/dashboard/projects" className="text-sm text-slate-500 hover:text-normal-blue">&larr; Projects</Link>
                     <header className="w-full border-b pb-5 flex justify-between gap-2 items-center">
                         <h1 className="font-[800] text-slate-200 text-2xl">{project.name}</h1>
+                        
                     </header>
                 </div>
                 {isLoading ? (

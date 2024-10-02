@@ -97,3 +97,10 @@ export const taskHistory = pgTable('taskHistory', {
     newValue: text('newValue'),
     createdAt: timestamp('createdAt').defaultNow()
 });
+
+export const userFavourites = pgTable('userFavourites', {
+    id: serial('id').primaryKey(),
+    userId: integer('userId').notNull().references(() => users.id, { onDelete: 'cascade' }),
+    projectId: integer('projectId').notNull().references(() => projects.id, { onDelete: 'cascade' }),
+    addedAt: timestamp('addedAt').defaultNow(),
+});

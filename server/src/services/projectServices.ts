@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import db from "../database/db.js";
-import { projects, projectStatusesEnum, tasks } from "../database/schemas.js";
+import { projects, projectStatusesEnum, tasks, userFavourites } from "../database/schemas.js";
 
 type Project = typeof projects.$inferSelect;
 type Task = typeof tasks.$inferSelect;
@@ -102,6 +102,16 @@ export const createNewProjectInDB = async (
   }
 };
 
+export const createBookmarkInDB = async (projectId: number, userId: number) => {
+  try {
+    const bookmark = await db.insert(userFavourites).values({projectId, userId}).returning();
+    return bookmark;
+  } catch (err) {
+    console.error("Error creating new bookmark in db:", err);
+    throw err;
+  }
+}
+
 export const deleteProjectFromDb = async (projectId: number): Promise<{}> => {
   try {
     const deletedProject = await db
@@ -145,3 +155,14 @@ export const checkProjectExists = async (alias: string): Promise<boolean> => {
     throw err;
   }
 };
+
+
+export const deleteBookmarkInDB = async (projectId: number, userId: number) => {
+  try {
+    const deletedBookmark = await db.delete(userFavourites).where(and(eq(userFavourites.projectId, projectId), eq(userFavourites.userId, userId))).returning();
+    return deletedBookmark;
+  } catch (err) {
+    console.error("Error deleting bookmark from db:", err);
+    throw err;
+  }
+}

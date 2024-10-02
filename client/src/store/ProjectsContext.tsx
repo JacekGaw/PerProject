@@ -7,7 +7,7 @@ import {
   useState
 } from "react";
 import { useCompanyCtx } from "./CompanyContext";
-import axios from "axios";
+import axios, { AxiosInstance, AxiosResponse } from "axios";
 
 type ProjectStatus =
   | "Active"
@@ -86,7 +86,8 @@ interface ProjectsContextProps {
   subtasksArr: SubtaskType[] | undefined,
   changeTask: (type: "subtask" | "task", taskId: number, data: Partial<Task>) => Promise<object>,
   addNewTask: (type: "task" | "subtask", data: Partial<Task>) => Promise<{status: string, text: string}>,
-  deleteTask: (id: number) => Promise<{status: string, text: string}>
+  deleteTask: (id: number) => Promise<{status: string, text: string}>,
+  bookmarkProject: (method: "add" | "delete", projectId: number, userId: number) => Promise<{status: string, text: string}>
 }
 
 export const ProjectsContext = createContext<ProjectsContextProps | undefined>(
@@ -210,6 +211,25 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
     }
   }
 
+  const bookmarkProject = async (method: "add" | "delete", projectId: number, userId: number) => {
+    if(!projectId || !userId){
+      return {status: "Error", text: "Did not provide all required info to bookmark project"};
+    }
+    try {
+        let response:AxiosResponse;
+        if(method === "add") response = await axios.post(`http://localhost:3002/api/project/bookmark/${projectId}/${userId}`);
+        else response = await axios.delete(`http://localhost:3002/api/project/bookmark/${projectId}/${userId}`)
+        const deletedTask = response.data.data;
+        console.log(deletedTask);
+        setTasks((prevTasks) => prevTasks.filter((task) => task.id !== deletedTask.id));
+        return {status: "Success", text: "Added/deleted bookmark"}
+    } catch (err: any) {
+      console.log(err);
+      const errMessage = err.response?.data.message || err.message
+      return {status: "Error", text: errMessage};
+    }
+  }
+
   const ctxValue = {
     addNewProject,
     getCompanyProjects,
@@ -221,7 +241,8 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
     subtasksArr,
     changeTask,
     addNewTask,
-    deleteTask
+    deleteTask,
+    bookmarkProject
   };
 
   return (
