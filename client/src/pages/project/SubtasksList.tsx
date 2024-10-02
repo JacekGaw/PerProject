@@ -4,6 +4,7 @@ import AddButton from "../../components/UI/AddButton";
 import taskIcon from "../../assets/img/taskIcon.svg";
 import { useProjectCtx } from "../../store/ProjectsContext";
 import ChangeUser from "../../components/UI/ChangeUser";
+import Priority from "../../components/UI/Priority";
 interface SubtasksListProps {
   subtasks: SubtaskType[];
   taskId: number;
@@ -54,6 +55,7 @@ const SubtasksList: React.FC<SubtasksListProps> = ({ subtasks, taskId }) => {
                 ))}
               </select>
               <ChangeUser item={subtask} type="subtask" />
+              <Priority priority={subtask.priority} />
             </li>
           ))}
         </ul>

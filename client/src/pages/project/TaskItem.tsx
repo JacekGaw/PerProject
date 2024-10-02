@@ -6,6 +6,7 @@ import storyIcon from "../../assets/img/storyIcon.svg";
 import { useProjectCtx } from '../../store/ProjectsContext';
 import { Link } from 'react-router-dom';
 import ChangeUser from '../../components/UI/ChangeUser';
+import Priority from '../../components/UI/Priority';
 
 interface taskType {
     type: string,
@@ -65,6 +66,7 @@ const TaskItem: React.FC<TaskItemProps > = ({item}) => {
                     ))}
                 </select>
                 <ChangeUser item={item} type='task' />
+                <Priority priority={item.priority} />
             </li>
         </>
     )
