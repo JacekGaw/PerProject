@@ -40,20 +40,19 @@ const ProjectsList: React.FC = () => {
           animate="show"
           className="flex flex-col gap-2 w-full"
         >
-          <li className="grid grid-cols-4 gap-4 justify-between items-center *:font-[200] text-sm border-b-2 border-slate-800 *:p-2">
-            <h3 className="text-left ">Name:</h3>
-            <p className="text-left ">Alias:</p>
-            <p className="text-left font-semibold">Status:</p>
-            <p className="text-left font-semibold">Created:</p>
+          <li className="flex gap-2 justify-between items-center text-sm border-b-2 border-slate-800 *:p-2">
+          <p className="text-left w-24">Alias:</p>
+            <p className="text-left flex-1  ">Name:</p>
+            
+            <p className="text-left w-32 font-semibold">Status:</p>
+            <p className="text-left font-semibold w-32">Created:</p>
+            <p className="text-left font-semibold w-14">PM:</p>
           </li>
 
           {projects.map((project) => (
             <ProjectListItem
               key={project.alias}
-              name={project.name}
-              alias={project.alias}
-              createdAt={project.createdAt}
-              status={project.status}
+              project={project}
             />
           ))}
         </motion.ul>
