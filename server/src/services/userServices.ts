@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import db from "../database/db.js";
-import { users, companyUsers } from "../database/schemas.js";
+import { users, companyUsers, userFavourites } from "../database/schemas.js";
 import { hashPassword } from "../utils/passwordUtils.js";
 
 interface UserUpdateData {
@@ -50,6 +50,16 @@ export const getUserByEmail = async (userEmail: string) => {
     throw err;
   }
 };
+
+export const getUserBookmarksFromDB = async (userId: number) => {
+  try {
+    const bookmarks = await db.select().from(userFavourites).where(eq(userFavourites.userId, userId));
+    return bookmarks;
+  } catch (err) {
+    console.error("Error getting user bookmarks: ", err);
+    throw err;
+  }
+}
 
 export const createUserInDB = async (
   email: string,

@@ -5,18 +5,9 @@ import {
   deleteUserFromDb,
   updateUserInDB,
   assignUserToCompany,
+  getUserBookmarksFromDB
 } from "../services/userServices.js";
-// import { asyncHandler } from '../utils/asyncHandler.js';
 
-// export const getUsers = asyncHandler(async (req: Request, res: Response) => {
-//     const usersList = await db.query.users.findMany();
-//     console.log(usersList);
-
-//     res.status(200).json({
-//       message: "Getting all users",
-//       users: usersList,
-//     });
-//   });
 
 export const getUsers: RequestHandler = async (req, res) => {
   try {
@@ -49,6 +40,20 @@ export const getUser: RequestHandler = async (req, res) => {
     });
   }
 };
+
+export const getUserBookmarks: RequestHandler = async (req, res) => {
+  const userId = req.params.id;
+  try {
+    const bookmarks = await getUserBookmarksFromDB(parseInt(userId));
+    console.log("Getting user bookmarks: ", bookmarks);
+    return res.status(201).json({message: "Getting user bookmarks", data: bookmarks});
+  } catch (err) {
+    res.status(500).json({
+      message: "Error",
+      error: (err as Error).message || "Unknown error",
+    });
+  }
+}
 
 export const createUser: RequestHandler = async (req, res) => {
   try {

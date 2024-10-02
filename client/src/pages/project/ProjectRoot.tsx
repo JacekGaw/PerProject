@@ -1,9 +1,10 @@
 import axios from "axios";
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { LoaderFunctionArgs, Outlet, useLoaderData } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useProjectCtx } from "../../store/ProjectsContext";
 import TaskList from "./TaskList";
+import ProjectDetails from "./ProjectDetails";
 
 type ProjectStatus =
   | "Active"
@@ -45,45 +46,45 @@ export interface Task {
 }
 
 type LoaderData = {
-    project: Project,
-    tasks: Task[]
-}
+  project: Project;
+  tasks: Task[];
+};
 
 const ProjectRoot: React.FC = () => {
-    const {setProject, setTasks} = useProjectCtx();
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { setProject, setTasks } = useProjectCtx();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const {project, tasks} = useLoaderData() as LoaderData;
+
+  const { project, tasks } = useLoaderData() as LoaderData;
   useEffect(() => {
     setIsLoading(true);
     if (project) {
-        setProject(project);
+      setProject(project);
     }
     if (tasks) {
-        setTasks(tasks);
+      setTasks(tasks);
     }
     setIsLoading(false);
-}, [project, tasks, setProject, setTasks]);
+  }, [project, tasks, setProject, setTasks]);
+
   
+
   return (
     <>
-            <section className="w-full max-w-screen-xl mx-auto gap-10 flex flex-col">
-                <div>
-                    <Link to="/dashboard/projects" className="text-sm text-slate-500 hover:text-normal-blue">&larr; Projects</Link>
-                    <header className="w-full border-b pb-5 flex justify-between gap-2 items-center">
-                        <h1 className="font-[800] text-slate-200 text-2xl">{project.name}</h1>
-                        
-                    </header>
-                </div>
-                {isLoading ? (
-                    <div>Loading tasks...</div>
-                ) : (
-                    <TaskList />
-                )}
-                
-            </section>
-            <Outlet />
-        </>
+      <section className="w-full max-w-screen-xl mx-auto gap-10 flex flex-col">
+        <div>
+          <Link
+            to="/dashboard/projects"
+            className="text-sm text-slate-500 hover:text-normal-blue"
+          >
+            &larr; Projects
+          </Link>
+          <ProjectDetails project={project} />
+        </div>
+        {isLoading ? <div>Loading tasks...</div> : <TaskList />}
+      </section>
+      <Outlet />
+    </>
   );
 };
 

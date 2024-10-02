@@ -8,7 +8,7 @@ import DashboardRoot from "./pages/dashboard/DashboardRoot";
 import MainRoot, {loader as mainLoader} from "./pages/main/MainRoot";
 import InitialOnboardingRoot from "./pages/initialOnboarding/InitialOnboardingRoot";
 import ProjectsRoot from "./pages/projects/ProjectsRoot";
-import NotesRoot from "./pages/notes/NotesRoot";
+// import NotesRoot from "./pages/notes/NotesRoot";
 import TasksRoot from "./pages/tasks/TasksRoot";
 import CompanyRoot from "./pages/company/CompanyRoot";
 import ProjectRoot, {projectLoader} from "./pages/project/ProjectRoot";

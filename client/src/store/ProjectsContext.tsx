@@ -4,10 +4,10 @@ import {
   SetStateAction,
   createContext,
   useContext,
-  useState
+  useState,
 } from "react";
 import { useCompanyCtx } from "./CompanyContext";
-import axios, { AxiosInstance, AxiosResponse } from "axios";
+import axios, { AxiosResponse } from "axios";
 
 type ProjectStatus =
   | "Active"
@@ -18,7 +18,6 @@ type ProjectStatus =
 type TaskStatus = "To Do" | "In Progress" | "On Hold" | "Done";
 type TaskPriority = "Low" | "Medium" | "High";
 type TaskType = "Task" | "Story" | "Error";
-
 
 export interface SubtaskType {
   id: number;
@@ -76,31 +75,46 @@ export interface Project {
 }
 
 interface ProjectsContextProps {
-  addNewProject: (data: NewProjectType) => Promise<{status: string, text: string}>,
-  getCompanyProjects: () => Promise<Project[]>,
-  setProject: Dispatch<SetStateAction<Project | undefined>>,
-  project: Project | undefined,
-  setTasks: Dispatch<SetStateAction<Task[]>>,
-  setSubtasksArr: Dispatch<SetStateAction<SubtaskType[]>>,
-  tasks: Task[] | undefined,
-  subtasksArr: SubtaskType[] | undefined,
-  changeTask: (type: "subtask" | "task", taskId: number, data: Partial<Task>) => Promise<object>,
-  addNewTask: (type: "task" | "subtask", data: Partial<Task>) => Promise<{status: string, text: string}>,
-  deleteTask: (id: number) => Promise<{status: string, text: string}>,
-  bookmarkProject: (method: "add" | "delete", projectId: number, userId: number) => Promise<{status: string, text: string}>
+  addNewProject: (
+    data: NewProjectType
+  ) => Promise<{ status: string; text: string }>;
+  getCompanyProjects: () => Promise<Project[]>;
+  setProject: Dispatch<SetStateAction<Project | undefined>>;
+  project: Project | undefined;
+  setTasks: Dispatch<SetStateAction<Task[]>>;
+  setSubtasksArr: Dispatch<SetStateAction<SubtaskType[]>>;
+  tasks: Task[] | undefined;
+  subtasksArr: SubtaskType[] | undefined;
+  changeTask: (
+    type: "subtask" | "task",
+    taskId: number,
+    data: Partial<Task>
+  ) => Promise<object>;
+  addNewTask: (
+    type: "task" | "subtask",
+    data: Partial<Task>
+  ) => Promise<{ status: string; text: string }>;
+  deleteTask: (id: number) => Promise<{ status: string; text: string }>;
+  bookmarkProject: (
+    method: "add" | "delete",
+    projectId: number,
+    userId: number
+  ) => Promise<{ status: string; text: string }>;
 }
 
 export const ProjectsContext = createContext<ProjectsContextProps | undefined>(
   undefined
 );
 
-export const useProjectCtx = () : ProjectsContextProps => {
+export const useProjectCtx = (): ProjectsContextProps => {
   const context = useContext(ProjectsContext);
-  if(context === undefined) {
-    throw new Error("Project Context must be used within an ProjectContextProvider");
+  if (context === undefined) {
+    throw new Error(
+      "Project Context must be used within an ProjectContextProvider"
+    );
   }
   return context;
-}
+};
 
 export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
   children,
@@ -110,125 +124,151 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
   const [tasks, setTasks] = useState<Task[]>([]);
   const [subtasksArr, setSubtasksArr] = useState<SubtaskType[]>([]);
 
-  const changeTask = async (type: "task" | "subtask", taskId: number, data: Partial<Task> | Partial<SubtaskType>) => {
+  const changeTask = async (
+    type: "task" | "subtask",
+    taskId: number,
+    data: Partial<Task> | Partial<SubtaskType>
+  ) => {
     try {
-      const response = await axios.patch(`http://localhost:3002/api/${type}/${taskId}`, data);
-      if(type === "task") {
+      const response = await axios.patch(
+        `http://localhost:3002/api/${type}/${taskId}`,
+        data
+      );
+      if (type === "task") {
         setTasks((prevTasks) =>
           prevTasks.map((task) =>
             task.id === taskId ? { ...task, ...data } : task
           )
         );
-      }
-      else {
+      } else {
         setSubtasksArr((prevSubTasks) =>
           prevSubTasks.map((subtask) =>
             subtask.id === taskId ? { ...subtask, ...data } : subtask
           )
         );
       }
-      return {status: "Success", text: response.data.message}
+      return { status: "Success", text: response.data.message };
     } catch (err: any) {
       console.log(err);
-      const errMessage = err.response?.data.message || err.message
-      return {status: "Error", text: errMessage};
+      const errMessage = err.response?.data.message || err.message;
+      return { status: "Error", text: errMessage };
     }
-  }
+  };
 
-  const addNewProject = async (data: NewProjectType) =>  {
+  const addNewProject = async (data: NewProjectType) => {
     try {
-      const response = await axios.post("http://localhost:3002/api/project",  data);
-      if(response.status == 200 || response.status == 201) {
-        return {status: "Success", text: "Project Created"}
-      }
-      else {
+      const response = await axios.post(
+        "http://localhost:3002/api/project",
+        data
+      );
+      if (response.status == 200 || response.status == 201) {
+        return { status: "Success", text: "Project Created" };
+      } else {
         throw new Error(response.statusText);
       }
     } catch (err: any) {
       console.log(err);
-      const errMessage = err.response?.data.message || err.message
-      return {status: "Error", text: errMessage};
+      const errMessage = err.response?.data.message || err.message;
+      return { status: "Error", text: errMessage };
     }
-  }
+  };
 
-  const addNewTask = async (type: "task" | "subtask" ,data: Partial<Task> ) => {
+  const addNewTask = async (type: "task" | "subtask", data: Partial<Task>) => {
     try {
-      const url = type === "task" ? "http://localhost:3002/api/task" : "http://localhost:3002/api/subtask";
-      const response = await axios.post(url,  data);
+      const url =
+        type === "task"
+          ? "http://localhost:3002/api/task"
+          : "http://localhost:3002/api/subtask";
+      const response = await axios.post(url, data);
       console.log(response);
-      if(type === "task"){
-        if(response.data.data){
-          setTasks((prevState) => [...prevState, response.data.data])
+      if (type === "task") {
+        if (response.data.data) {
+          setTasks((prevState) => [...prevState, response.data.data]);
+        }
+      } else {
+        if (response.data.data) {
+          setSubtasksArr((prevState) => [...prevState, response.data.data]);
         }
       }
-      else {
-        if(response.data.data){
-          setSubtasksArr((prevState) => [...prevState, response.data.data])
-        }
-      }
-      
-      
-      return {status: "Success", text: "Added task"};
+
+      return { status: "Success", text: "Added task" };
     } catch (err: any) {
       console.log(err);
-      const errMessage = err.response?.data.message || err.message
-      return {status: "Error", text: errMessage};
+      const errMessage = err.response?.data.message || err.message;
+      return { status: "Error", text: errMessage };
     }
-  } 
+  };
 
   const getCompanyProjects = async () => {
     try {
-      if(company == undefined){
-        return {status: "Error", text: "Company is not defined"};
-      }
-      else {
-      const response = await axios.get(`http://localhost:3002/api/projects?companyId=${company.id}`);
-      const data = response.data;
-      console.log(data);
-      return data.projects;
+      if (company == undefined) {
+        return { status: "Error", text: "Company is not defined" };
+      } else {
+        const response = await axios.get(
+          `http://localhost:3002/api/projects?companyId=${company.id}`
+        );
+        const data = response.data;
+        console.log(data);
+        return data.projects;
       }
     } catch (err: any) {
       console.log(err);
-      const errMessage = err.response?.data.message || err.message
-      return {status: "Error", text: errMessage};
+      const errMessage = err.response?.data.message || err.message;
+      return { status: "Error", text: errMessage };
     }
-  }
+  };
 
   const deleteTask = async (id: number) => {
     try {
-      if(!id) {
-        return {status: "Error", text: "Did not provide task id"};
+      if (!id) {
+        return { status: "Error", text: "Did not provide task id" };
       }
-        const response = await axios.delete(`http://localhost:3002/api/task/${id}`);
-        const deletedTask = response.data.data;
-        console.log(deletedTask);
-        setTasks((prevTasks) => prevTasks.filter((task) => task.id !== deletedTask.id));
-        return {status: "Success", text: "Task deleted"}
+      const response = await axios.delete(
+        `http://localhost:3002/api/task/${id}`
+      );
+      const deletedTask = response.data.data;
+      console.log(deletedTask);
+      setTasks((prevTasks) =>
+        prevTasks.filter((task) => task.id !== deletedTask.id)
+      );
+      return { status: "Success", text: "Task deleted" };
     } catch (err: any) {
       console.log(err);
-      const errMessage = err.response?.data.message || err.message
-      return {status: "Error", text: errMessage};
+      const errMessage = err.response?.data.message || err.message;
+      return { status: "Error", text: errMessage };
     }
-  }
+  };
 
-  const bookmarkProject = async (method: "add" | "delete", projectId: number, userId: number) => {
-    if(!projectId || !userId){
-      return {status: "Error", text: "Did not provide all required info to bookmark project"};
+  const bookmarkProject = async (
+    method: "add" | "delete",
+    projectId: number,
+    userId: number
+  ) => {
+    if (!projectId || !userId) {
+      return {
+        status: "Error",
+        text: "Did not provide all required info to bookmark project",
+      };
     }
     try {
-        let response:AxiosResponse;
-        if(method === "add") response = await axios.post(`http://localhost:3002/api/project/bookmark/${projectId}/${userId}`);
-        else response = await axios.delete(`http://localhost:3002/api/project/bookmark/${projectId}/${userId}`)
-        const deletedTask = response.data.data;
-        console.log(deletedTask);
-        setTasks((prevTasks) => prevTasks.filter((task) => task.id !== deletedTask.id));
-        return {status: "Success", text: "Added/deleted bookmark"}
+      let response: AxiosResponse;
+      if (method === "add")
+        response = await axios.post(
+          `http://localhost:3002/api/project/bookmark/${projectId}/${userId}`
+        );
+      else
+        response = await axios.delete(
+          `http://localhost:3002/api/project/bookmark/${projectId}/${userId}`
+        );
+      const bookmark = response.data.data;
+      console.log("Bookmark from endpoint: ", bookmark)
+      return { status: "Success", text: "Added/deleted bookmark" };
     } catch (err: any) {
       console.log(err);
-      const errMessage = err.response?.data.message || err.message
-      return {status: "Error", text: errMessage};
+      const errMessage = err.response?.data.message || err.message;
+      return { status: "Error", text: errMessage };
     }
-  }
+  };
 
   const ctxValue = {
     addNewProject,
@@ -242,7 +282,7 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
     changeTask,
     addNewTask,
     deleteTask,
-    bookmarkProject
+    bookmarkProject,
   };
 
   return (

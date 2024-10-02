@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom"; // Import useLocation to get the
 import { useAuth } from "../../store/AuthContext";
 import { Navigate } from "react-router-dom";
 import projectsImg from "../../assets/img/projects.svg";
-import notesImg from "../../assets/img/notes.svg";
+// import notesImg from "../../assets/img/notes.svg";
 import tasksImg from "../../assets/img/tasks.svg";
 import homeImg from "../../assets/img/home.svg";
 import NavigationItem from "./NavigationItem";

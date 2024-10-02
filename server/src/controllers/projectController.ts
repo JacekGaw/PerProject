@@ -125,7 +125,7 @@ export const createProject: RequestHandler = async (req, res) => {
 export const createBookmark: RequestHandler = async (req, res) => {
   const { projectId, userId } = req.params;
   try {
-    const bookmark = createBookmarkInDB(parseInt(projectId), parseInt(userId));
+    const bookmark = await createBookmarkInDB(parseInt(projectId), parseInt(userId));
     console.log("Added bookmark to db: ", bookmark);
     res.status(201).json({
       message: "Added new bookmark",
@@ -180,7 +180,7 @@ export const deleteProject: RequestHandler = async (req, res) => {
 export const deleteBookmark: RequestHandler = async (req, res) => {
   const { projectId, userId } = req.params;
   try {
-    const deletedBookmark = deleteBookmarkInDB(parseInt(projectId), parseInt(userId));
+    const deletedBookmark = await deleteBookmarkInDB(parseInt(projectId), parseInt(userId));
     console.log("Deleted bookmark from db: ", deletedBookmark);
     res.status(201).json({
       message: "Deleted bookmark",

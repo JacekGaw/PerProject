@@ -3,8 +3,6 @@ import { Task, useProjectCtx } from "../../store/ProjectsContext";
 import { motion } from "framer-motion";
 import saveIcon from "../../assets/img/check.svg"
 import exitIcon from "../../assets/img/close.svg"
-import editIcon from "../../assets/img/edit.svg"
-
 
 const ParentContainer = {
     init:{opacity: 1},
