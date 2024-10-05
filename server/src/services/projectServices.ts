@@ -1,6 +1,12 @@
-import { eq, and } from "drizzle-orm";
+import { eq, and, or, exists } from "drizzle-orm";
 import db from "../database/db.js";
-import { projects, projectStatusesEnum, tasks, userFavourites } from "../database/schemas.js";
+import {
+  projects,
+  projectStatusesEnum,
+  tasks,
+  userFavourites,
+  subTasks,
+} from "../database/schemas.js";
 
 type Project = typeof projects.$inferSelect;
 type Task = typeof tasks.$inferSelect;
@@ -35,12 +41,65 @@ export const getProjectsFromDB = async (
   try {
     let projectsList = [];
     if (companyId) {
-      projectsList = await db.select().from(projects).where(eq(projects.companyId, parseInt(companyId))).orderBy(projects.createdAt);
+      projectsList = await db
+        .select()
+        .from(projects)
+        .where(eq(projects.companyId, parseInt(companyId)))
+        .orderBy(projects.createdAt);
     } else {
       projectsList = await db.query.projects.findMany();
     }
     return projectsList;
   } catch (err) {
+    console.error("Error getting projects from the database:", err);
+    throw err;
+  }
+};
+
+export const getDashboardProjectsFromDB = async (
+  companyId: number,
+  userId: number
+): Promise<Project[]> => {
+  try {
+    const projectsList = await db
+      .selectDistinct()
+      .from(projects)
+      .where(
+        and(
+          eq(projects.companyId, companyId),
+          or(
+            eq(projects.projectManagerId, userId),
+            exists(
+              db
+                .select()
+                .from(tasks)
+                .where(
+                  and(
+                    eq(tasks.projectId, projects.id),
+                    eq(tasks.assignedTo, userId)
+                  )
+                )
+            ),
+            exists(
+              db
+                .select()
+                .from(tasks)
+                .innerJoin(subTasks, eq(subTasks.taskId, tasks.id))
+                .where(
+                  and(
+                    eq(tasks.projectId, projects.id),
+                    eq(subTasks.assignedTo, userId)
+                  )
+                )
+            )
+          )
+        )
+      )
+      .orderBy(projects.createdAt)
+      .limit(10);
+    return projectsList;
+  } catch (err) {
+    console.log(err);
     console.error("Error getting projects from the database:", err);
     throw err;
   }
@@ -82,7 +141,8 @@ export const getTasksFromProject = async (
     const projectTasks = await db
       .select()
       .from(tasks)
-      .where(eq(tasks.projectId, projectId)).orderBy(tasks.createdAt);
+      .where(eq(tasks.projectId, projectId))
+      .orderBy(tasks.createdAt);
     return projectTasks;
   } catch (err) {
     console.error("Error getting tasks from project with provided id: ", err);
@@ -104,13 +164,16 @@ export const createNewProjectInDB = async (
 
 export const createBookmarkInDB = async (projectId: number, userId: number) => {
   try {
-    const bookmark = await db.insert(userFavourites).values({projectId, userId}).returning();
+    const bookmark = await db
+      .insert(userFavourites)
+      .values({ projectId, userId })
+      .returning();
     return bookmark;
   } catch (err) {
     console.error("Error creating new bookmark in db:", err);
     throw err;
   }
-}
+};
 
 export const deleteProjectFromDb = async (projectId: number): Promise<{}> => {
   try {
@@ -156,13 +219,20 @@ export const checkProjectExists = async (alias: string): Promise<boolean> => {
   }
 };
 
-
 export const deleteBookmarkInDB = async (projectId: number, userId: number) => {
   try {
-    const deletedBookmark = await db.delete(userFavourites).where(and(eq(userFavourites.projectId, projectId), eq(userFavourites.userId, userId))).returning();
+    const deletedBookmark = await db
+      .delete(userFavourites)
+      .where(
+        and(
+          eq(userFavourites.projectId, projectId),
+          eq(userFavourites.userId, userId)
+        )
+      )
+      .returning();
     return deletedBookmark;
   } catch (err) {
     console.error("Error deleting bookmark from db:", err);
     throw err;
   }
-}
+};

@@ -11,10 +11,11 @@ const listItem = {
   };
 
 interface ProjectListItemProps {
-    project: Project
+    project: Project,
+    sourceComponent?: "dashboard" | "projects"
 }
 
-const ProjectListItem: React.FC<ProjectListItemProps> = ({ project }) => {
+const ProjectListItem: React.FC<ProjectListItemProps> = ({ sourceComponent, project }) => {
     const date = new Date(project.createdAt);
     const formattedDate = date.toLocaleDateString();
     const { companyUsers} = useCompanyCtx();
@@ -22,12 +23,13 @@ const ProjectListItem: React.FC<ProjectListItemProps> = ({ project }) => {
     return (
         <motion.li key={project.alias} variants={listItem} whileHover={{scale: 1.01, y:-2}} className="z-10">
             <Link to={`/dashboard/projects/${project.alias}`} className='flex z-10 gap-2 justify-between items-center border border-slate-800 rounded-sm *:px-2 *:py-4  bg-darkest-blue bg-opacity-40'>
-            <p className="text-left w-24 text-light-blue text-sm font-[7 00]">{project.alias}</p>
-            <h3 className="text-left font-[600] flex-1">{project.name}</h3>
+            <p className="text-left w-16 text-light-blue text-sm font-[700]">{project.alias}</p>
+            <h3 className="text-left font-[600] flex-1 truncate">{project.name}</h3>
             
             <p className="text-left w-32 text-slate-400 uppercase text-sm">{project.status}</p>
             <p className="text-left w-32 text-sm text-normal-blue text-[700]">{formattedDate}</p>
-            <UserAvatar details={false} user={companyUsers.filter(user => user.id == project.projectManagerId)[0]} />
+            {sourceComponent !== "dashboard" &&
+            <UserAvatar details={false} user={companyUsers.filter(user => user.id == project.projectManagerId)[0]} />}
             </Link>
         </motion.li>
     );

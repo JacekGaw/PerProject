@@ -8,6 +8,7 @@ import {
 } from "react";
 import { useCompanyCtx } from "./CompanyContext";
 import axios, { AxiosResponse } from "axios";
+import { useAuth } from "./AuthContext";
 
 type ProjectStatus =
   | "Active"
@@ -100,6 +101,7 @@ interface ProjectsContextProps {
     projectId: number,
     userId: number
   ) => Promise<{ status: string; text: string }>;
+  getDashboardProjects: () => Promise<Project[]>
 }
 
 export const ProjectsContext = createContext<ProjectsContextProps | undefined>(
@@ -120,6 +122,7 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const { company } = useCompanyCtx();
+  const { user } = useAuth();
   const [project, setProject] = useState<Project | undefined>();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [subtasksArr, setSubtasksArr] = useState<SubtaskType[]>([]);
@@ -201,7 +204,7 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
 
   const getCompanyProjects = async () => {
     try {
-      if (company == undefined) {
+      if (!company) {
         return { status: "Error", text: "Company is not defined" };
       } else {
         const response = await axios.get(
@@ -210,6 +213,26 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
         const data = response.data;
         console.log(data);
         return data.projects;
+      }
+    } catch (err: any) {
+      console.log(err);
+      const errMessage = err.response?.data.message || err.message;
+      return { status: "Error", text: errMessage };
+    }
+  };
+
+  const getDashboardProjects = async () => {
+    try {
+      if (!company || !user) {
+        return { status: "Error", text: "Company or user is not defined" };
+      } else {
+        const response = await axios.get(
+          `http://localhost:3002/api/dashboard/projects/${company.id}/${user.id}`
+        );
+        console.log("GETTING DASHBOARD: ", response);
+        const data = response.data;
+        console.log(data);
+        return data.data;
       }
     } catch (err: any) {
       console.log(err);
@@ -283,6 +306,7 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
     addNewTask,
     deleteTask,
     bookmarkProject,
+    getDashboardProjects,
   };
 
   return (

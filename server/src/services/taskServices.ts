@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { eq, desc, and, ne } from 'drizzle-orm';
 import db from "../database/db.js";
-import { tasks, taskPriorityEnum, taskStatusesEnum, taskTypeEnum, subTasks} from "../database/schemas.js";
+import { tasks, taskPriorityEnum, taskStatusesEnum, taskTypeEnum, subTasks, projects} from "../database/schemas.js";
 
 type Task = typeof tasks.$inferSelect;
 
@@ -28,6 +28,7 @@ export interface NewSubtaskType {
     taskId: number;
 }
 
+
 export const getTaskFromDB = async (id: number): Promise<object> => {
     try {
         const taskToReturn = await db.select().from(tasks).where(eq(tasks.id, id));
@@ -41,6 +42,31 @@ export const getTaskFromDB = async (id: number): Promise<object> => {
       throw err;
     }
 }
+
+export const getDashboardTasksFromDB = async (companyId: number, userId: number): Promise<object[]> => {
+  try {
+    const userTasks = await db
+    .selectDistinct({
+      id: tasks.id,
+      taskText: tasks.taskText,
+      description: tasks.description,
+      createdAt: tasks.createdAt,
+      updatedAt: tasks.updatedAt,
+      priority: tasks.priority,
+      estimatedTime: tasks.estimatedTime,
+      status: tasks.status,
+      projectAlias: projects.alias,
+    })
+    .from(tasks)
+    .leftJoin(projects, eq(projects.id, tasks.projectId))
+    .where(and(eq(tasks.assignedTo, userId),ne(tasks.status, "Done"))).orderBy(desc(tasks.createdAt));
+    console.log(userTasks)
+    return userTasks;
+  } catch (err) {
+    console.error("Error getting latest tasks from the database:", err);
+    throw err;
+  }
+};
 
 export const changeTaskInDB = async (
     taskId: number,
