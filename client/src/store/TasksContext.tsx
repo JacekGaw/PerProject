@@ -3,6 +3,7 @@ import {
     createContext, useContext, useState, Dispatch, SetStateAction  } from "react";
 import { useAuth } from "./AuthContext";
 import { useCompanyCtx } from "./CompanyContext";
+import {Project} from  "./ProjectsContext";
 import axios from "axios";
 
 type TaskStatus = "To Do" | "In Progress" | "On Hold" | "Done";
@@ -34,6 +35,7 @@ export interface SubTask extends Partial<Task> {
 
 export interface TaskWithSubtasks extends Task {
   subTasks: SubTask[];
+  project: Partial<Project>
 }
   
   interface TasksContextProps {
@@ -41,8 +43,10 @@ export interface TaskWithSubtasks extends Task {
     getUserTasks: () => Promise<TaskWithSubtasks[]>
     setTasks: Dispatch<SetStateAction<Task[]>>;
     setSubtasksArr: Dispatch<SetStateAction<SubTask[]>>;
+    setUserAllTasks: Dispatch<SetStateAction<TaskWithSubtasks[]>>;
     tasks: Task[] | undefined;
     subtasksArr: SubTask[] | undefined;
+    userAllTasks: TaskWithSubtasks[] | undefined;
     changeTask: (
       type: "subtask" | "task",
       taskId: number,
@@ -76,6 +80,7 @@ export interface TaskWithSubtasks extends Task {
     const { user } = useAuth();
     const [tasks, setTasks] = useState<Task[]>([]);
   const [subtasksArr, setSubtasksArr] = useState<SubTask[]>([]);
+  const [userAllTasks, setUserAllTasks] = useState<TaskWithSubtasks[]>([])
     
     const getDashboardTasks = async () => {
       try {
@@ -106,9 +111,9 @@ export interface TaskWithSubtasks extends Task {
             `http://localhost:3002/api/tasks/${user.id}?withSubtasks=true`
           );1
           console.log("GETTING TASKS with subtask: ", response);
-          const data = response.data;
-          console.log(data);
-          return data.data;
+          const data = response.data.data;
+          setUserAllTasks(data);
+          return data;
         }
       } catch (err: any) {
         console.log(err);
@@ -159,6 +164,11 @@ export interface TaskWithSubtasks extends Task {
               task.id === taskId ? { ...task, ...data } : task
             )
           );
+          setUserAllTasks((prevTasks) =>
+            prevTasks.map((task) =>
+              task.id === taskId ? { ...task, ...data } : task
+            )
+          );
         } else {
           setSubtasksArr((prevSubTasks) =>
             prevSubTasks.map((subtask) =>
@@ -205,7 +215,9 @@ export interface TaskWithSubtasks extends Task {
       setSubtasksArr,
       setTasks,
       tasks,
-      subtasksArr
+      subtasksArr,
+      userAllTasks,
+      setUserAllTasks
     };
   
     return (

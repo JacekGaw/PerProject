@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useTasksCtx } from '../../store/TasksContext';
+import { useTasksCtx} from '../../store/TasksContext';
+import Spinner from '../../components/UI/Spinner';
+import TasksList from './TasksList';
 
 const TasksRoot: React.FC = () => {
     const {getUserTasks} = useTasksCtx();
@@ -9,16 +11,17 @@ const TasksRoot: React.FC = () => {
         const loadUserTasks = async() => {
             setLoading(true);
             try {
-                const tasks = await getUserTasks();
-                console.log(tasks);
-                setLoading(false);
+                await getUserTasks();
             } catch (err) {
                 console.log(err);
+                setLoading(false);
+            } finally {
                 setLoading(false);
             }
         }
         loadUserTasks()
-    }, [getUserTasks])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     return (
         <>
@@ -27,7 +30,10 @@ const TasksRoot: React.FC = () => {
         <h1 className="font-[800] text-slate-200 text-2xl">Tasks</h1>
         
       </header>
-      {loading ? <p>Loading...</p>: <p>tasks</p>}
+      <div className='w-full'>
+        {loading ? <div className='flex justify-center items-center p-10'><Spinner /></div> : <TasksList  />}
+      </div>
+      
         </section>
         </>
     )
