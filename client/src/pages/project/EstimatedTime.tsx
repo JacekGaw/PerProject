@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Task, useProjectCtx } from "../../store/ProjectsContext";
 import { motion } from "framer-motion";
 import saveIcon from "../../assets/img/check.svg"
 import exitIcon from "../../assets/img/close.svg"
+import { useTasksCtx, Task } from "../../store/TasksContext";
 
 const ParentContainer = {
     init:{opacity: 1},
@@ -20,7 +20,7 @@ const EstimatedTime: React.FC<EstimatedTimeProps> = ({
   task,
 }) => {
   const [editTime, setEditTime] = useState<boolean>(false);
-  const { changeTask} = useProjectCtx();
+  const { changeTask} = useTasksCtx();
 
   const changeTime =  async (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();

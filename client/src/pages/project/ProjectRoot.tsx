@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { useProjectCtx } from "../../store/ProjectsContext";
 import TaskList from "./TaskList";
 import ProjectDetails from "./ProjectDetails";
+import { useTasksCtx } from "../../store/TasksContext";
 
 type ProjectStatus =
   | "Active"
@@ -51,7 +52,8 @@ type LoaderData = {
 };
 
 const ProjectRoot: React.FC = () => {
-  const { setProject, setTasks } = useProjectCtx();
+  const { setProject } = useProjectCtx();
+  const {setTasks} = useTasksCtx()
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
 

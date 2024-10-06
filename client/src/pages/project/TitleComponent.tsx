@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { Task, useProjectCtx } from "../../store/ProjectsContext";
 import { motion } from "framer-motion";
 import saveIcon from "../../assets/img/check.svg"
 import exitIcon from "../../assets/img/close.svg"
 import editIcon from "../../assets/img/edit.svg"
+import { useTasksCtx, Task } from "../../store/TasksContext";
 
 
 const ParentContainer = {
@@ -26,7 +26,8 @@ const TitleComponent: React.FC<TitleComponentProps> = ({
   task,
 }) => {
   const [editTitle, setEditTitle] = useState<boolean>(false);
-  const { changeTask} = useProjectCtx();
+  const { changeTask} = useTasksCtx();
+
 
   const changeTitle = async (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();

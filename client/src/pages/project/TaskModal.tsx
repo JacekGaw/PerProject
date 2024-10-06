@@ -8,7 +8,6 @@ import {
 import { motion } from "framer-motion";
 import closeIcon from "../../assets/img/close.svg";
 import axios from "axios";
-import { useProjectCtx, Task, SubtaskType } from "../../store/ProjectsContext";
 import deleteIcon from "../../assets/img/delete.svg";
 import { CompanyUserType, useCompanyCtx } from "../../store/CompanyContext";
 import SubtasksList from "./SubtasksList";
@@ -16,17 +15,19 @@ import UserAvatar from "../../components/UI/UserAvatar";
 import DescriptionComponent from "./DescriptionComponent";
 import TitleComponent from "./TitleComponent";
 import EstimatedTime from "./EstimatedTime";
+import { useTasksCtx, Task, SubTask } from "../../store/TasksContext";
 
 const TaskModal: React.FC = () => {
   const { alias } = useParams();
   const { task, subtasks } = useLoaderData() as {
     task: Task;
-    subtasks: SubtaskType[];
+    subtasks: SubTask[];
   };
   const modalRef = useRef<HTMLDialogElement>(null);
   const navigate = useNavigate();
-  const { deleteTask, changeTask, setSubtasksArr, subtasksArr } =
-    useProjectCtx();
+
+    const { deleteTask, changeTask, setSubtasksArr, subtasksArr } =
+    useTasksCtx();
   const { companyUsers } = useCompanyCtx();
 
   const createdAtDate = new Date(task.createdAt);

@@ -1,18 +1,18 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useProjectCtx, SubtaskType } from "../../store/ProjectsContext";
 import { useCompanyCtx, CompanyUserType } from "../../store/CompanyContext";
 import { Task } from "../../pages/project/ProjectRoot";
 import UserAvatar from "./UserAvatar";
+import { useTasksCtx ,SubTask } from "../../store/TasksContext";
 
 interface ChangeUserProps {
-  item: Task | SubtaskType;
+  item: Task | SubTask;
   type: "subtask" | "task";
 }
 
 const ChangeUser: React.FC<ChangeUserProps> = ({ item, type }) => {
   const [listOpen, setListOpen] = useState<boolean>(false);
   const { companyUsers } = useCompanyCtx();
-  const { changeTask} = useProjectCtx()
+  const {changeTask} = useTasksCtx()
   const ref = useRef<HTMLDivElement>(null); // Ref to track clicks outside
 
   const assignedUser: CompanyUserType | undefined = companyUsers.find((user) => user.id === item.assignedTo);
@@ -32,7 +32,7 @@ const ChangeUser: React.FC<ChangeUserProps> = ({ item, type }) => {
 
   const handleChangeAssignedUser = async (userId: number) => {
     try {
-        await changeTask(type, item.id, {assignedTo: userId});
+        await changeTask(type, item.id!, {assignedTo: userId});
         setListOpen(false);
     } catch (error) {
         console.error("Error updating task:", error);

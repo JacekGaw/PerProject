@@ -1,12 +1,12 @@
 import React from "react";
-import { SubtaskType } from "../../store/ProjectsContext";
 import AddButton from "../../components/UI/AddButton";
 import taskIcon from "../../assets/img/taskIcon.svg";
-import { useProjectCtx } from "../../store/ProjectsContext";
 import ChangeUser from "../../components/UI/ChangeUser";
 import Priority from "../../components/UI/Priority";
+import { useTasksCtx, SubTask
+ } from "../../store/TasksContext";
 interface SubtasksListProps {
-  subtasks: SubtaskType[];
+  subtasks: SubTask[];
   taskId: number;
 }
 
@@ -14,7 +14,8 @@ const taskStatuses = ["To Do", "In Progress", "On Hold", "Done"];
 type TaskStatus = "To Do" | "In Progress" | "On Hold" | "Done";
 
 const SubtasksList: React.FC<SubtasksListProps> = ({ subtasks, taskId }) => {
-  const { changeTask, subtasksArr } = useProjectCtx();
+  const { changeTask, subtasksArr } = useTasksCtx();
+
 
   const changeStatus = async (subtaskId: number, newStatus: TaskStatus) => {
     try {
@@ -45,7 +46,7 @@ const SubtasksList: React.FC<SubtasksListProps> = ({ subtasks, taskId }) => {
               <p className="w-full">{subtask.taskText}</p>
               <select
                 value={subtask.status}
-                onChange={(e) => changeStatus(subtask.id, e.target.value as TaskStatus)}
+                onChange={(e) => changeStatus(subtask.id!, e.target.value as TaskStatus)}
                 className="bg-darkest-blue text-sm p-2 rounded-sm"
               >
                 {taskStatuses.map((status) => (
@@ -55,7 +56,7 @@ const SubtasksList: React.FC<SubtasksListProps> = ({ subtasks, taskId }) => {
                 ))}
               </select>
               <ChangeUser item={subtask} type="subtask" />
-              <Priority priority={subtask.priority} />
+              <Priority priority={subtask.priority!} />
             </li>
           ))}
         </ul>

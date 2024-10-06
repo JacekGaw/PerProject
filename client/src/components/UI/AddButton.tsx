@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import addIcon from "../../assets/img/plus.svg"
 import { useAuth } from '../../store/AuthContext';
 import { useProjectCtx } from '../../store/ProjectsContext';
+import { useTasksCtx } from '../../store/TasksContext';
 
 interface AddButtonTypes {
     type: "task" | "subtask",
@@ -25,7 +26,8 @@ const AddButton: React.FC<AddButtonTypes> = ({type, placeholder, taskId}) => {
     const [inputVisible, setInputVisible] = useState<boolean>(false);
     const [isError, setIsError] = useState<boolean>(false);
     const { user, logOut } = useAuth();
-    const { project, addNewTask } = useProjectCtx()
+    const { project } = useProjectCtx()
+    const {addNewTask} = useTasksCtx()
 
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();

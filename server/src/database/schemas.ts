@@ -1,5 +1,5 @@
-import { boolean, date, integer, pgEnum, pgTable, serial, text, timestamp, uniqueIndex, varchar } from 'drizzle-orm/pg-core';
-
+import { boolean, date, integer, pgEnum, pgTable, serial, text, timestamp, varchar } from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
 export const userRoleEnum = pgEnum("role", ["Developer", "Tester", "Product Owner", "Project Manager", "Other"]);
 
 export const users = pgTable('users', {
@@ -65,7 +65,7 @@ export const tasks = pgTable('tasks', {
     description: text('description'),
     type: taskTypeEnum('type').notNull().default("Task"),
     createdAt: timestamp('createdAt').defaultNow(),
-    updatedAt: timestamp('updatedAt'),
+    updatedAt: timestamp('updatedAt').defaultNow(),
     priority: taskPriorityEnum('priority').notNull().default("Low"),
     estimatedTime: integer('estimatedTime').default(0),
     status: taskStatusesEnum("status").notNull().default("To Do"),
@@ -79,7 +79,7 @@ export const subTasks = pgTable('subTasks', {
     taskText: text('taskText').notNull(),
     description: text('description'),
     createdAt: timestamp('createdAt').defaultNow(),
-    updatedAt: timestamp('updatedAt'),
+    updatedAt: timestamp('updatedAt').defaultNow(),
     priority: taskPriorityEnum('priority').notNull().default("Low"),
     estimatedTime: integer('estimatedTime').default(0),
     status: taskStatusesEnum("status").notNull().default("To Do"),
@@ -104,3 +104,18 @@ export const userFavourites = pgTable('userFavourites', {
     projectId: integer('projectId').notNull().references(() => projects.id, { onDelete: 'cascade' }),
     addedAt: timestamp('addedAt').defaultNow(),
 });
+
+export const tasksRelations = relations(tasks, ({ many, one }) => ({
+    subTasks: many(subTasks),
+    project: one(projects, {
+        fields: [tasks.projectId],
+        references: [projects.id],
+    }),
+  }));
+  
+  export const subTasksRelations = relations(subTasks, ({ one }) => ({
+    task: one(tasks, {
+      fields: [subTasks.taskId],
+      references: [tasks.id],
+    }),
+  }));

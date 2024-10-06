@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import { NewTaskType, NewSubtaskType } from "../services/taskServices.js";
-import { getTaskFromDB, changeTaskInDB, addNewTaskToDB, deleteTaskFromDB, addNewSubtaskToDB, changeSubtaskInDB } from "../services/taskServices.js";
+import { getTaskFromDB, getTasksFromDB, changeTaskInDB, addNewTaskToDB, deleteTaskFromDB, addNewSubtaskToDB, changeSubtaskInDB } from "../services/taskServices.js";
 
 
 export const getTask: RequestHandler = async (req,res) => {
@@ -16,6 +16,23 @@ export const getTask: RequestHandler = async (req,res) => {
     });
   }
 }
+
+
+export const getTasks: RequestHandler = async (req,res) => {
+  try {
+      const {withSubtasks} = req.query;
+      const {userId} = req.params;
+      const withSubtasksBoolean = withSubtasks === 'true';
+      const data = await getTasksFromDB(parseInt(userId), withSubtasksBoolean);
+      return res.status(200).json({message: "Getting task data", data: data});
+  } catch (err) {
+  return res.status(500).json({
+    message: "Error",
+    error: (err as Error).message || "Unknown error"
+  });
+}
+}
+
 
 export const createTask: RequestHandler = async (req,res) => {
     try {

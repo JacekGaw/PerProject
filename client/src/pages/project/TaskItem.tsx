@@ -3,10 +3,10 @@ import { Task } from './ProjectRoot';
 import errorIcon from "../../assets/img/errorIcon.svg";
 import taskIcon from "../../assets/img/taskIcon.svg";
 import storyIcon from "../../assets/img/storyIcon.svg";
-import { useProjectCtx } from '../../store/ProjectsContext';
 import { Link } from 'react-router-dom';
 import ChangeUser from '../../components/UI/ChangeUser';
 import Priority from '../../components/UI/Priority';
+import { useTasksCtx } from '../../store/TasksContext';
 
 interface taskType {
     type: string,
@@ -25,7 +25,8 @@ const taskTypes: taskType[] = [{type: "Task", icon: taskIcon}, {type: "Story", i
 // const taskPriority = ["Low", "Medium", "High"];
 
 const TaskItem: React.FC<TaskItemProps > = ({item}) => {
-    const { changeTask } = useProjectCtx();
+    const { changeTask } = useTasksCtx();
+
     const statusRef = useRef<HTMLSelectElement>(null);
     const selectRef = useRef<HTMLSelectElement>(null);
 

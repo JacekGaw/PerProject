@@ -26,7 +26,7 @@ const UserTasks: React.FC = () => {
         {isLoading ? <p>Loading...</p> :
         <ul className="max-h-[400px] overflow-y-auto overflow-x-hidden">
             {tasks && tasks.map(task => {
-                const date = new Date(task.createdAt);
+                const date = new Date(task.createdAt!);
                 const formattedDate = date.toLocaleDateString();
                 return <Link to={`/dashboard/projects/${task.projectAlias}/task/${task.id}`} className='flex z-10 gap-2 justify-between items-center border border-slate-800 rounded-sm *:px-2 *:py-4  bg-darkest-blue bg-opacity-40'>
                     <p className="text-left w-16 text-light-blue text-sm font-[700]">{task.projectAlias}</p>

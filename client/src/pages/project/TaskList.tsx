@@ -1,11 +1,11 @@
 import React from "react";
 import TaskItem from "./TaskItem";
-import { useProjectCtx } from "../../store/ProjectsContext";
 import AddButton from "../../components/UI/AddButton";
+import { useTasksCtx } from "../../store/TasksContext";
 
 
 const TaskList: React.FC = () => {
-  const { tasks} = useProjectCtx();
+  const { tasks} = useTasksCtx();
 
   return (
     <>
