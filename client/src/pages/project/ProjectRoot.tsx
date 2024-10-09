@@ -2,49 +2,10 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { LoaderFunctionArgs, Outlet, useLoaderData } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { useProjectCtx } from "../../store/ProjectsContext";
+import { useProjectCtx, Task, Project } from "../../store/ProjectsContext";
 import TaskList from "./TaskList";
 import ProjectDetails from "./ProjectDetails";
 import { useTasksCtx } from "../../store/TasksContext";
-
-type ProjectStatus =
-  | "Active"
-  | "On Hold"
-  | "Completed"
-  | "Archive"
-  | "Maintaining";
-type TaskStatus = "To Do" | "In Progress" | "On Hold" | "Done";
-type TaskPriority = "Low" | "Medium" | "High";
-type TaskType = "Task" | "Story" | "Error";
-
-interface Project {
-  id: number;
-  name: string;
-  alias: string;
-  description: string | null;
-  status: ProjectStatus;
-  startDate: Date | null;
-  endDate: Date | null;
-  createdAt: Date;
-  authorId: number | null;
-  projectManagerId: number | null;
-  companyId: number;
-}
-
-export interface Task {
-  id: number;
-  taskText: string;
-  description: string | null;
-  type: TaskType;
-  createdAt: Date;
-  updatedAt: Date | null;
-  priority: TaskPriority;
-  estimatedTime: number | null;
-  status: TaskStatus;
-  assignedTo: number | null;
-  projectId: number;
-  authorId: number;
-}
 
 type LoaderData = {
   project: Project;

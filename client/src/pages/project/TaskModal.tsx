@@ -94,8 +94,8 @@ const TaskModal: React.FC = () => {
         </form>
         <div className="h-full p-12 flex flex-col gap-5">
           <div className="flex gap-5 justify-between items-center">
-            <DateFormatted label="Created:" dateObj={task.createdAt} />
-            {task.updatedAt && <DateFormatted label="Updated:" dateObj={task.updatedAt} />}
+            <DateFormatted label="Created:" dateObj={task.createdAt} time={true} />
+            <DateFormatted label="Updated:" dateObj={task.updatedAt} />
           </div>
           <header className=" flex flex-col gap-2">
             <div className="flex justify-between items-center gap-5">

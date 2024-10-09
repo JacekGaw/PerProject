@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useCompanyCtx, CompanyUserType } from "../../store/CompanyContext";
-import { Task } from "../../pages/project/ProjectRoot";
+// import { Task } from "../../pages/project/ProjectRoot";
 import UserAvatar from "./UserAvatar";
-import { useTasksCtx ,SubTask } from "../../store/TasksContext";
+import { useTasksCtx ,SubTask, Task } from "../../store/TasksContext";
 
 interface ChangeUserProps {
   item: Task | SubTask;
-  type: "subtask" | "task";
+  type: "subtask" | "task" | "project";
 }
 
 const ChangeUser: React.FC<ChangeUserProps> = ({ item, type }) => {
@@ -32,10 +32,15 @@ const ChangeUser: React.FC<ChangeUserProps> = ({ item, type }) => {
 
   const handleChangeAssignedUser = async (userId: number) => {
     try {
-        await changeTask(type, item.id!, {assignedTo: userId});
-        setListOpen(false);
+        if(type !== "project") {
+          await changeTask(type, item!.id!, {assignedTo: userId});
+        }
+        // Add here option to change project PM
+        
     } catch (error) {
         console.error("Error updating task:", error);
+      } finally {
+        setListOpen(false);
       }
   }
 
