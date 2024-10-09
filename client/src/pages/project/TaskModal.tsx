@@ -16,6 +16,7 @@ import DescriptionComponent from "./DescriptionComponent";
 import TitleComponent from "./TitleComponent";
 import EstimatedTime from "./EstimatedTime";
 import { useTasksCtx, Task, SubTask } from "../../store/TasksContext";
+import DateFormatted from "../../components/UI/DateFormatted";
 
 const TaskModal: React.FC = () => {
   const { alias } = useParams();
@@ -30,13 +31,6 @@ const TaskModal: React.FC = () => {
     useTasksCtx();
   const { companyUsers } = useCompanyCtx();
 
-  const createdAtDate = new Date(task.createdAt);
-  const formattedCreatedAt = `${createdAtDate.toLocaleDateString()} ${createdAtDate.toLocaleTimeString()}`;
-  let formattedUpdatedAt = "";
-  if (task.updatedAt) {
-    const updatedAtDate = new Date(task.updatedAt);
-    formattedUpdatedAt = `${updatedAtDate.toLocaleDateString()} ${updatedAtDate.toLocaleTimeString()}`;
-  }
 
   useEffect(() => {
     if (modalRef.current) {
@@ -100,16 +94,11 @@ const TaskModal: React.FC = () => {
         </form>
         <div className="h-full p-12 flex flex-col gap-5">
           <div className="flex gap-5 justify-between items-center">
-            <p className="text-xs font-[600] text-slate-400">
-              Created: {formattedCreatedAt}
-            </p>
-            <p className="text-xs font-[600] text-slate-400">
-              Updated: {formattedUpdatedAt}
-            </p>
+            <DateFormatted label="Created:" dateObj={task.createdAt} />
+            {task.updatedAt && <DateFormatted label="Updated:" dateObj={task.updatedAt} />}
           </div>
           <header className=" flex flex-col gap-2">
             <div className="flex justify-between items-center gap-5">
-              {/* <h1 className="font-[500] text-2xl">{task.taskText}</h1> */}
               <div className="w-full"><TitleComponent task={task} /></div>
               
               <button

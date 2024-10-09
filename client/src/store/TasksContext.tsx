@@ -175,6 +175,19 @@ export interface TaskWithSubtasks extends Task {
               subtask.id === taskId ? { ...subtask, ...data } : subtask
             )
           );
+          setUserAllTasks((prevTasks) =>
+            prevTasks.map((task) => {
+              if (task.subTasks) {
+                const updatedSubTasks = task.subTasks.map((subtask) =>
+                  subtask.id === taskId ? { ...subtask, ...data } : subtask
+                );
+    
+                // Return the updated task with modified subtasks
+                return { ...task, subTasks: updatedSubTasks };
+              }
+              return task; // If no subtasks, return the task unchanged
+            })
+          );
         }
         return { status: "Success", text: response.data.message };
       } catch (err: any) {
