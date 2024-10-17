@@ -68,10 +68,10 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({ project }) => {
       <AnimatePresence mode="wait">
         {detailsOpen && 
           <motion.div
-          initial={{height: 0}}
-          animate={detailsOpen ? {height: "auto"} : {height: 0}}
+          initial={{height: 0, overflow: "visible"}}
+          animate={detailsOpen ? {height: "auto", overflow: "hidden"} : {height: 0, overflow: "visible"}}
           exit={{height: 0}}
-          className="overflow-hidden w-full flex flex-col gap-2"
+          className=" w-full flex flex-col gap-2"
           >
             <div className="w-full flex">   
               <div className="w-1/2 p-5 text-base text-justify text-slate-400 leading-6">

@@ -5,9 +5,8 @@ import {
   deleteUserFromDb,
   updateUserInDB,
   assignUserToCompany,
-  getUserBookmarksFromDB
+  getUserBookmarksFromDB,
 } from "../services/userServices.js";
-
 
 export const getUsers: RequestHandler = async (req, res) => {
   try {
@@ -46,18 +45,20 @@ export const getUserBookmarks: RequestHandler = async (req, res) => {
   try {
     const bookmarks = await getUserBookmarksFromDB(parseInt(userId));
     console.log("Getting user bookmarks: ", bookmarks);
-    return res.status(201).json({message: "Getting user bookmarks", data: bookmarks});
+    return res
+      .status(201)
+      .json({ message: "Getting user bookmarks", data: bookmarks });
   } catch (err) {
     res.status(500).json({
       message: "Error",
       error: (err as Error).message || "Unknown error",
     });
   }
-}
+};
 
 export const createUser: RequestHandler = async (req, res) => {
   try {
-    const { email, password, role } = req.body;
+    const { email, password, role, name, surname } = req.body;
     if (!email || !password || !role) {
       return res.status(400).json({
         message: "Did not provide all requested user informations",
@@ -71,7 +72,9 @@ export const createUser: RequestHandler = async (req, res) => {
         | "Tester"
         | "Product Owner"
         | "Project Manager"
-        | "Other"
+        | "Other",
+      name,
+      surname
     );
     console.log("Created user", newUser);
     return res.status(200).json({

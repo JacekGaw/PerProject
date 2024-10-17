@@ -19,7 +19,7 @@ const UserProjects: React.FC = () => {
     
     return (
         <>
-        <header className="bg-light-blue text-black px-5 py-2 text-lg font-[400] ">
+        <header className="  p-4 uppercase text-lg font-[400] ">
             <h2>Related projects:</h2>
         </header>
         {isLoading ? <p>Loading...</p> :

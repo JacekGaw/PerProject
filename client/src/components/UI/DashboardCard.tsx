@@ -9,7 +9,7 @@ interface DashboardCardProps {
 const DashboardCard: React.FC<DashboardCardProps> = ({className, children}) => {
     return (
         <motion.div
-        className={`border-2 border-light-blue rounded-xl overflow-hidden drop-shadow-md ${className}`}>
+        className={`bg-darkest-blue shadow-sm rounded-xl overflow-hidden drop-shadow-md ${className}`}>
             {children}
         </motion.div>
     )

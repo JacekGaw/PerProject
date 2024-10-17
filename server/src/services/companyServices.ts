@@ -1,6 +1,7 @@
-import { eq } from "drizzle-orm";
+import { eq, count, inArray } from "drizzle-orm";
 import db from "../database/db.js";
-import { companies, companyUsers, users } from "../database/schemas.js";
+import { companies, companyUsers, projects, users, tasks, subTasks } from "../database/schemas.js";
+
 
 interface CompanyUpdateData {
   name?: string;
@@ -71,6 +72,72 @@ export const getCompanyByUserId = async (userId: number): Promise<{}> => {
   }
 }
 
+export const getCompanyStatisticsFromDB = async (companyId: number): Promise<{ projects: number, tasks: number, users: number }> => {
+  const statistics = {
+    projects: 0,
+    tasks: 0,
+    users: 0,
+  };
+
+  try {
+    const projectCountResult = await db
+      .select({ count: count() })
+      .from(projects)
+      .where(eq(projects.companyId, companyId));
+    
+    statistics.projects = projectCountResult[0].count;
+
+    const projectIdsResult = await db
+      .select({ id: projects.id })
+      .from(projects)
+      .where(eq(projects.companyId, companyId));
+    
+    const projectIds = projectIdsResult.map(project => project.id);
+
+    if (projectIds.length > 0) {
+      const taskCountResult = await db
+        .select({ count: count() })
+        .from(tasks)
+        .where(inArray(tasks.projectId, projectIds));
+
+      const taskCount = taskCountResult[0].count;
+
+      const taskIdsResult = await db
+        .select({ id: tasks.id })
+        .from(tasks)
+        .where(inArray(tasks.projectId, projectIds));
+      
+      const taskIds = taskIdsResult.map(task => task.id);
+
+      let subTaskCount = 0;
+      if (taskIds.length > 0) {
+        const subTaskCountResult = await db
+          .select({ count: count() })
+          .from(subTasks)
+          .where(inArray(subTasks.taskId, taskIds));
+      
+        subTaskCount = subTaskCountResult[0].count;
+      }
+
+      statistics.tasks = taskCount + subTaskCount;
+    } else {
+      statistics.tasks = 0;
+    }
+
+    const userCountResult = await db
+      .select({ count: count() })
+      .from(companyUsers)
+      .where(eq(companyUsers.companyId, companyId));
+    
+    statistics.users = userCountResult[0].count;
+
+    return statistics;
+  } catch (err) {
+    console.error("Error getting company statistics:", err);
+    throw err;
+  }
+};
+
 
 
 export const createNewCompanyInDB = async (
@@ -85,7 +152,7 @@ export const createNewCompanyInDB = async (
     const newCompany = await db.insert(companies).values(params).returning();
     return newCompany;
   } catch (err) {
-    console.error("Error getting projects from the database:", err);
+    console.error("Error creating new company in db:", err);
     throw err;
   }
 };

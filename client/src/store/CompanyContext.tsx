@@ -15,21 +15,30 @@ export interface CompanyUserType {
   email: string;
   role: "Developer" | "Tester" | "Product Owner" | "Project Manager" | "Other";
   active: boolean;
-  joinDate: string;
+  joinDate: Date;
 }
 
 interface CompanyType {
   id: number,
   name: string,
   description: string,
-  createdAt: string
+  createdAt: Date
+}
+
+export interface StatisticsType {
+  projects: number;
+  tasks: number;
+  users: number;
 }
 
 interface CompanyContextProps {
   isLoading: boolean;
   company: CompanyType | undefined;
   companyUsers: CompanyUserType[];
+  getCompanyStatistics: () => Promise<StatisticsType>
 }
+
+
 
 export const CompanyContext = createContext<CompanyContextProps | undefined>(
   undefined
@@ -86,10 +95,23 @@ export const CompanyProvider: React.FC<{ children: ReactNode }> = ({
     getUserCompany();
   }, [user, setIsAuthenticated]);
 
+
+  const getCompanyStatistics = async () => {
+    try {
+      const response = await axios.get(`http://localhost:3002/api/company/${company?.id}/statistics`);
+      return response.data.data;
+    } catch (err: any) {
+      console.log(err);
+      const errMessage = err.response?.data.message || err.message;
+      return { status: "Error", text: errMessage };
+    }
+  };
+
   const ctxValue = {
     isLoading,
     company,
     companyUsers,
+    getCompanyStatistics
   };
 
   return (

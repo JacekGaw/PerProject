@@ -5,7 +5,7 @@ import {
   LoaderFunctionArgs,
   useLoaderData,
 } from "react-router-dom";
-import { motion } from "framer-motion";
+import { delay, motion } from "framer-motion";
 import closeIcon from "../../assets/img/close.svg";
 import axios from "axios";
 import deleteIcon from "../../assets/img/delete.svg";
@@ -17,6 +17,17 @@ import TitleComponent from "./TitleComponent";
 import EstimatedTime from "./EstimatedTime";
 import { useTasksCtx, Task, SubTask } from "../../store/TasksContext";
 import DateFormatted from "../../components/UI/DateFormatted";
+
+const DialogMotion = {
+  hidden: {x: 500, opacity: 0},
+  show: {x: 0, opacity: 1, transition: {staggerChildren: 0.2}}
+}
+
+const ChildrenMotion = {
+  hidden: {x: -100, opacity: 0},
+  show: {x: 0, opacity: 1},
+}
+
 
 const TaskModal: React.FC = () => {
   const { alias } = useParams();
@@ -75,7 +86,11 @@ const TaskModal: React.FC = () => {
 
   return (
     <div className="relative">
-      <dialog
+      <motion.dialog
+      variants={DialogMotion}
+      initial="hidden"
+      animate="show"
+      transition={{duration: 0.5, type: "spring"}}
         ref={modalRef}
         className={`mr-0 my-0 top-[0%] right-[0%]  left-100 w-auto max-w-screen-sm h-screen backdrop:bg-slate-900/80 bg-dark-blue text-slate-200  shadow-lg`}
       >
@@ -93,11 +108,11 @@ const TaskModal: React.FC = () => {
           </motion.button>
         </form>
         <div className="h-full p-12 flex flex-col gap-5">
-          <div className="flex gap-5 justify-between items-center">
+          <motion.div variants={ChildrenMotion}  className="flex gap-5 justify-between items-center">
             <DateFormatted label="Created:" dateObj={task.createdAt} time={true} />
             <DateFormatted label="Updated:" dateObj={task.updatedAt} />
-          </div>
-          <header className=" flex flex-col gap-2">
+          </motion.div>
+          <motion.header className=" flex flex-col gap-2" variants={ChildrenMotion}>
             <div className="flex justify-between items-center gap-5">
               <div className="w-full"><TitleComponent task={task} /></div>
               
@@ -110,8 +125,8 @@ const TaskModal: React.FC = () => {
             </div>
             <DescriptionComponent task={task} />
             
-          </header>
-          <div className="flex gap-5 justify-center items-center bg-darkest-blue p-5 rounded-md">
+          </motion.header>
+          <motion.div variants={ChildrenMotion} className="flex gap-5 justify-center items-center bg-darkest-blue p-5 rounded-md">
             <div className="flex-1 group hover:cursor-pointer flex flex-col gap-1">
               <label
                 className="font-[100] group-hover:translate-x-2 group-focus-within:translate-x-2 group-focus-within:font-[500] transition-all duration-200"
@@ -170,8 +185,8 @@ const TaskModal: React.FC = () => {
                 <option value="Done">Done</option>
               </select>
             </div>
-          </div>
-          <div className="w-full flex justify-between px-2 gap-10 items-center">
+          </motion.div>
+          <motion.div variants={ChildrenMotion} className="w-full flex justify-between px-2 gap-10 items-center">
             <div className="flex gap-2 items-center">
               <p>Author</p>
               <UserAvatar
@@ -195,14 +210,14 @@ const TaskModal: React.FC = () => {
               <p>Estimated Time</p>
               <EstimatedTime task={task} />
             </div>
-          </div>
-          <div>
+          </motion.div>
+          <motion.div variants={ChildrenMotion}>
             {subtasksArr && (
               <SubtasksList subtasks={subtasksArr} taskId={task.id} />
             )}
-          </div>
+          </motion.div>
         </div>
-      </dialog>
+      </motion.dialog>
     </div>
   );
 };

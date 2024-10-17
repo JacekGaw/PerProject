@@ -4,6 +4,7 @@ import {
     createNewCompanyInDB,
     updateCompanyInDB,
     deleteCompanyFromDb,
+    getCompanyStatisticsFromDB,
     getCompanyByUserId} from "../services/companyServices.js";
 
 
@@ -30,6 +31,21 @@ export const getUserCompany: RequestHandler = async (req, res) => {
       throw new Error("Cannot get company by userId");
     }
     return res.status(200).json({message: "Getting company by userID", data: company});
+  } catch (err) {
+    return res.status(500).json({
+      message: "Error",
+      error: (err as Error).message || "Unknown error",
+    });
+  }
+}
+
+export const getCompanyStatistics: RequestHandler = async (req, res) => {
+  try {
+    const companyStatistics = await getCompanyStatisticsFromDB(parseInt(req.params.id));
+    if(!companyStatistics) {
+      throw new Error("Cannot get company statistics");
+    }
+    return res.status(200).json({message: "Getting company statistics", data: companyStatistics});
   } catch (err) {
     return res.status(500).json({
       message: "Error",
