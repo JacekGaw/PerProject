@@ -48,7 +48,17 @@ export const getTaskFromDB = async (id: number): Promise<object> => {
       subtasks: subtasks,
     };
   } catch (err) {
-    console.error("Error trying to add task to db", err);
+    console.error("Error trying to get subtask from db", err);
+    throw err;
+  }
+};
+
+export const getSubtaskFromDB = async (id: number): Promise<object> => {
+  try {
+    const subtask = await db.select().from(subTasks).where(eq(subTasks.id, id));
+    return subtask;
+  } catch (err) {
+    console.error("Error trying to get subtask from db", err);
     throw err;
   }
 };
@@ -201,7 +211,22 @@ export const deleteTaskFromDB = async (
       .returning();
     return deletedTask[0];
   } catch (err) {
-    console.error("Error trying to add task to db", err);
+    console.error("Error trying to delete task from db", err);
+    throw err;
+  }
+};
+
+export const deleteSubtaskFromDB = async (
+  id: number
+): Promise<typeof subTasks.$inferSelect> => {
+  try {
+    const deletedSubtask = await db
+      .delete(subTasks)
+      .where(eq(subTasks.id, id))
+      .returning();
+    return deletedSubtask[0];
+  } catch (err) {
+    console.error("Error trying to delete subtask from db", err);
     throw err;
   }
 };

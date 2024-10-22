@@ -67,7 +67,7 @@ const TaskItem: React.FC<TaskItemProps > = ({item}) => {
                     ))}
                 </select>
                 <ChangeUser item={item} type='task' />
-                <Priority priority={item.priority} />
+                <Priority  task={item} />
             </li>
         </>
     )

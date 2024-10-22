@@ -14,6 +14,7 @@ import CompanyRoot from "./pages/company/CompanyRoot";
 import ProjectRoot, {projectLoader} from "./pages/project/ProjectRoot";
 import TaskModal, {taskLoader} from "./pages/project/TaskModal";
 import Dashboard from "./pages/dashboard/Dashboard";
+import SubtaskModal, {subtaskLoader} from "./pages/project/SubtaskModal";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -62,7 +63,7 @@ const App = () => {
                     {
                       path: "task/:id",
                       loader: taskLoader,
-                      element: <TaskModal />
+                      element: <TaskModal />,
                     }
                   ]
                 },

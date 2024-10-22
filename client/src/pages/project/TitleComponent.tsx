@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import saveIcon from "../../assets/img/check.svg"
 import exitIcon from "../../assets/img/close.svg"
 import editIcon from "../../assets/img/edit.svg"
-import { useTasksCtx, Task } from "../../store/TasksContext";
+import { useTasksCtx, Task, SubTask } from "../../store/TasksContext";
 
 
 const ParentContainer = {
@@ -18,7 +18,7 @@ const ChildrenComponent = {
 
 interface TitleComponentProps {
   type?: "subtask" | "task";
-  task: Task;
+  task: Task | SubTask;
 }
 
 const TitleComponent: React.FC<TitleComponentProps> = ({
@@ -33,8 +33,12 @@ const TitleComponent: React.FC<TitleComponentProps> = ({
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const newTitle = formData.get("taskText") as string;
+    if(newTitle === task.taskText) {
+      setEditTitle(false)
+      return;
+    }
     try {
-      await changeTask(type, task.id, {taskText: newTitle});
+      await changeTask(type, task.id!, {taskText: newTitle});
       setEditTitle(false);
       location.reload();
     } catch (err){
@@ -55,8 +59,9 @@ const TitleComponent: React.FC<TitleComponentProps> = ({
           </div>
         </form>
       ) : (
-        <motion.div variants={ParentContainer} onClick={() => setEditTitle(true)} initial="init" whileHover="show"  className="cursor-pointer font-[200] text-sm p-2 flex gap-2 justify-between" >
-            <h1 className="font-[500] text-2xl">{task.taskText}</h1>
+        <motion.div variants={ParentContainer} onClick={() => setEditTitle(true)} initial="init" whileHover="show"  className="w-full cursor-pointer font-[200] text-sm p-2 flex gap-2 justify-between" >
+            {type == 'task' ? <h1 className="font-[500] text-2xl">{task.taskText}</h1> : <p className="w-full">{task.taskText}</p>}
+            
             <motion.button variants={ChildrenComponent} className=""><img src={editIcon} className="w-4 max-h-6" /></motion.button>
             </motion.div>
       )}
