@@ -64,7 +64,7 @@ const TaskModal: React.FC = () => {
 
   const handleDeleteTask = async () => {
     try {
-      const response = await deleteTask(task.id);
+      const response = await deleteTask("task",task.id);
       if (response.status !== "Success") {
         throw new Error(response.text);
       } else {

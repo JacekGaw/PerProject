@@ -99,7 +99,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ item }) => {
             </option>
           ))}
         </select>
-        <Priority priority={item.priority} />
+        <Priority task={item} />
       </div>
       {item.subTasks.length > 0 && (
         <div className="py-2 px-10">

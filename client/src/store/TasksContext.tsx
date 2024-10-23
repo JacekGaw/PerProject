@@ -56,7 +56,7 @@ export interface TaskWithSubtasks extends Task {
       type: "task" | "subtask",
       data: Partial<Task>
     ) => Promise<{ status: string; text: string }>;
-    deleteTask: (id: number) => Promise<{ status: string; text: string }>;
+    deleteTask: (type: "task" | "subtask", id: number) => Promise<{ status: string; text: string }>;
   }
   
   export const TasksContext = createContext<TasksContextProps | undefined>(
@@ -197,19 +197,26 @@ export interface TaskWithSubtasks extends Task {
       }
     };
 
-    const deleteTask = async (id: number) => {
+    const deleteTask = async (type: "task" | "subtask", id: number) => {
       try {
         if (!id) {
           return { status: "Error", text: "Did not provide task id" };
         }
-        const response = await axios.delete(
-          `http://localhost:3002/api/task/${id}`
-        );
+        const url = type == "task" ? `http://localhost:3002/api/task/${id}` : `http://localhost:3002/api/subtask/${id}`;
+        const response = await axios.delete(url);
         const deletedTask = response.data.data;
         console.log(deletedTask);
-        setTasks((prevTasks) =>
-          prevTasks.filter((task) => task.id !== deletedTask.id)
-        );
+        if(type == "task"){
+          setTasks((prevTasks) =>
+            prevTasks.filter((task) => task.id !== deletedTask.id)
+          );
+        }
+        else {
+          setSubtasksArr((prevTasks) =>
+            prevTasks.filter((task) => task.id !== deletedTask.id)
+          );
+        }
+        
         return { status: "Success", text: "Task deleted" };
       } catch (err: any) {
         console.log(err);

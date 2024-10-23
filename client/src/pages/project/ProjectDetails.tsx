@@ -9,6 +9,7 @@ import downArrowIcon from '../../assets/img/down_arrow.svg'
 import DateFormatted from "../../components/UI/DateFormatted";
 import UserAvatar from "../../components/UI/UserAvatar";
 import { useCompanyCtx } from "../../store/CompanyContext";
+import DescriptionComponent from "./DescriptionComponent";
 
 interface ProjectDetailsProps {
   project: Project;
@@ -76,6 +77,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({ project }) => {
             <div className="w-full flex">   
               <div className="w-1/2 p-5 text-base text-justify text-slate-400 leading-6">
                 <p className="font-[600] p-1 border-b border-slate-600 mb-2">Description: </p>
+                <DescriptionComponent type="task"  />
                 <p>{project.description}</p>
               </div>
               <div className="bg-[#03040f] flex flex-col gap-2 p-5 w-1/2">

@@ -3,7 +3,8 @@ import { motion } from "framer-motion";
 import saveIcon from "../../assets/img/check.svg"
 import exitIcon from "../../assets/img/close.svg"
 import editIcon from "../../assets/img/edit.svg"
-import { useTasksCtx, Task } from "../../store/TasksContext";
+import { useTasksCtx, Task, SubTask } from "../../store/TasksContext";
+import { useProjectCtx, Project } from "../../store/ProjectsContext";
 
 
 const ParentContainer = {
@@ -17,8 +18,8 @@ const ChildrenComponent = {
 }
 
 interface DescriptionComponentProps {
-  type?: "subtask" | "task";
-  task: Task;
+  type?: "subtask" | "task" | "project";
+  task: Task | SubTask | Project;
 }
 
 const DescriptionComponent: React.FC<DescriptionComponentProps> = ({
@@ -55,8 +56,8 @@ const DescriptionComponent: React.FC<DescriptionComponentProps> = ({
         </form>
       ) : (
         <motion.div variants={ParentContainer} onClick={() => setEditDescription(true)} initial="init" whileHover="show"  className="cursor-pointer font-[200] text-sm p-2 border-b flex gap-2 justify-between" >
-            <p>{task.description ? task.description : "No task description"}</p>
-            <motion.button variants={ChildrenComponent} className=""><img src={editIcon} className="w-4 max-h-6" /></motion.button>
+            <p className="whitespace-pre-line">{task.description ? task.description : `No ${type} description`}</p>
+            <motion.button variants={ChildrenComponent} className="flex justify-center items-center"><img src={editIcon} className="w-6 h-6" /></motion.button>
             </motion.div>
       )}
     </>

@@ -16,7 +16,7 @@ const Priority: React.FC<PriorityProps> = ({ type = "task", task }) => {
 
     if(priority === task.priority) {
         return;
-      }
+    }
       try {
         await changeTask(type, task.id!, {priority: priority});
         location.reload();
@@ -39,7 +39,7 @@ const Priority: React.FC<PriorityProps> = ({ type = "task", task }) => {
             name="priority"
             defaultChecked={task.priority === "High"}
             onChange={changePriority}
-            className={`w-[10px] h-[10px] rounded-full ${
+            className={`w-[10px] h-[10px] checked:bg-normal-orange rounded-full ${
               task.priority === "High" ? "bg-normal-orange" : "bg-slate-800"
             }`}
           />
@@ -51,7 +51,7 @@ const Priority: React.FC<PriorityProps> = ({ type = "task", task }) => {
             name="priority"
             defaultChecked={task.priority === "Medium"}
             onChange={changePriority}
-            className={`w-[10px] h-[10px] rounded-full ${
+            className={`w-[10px] h-[10px] checked:bg-normal-blue rounded-full ${
               task.priority === "Medium" ? "bg-normal-blue" : "bg-slate-800"
             }`}
           />

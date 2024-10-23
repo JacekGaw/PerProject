@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import saveIcon from "../../assets/img/check.svg"
 import exitIcon from "../../assets/img/close.svg"
-import { useTasksCtx, Task } from "../../store/TasksContext";
+import { useTasksCtx, Task, SubTask } from "../../store/TasksContext";
 
 const ParentContainer = {
     init:{opacity: 1},
@@ -12,7 +12,7 @@ const ParentContainer = {
 
 interface EstimatedTimeProps {
   type?: "subtask" | "task";
-  task: Task;
+  task: Task | SubTask;
 }
 
 const EstimatedTime: React.FC<EstimatedTimeProps> = ({
@@ -27,7 +27,7 @@ const EstimatedTime: React.FC<EstimatedTimeProps> = ({
     const formData = new FormData(event.currentTarget);
     const estimatedTime= formData.get("estimatedTime") as number | null;
     try {
-      await changeTask(type, task.id, {estimatedTime: estimatedTime});
+      await changeTask(type, task.id!, {estimatedTime: estimatedTime});
       setEditTime(false);
       location.reload();
     } catch (err){

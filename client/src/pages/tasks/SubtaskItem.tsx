@@ -59,7 +59,7 @@ const SubtaskItem: React.FC<SubtaskItemProps> = ({ item }) => {
             </option>
           ))}
         </select>
-        
+        <Priority type="subtask" task={item} />
         </div>
       </li>
     </>

@@ -82,20 +82,6 @@ interface ProjectsContextProps {
   getCompanyProjects: () => Promise<Project[]>;
   setProject: Dispatch<SetStateAction<Project | undefined>>;
   project: Project | undefined;
-  setTasks: Dispatch<SetStateAction<Task[]>>;
-  setSubtasksArr: Dispatch<SetStateAction<SubtaskType[]>>;
-  tasks: Task[] | undefined;
-  subtasksArr: SubtaskType[] | undefined;
-  changeTask: (
-    type: "subtask" | "task",
-    taskId: number,
-    data: Partial<Task>
-  ) => Promise<object>;
-  addNewTask: (
-    type: "task" | "subtask",
-    data: Partial<Task>
-  ) => Promise<{ status: string; text: string }>;
-  deleteTask: (id: number) => Promise<{ status: string; text: string }>;
   bookmarkProject: (
     method: "add" | "delete",
     projectId: number,
@@ -124,39 +110,7 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
   const { company } = useCompanyCtx();
   const { user } = useAuth();
   const [project, setProject] = useState<Project | undefined>();
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [subtasksArr, setSubtasksArr] = useState<SubtaskType[]>([]);
 
-  const changeTask = async (
-    type: "task" | "subtask",
-    taskId: number,
-    data: Partial<Task> | Partial<SubtaskType>
-  ) => {
-    try {
-      const response = await axios.patch(
-        `http://localhost:3002/api/${type}/${taskId}`,
-        data
-      );
-      if (type === "task") {
-        setTasks((prevTasks) =>
-          prevTasks.map((task) =>
-            task.id === taskId ? { ...task, ...data } : task
-          )
-        );
-      } else {
-        setSubtasksArr((prevSubTasks) =>
-          prevSubTasks.map((subtask) =>
-            subtask.id === taskId ? { ...subtask, ...data } : subtask
-          )
-        );
-      }
-      return { status: "Success", text: response.data.message };
-    } catch (err: any) {
-      console.log(err);
-      const errMessage = err.response?.data.message || err.message;
-      return { status: "Error", text: errMessage };
-    }
-  };
 
   const addNewProject = async (data: NewProjectType) => {
     try {
@@ -176,31 +130,7 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
-  const addNewTask = async (type: "task" | "subtask", data: Partial<Task>) => {
-    try {
-      const url =
-        type === "task"
-          ? "http://localhost:3002/api/task"
-          : "http://localhost:3002/api/subtask";
-      const response = await axios.post(url, data);
-      console.log(response);
-      if (type === "task") {
-        if (response.data.data) {
-          setTasks((prevState) => [...prevState, response.data.data]);
-        }
-      } else {
-        if (response.data.data) {
-          setSubtasksArr((prevState) => [...prevState, response.data.data]);
-        }
-      }
 
-      return { status: "Success", text: "Added task" };
-    } catch (err: any) {
-      console.log(err);
-      const errMessage = err.response?.data.message || err.message;
-      return { status: "Error", text: errMessage };
-    }
-  };
 
   const getCompanyProjects = async () => {
     try {
@@ -298,12 +228,6 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
     getCompanyProjects,
     setProject,
     project,
-    setTasks,
-    setSubtasksArr,
-    tasks,
-    subtasksArr,
-    changeTask,
-    addNewTask,
     deleteTask,
     bookmarkProject,
     getDashboardProjects,
