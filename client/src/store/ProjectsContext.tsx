@@ -87,7 +87,11 @@ interface ProjectsContextProps {
     projectId: number,
     userId: number
   ) => Promise<{ status: string; text: string }>;
-  getDashboardProjects: () => Promise<Project[]>
+  getDashboardProjects: () => Promise<Project[]>;
+  changeProject: (
+    projectId: number,
+    data: Partial<Project>
+  ) => Promise<{ status: string; text: string }>;
 }
 
 export const ProjectsContext = createContext<ProjectsContextProps | undefined>(
@@ -111,7 +115,6 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
   const { user } = useAuth();
   const [project, setProject] = useState<Project | undefined>();
 
-
   const addNewProject = async (data: NewProjectType) => {
     try {
       const response = await axios.post(
@@ -129,8 +132,6 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
       return { status: "Error", text: errMessage };
     }
   };
-
-
 
   const getCompanyProjects = async () => {
     try {
@@ -151,6 +152,23 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
+  const changeProject = async (projectId: number, data: Partial<Project>) => {
+    try {
+      const response = await axios.patch(
+        `http://localhost:3002/api/project/${projectId}`,
+        data
+      );
+      if (response.data.data) {
+        setProject(response.data.data);
+      }
+      return { status: "Success", text: response.data.message };
+    } catch (err: any) {
+      console.log(err);
+      const errMessage = err.response?.data.message || err.message;
+      return { status: "Error", text: errMessage };
+    }
+  };
+
   const getDashboardProjects = async () => {
     try {
       if (!company || !user) {
@@ -164,27 +182,6 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
         console.log(data);
         return data.data;
       }
-    } catch (err: any) {
-      console.log(err);
-      const errMessage = err.response?.data.message || err.message;
-      return { status: "Error", text: errMessage };
-    }
-  };
-
-  const deleteTask = async (id: number) => {
-    try {
-      if (!id) {
-        return { status: "Error", text: "Did not provide task id" };
-      }
-      const response = await axios.delete(
-        `http://localhost:3002/api/task/${id}`
-      );
-      const deletedTask = response.data.data;
-      console.log(deletedTask);
-      setTasks((prevTasks) =>
-        prevTasks.filter((task) => task.id !== deletedTask.id)
-      );
-      return { status: "Success", text: "Task deleted" };
     } catch (err: any) {
       console.log(err);
       const errMessage = err.response?.data.message || err.message;
@@ -214,7 +211,7 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
           `http://localhost:3002/api/project/bookmark/${projectId}/${userId}`
         );
       const bookmark = response.data.data;
-      console.log("Bookmark from endpoint: ", bookmark)
+      console.log("Bookmark from endpoint: ", bookmark);
       return { status: "Success", text: "Added/deleted bookmark" };
     } catch (err: any) {
       console.log(err);
@@ -228,9 +225,9 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
     getCompanyProjects,
     setProject,
     project,
-    deleteTask,
     bookmarkProject,
     getDashboardProjects,
+    changeProject,
   };
 
   return (

@@ -151,7 +151,7 @@ export const updateProject: RequestHandler = async (req, res) => {
     console.log("Updated project ", updatedProject);
     res.status(200).json({
       message: "Updated single project",
-      user: updatedProject,
+      data: updatedProject,
     });
   } catch (err) {
     res.status(500).json({

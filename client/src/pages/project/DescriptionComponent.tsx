@@ -28,13 +28,19 @@ const DescriptionComponent: React.FC<DescriptionComponentProps> = ({
 }) => {
   const [editDescription, setEditDescription] = useState<boolean>(false);
   const { changeTask} = useTasksCtx();
+  const { changeProject} = useProjectCtx();
 
   const changeDescription = async (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const newDescription = formData.get("description") as string | null;
     try {
-      await changeTask(type, task.id, {description: newDescription});
+      if(type !== "project"){
+        await changeTask(type, task.id!, {description: newDescription});
+      }
+      else {
+        await changeProject(task.id!, {description: newDescription});
+      }
       setEditDescription(false);
       location.reload();
     } catch (err){
@@ -56,7 +62,7 @@ const DescriptionComponent: React.FC<DescriptionComponentProps> = ({
         </form>
       ) : (
         <motion.div variants={ParentContainer} onClick={() => setEditDescription(true)} initial="init" whileHover="show"  className="cursor-pointer font-[200] text-sm p-2 border-b flex gap-2 justify-between" >
-            <p className="whitespace-pre-line">{task.description ? task.description : `No ${type} description`}</p>
+            <p className={`whitespace-pre-line ${type == "project" && " text-base text-justify text-slate-400 leading-6"}`}>{task.description ? task.description : `No ${type} description`}</p>
             <motion.button variants={ChildrenComponent} className="flex justify-center items-center"><img src={editIcon} className="w-6 h-6" /></motion.button>
             </motion.div>
       )}
