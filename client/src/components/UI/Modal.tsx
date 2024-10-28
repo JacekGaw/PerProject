@@ -27,7 +27,7 @@ const Modal = forwardRef<ModalRef, ModalProps>(({ className = '', children, onCl
     },
     close() {
       if (dialog.current) {
-        dialog.current.click();
+        dialog.current.close();
       }
     }
   }));

@@ -2,20 +2,31 @@ import React, { useState, useEffect, useRef } from "react";
 import { useCompanyCtx, CompanyUserType } from "../../store/CompanyContext";
 // import { Task } from "../../pages/project/ProjectRoot";
 import UserAvatar from "./UserAvatar";
-import { useTasksCtx ,SubTask, Task } from "../../store/TasksContext";
+import { useTasksCtx , SubTask, Task } from "../../store/TasksContext";
+import { useProjectCtx, Project } from "../../store/ProjectsContext";
 
 interface ChangeUserProps {
-  item: Task | SubTask;
+  item: Task | SubTask | Project;
   type: "subtask" | "task" | "project";
+  orientation?: "left" | "right" | "top" | "bottom";
 }
 
-const ChangeUser: React.FC<ChangeUserProps> = ({ item, type }) => {
+const ChangeUser: React.FC<ChangeUserProps> = ({ item, type ,orientation }) => {
   const [listOpen, setListOpen] = useState<boolean>(false);
   const { companyUsers } = useCompanyCtx();
   const {changeTask} = useTasksCtx()
   const ref = useRef<HTMLDivElement>(null); // Ref to track clicks outside
+  const { changeProject} = useProjectCtx()
 
-  const assignedUser: CompanyUserType | undefined = companyUsers.find((user) => user.id === item.assignedTo);
+  const assignedUser: CompanyUserType | undefined = companyUsers.find((user) => {
+    if (type === "project") {
+      // For projects, we use projectManagerId
+      return user.id === (item as Project).projectManagerId;
+    } else if (type === "task" || type === "subtask") {
+      // For tasks and subtasks, we use assignedTo
+      return user.id === (item as Task | SubTask).assignedTo;
+    }
+  });
 
   const handleClickOutside = (event: MouseEvent) => {
     if (ref.current && !ref.current.contains(event.target as Node)) {
@@ -35,8 +46,9 @@ const ChangeUser: React.FC<ChangeUserProps> = ({ item, type }) => {
         if(type !== "project") {
           await changeTask(type, item!.id!, {assignedTo: userId});
         }
-        // Add here option to change project PM
-        
+        else {
+          await changeProject(item.id!, {projectManagerId: userId});
+        }
     } catch (error) {
         console.error("Error updating task:", error);
       } finally {
@@ -46,7 +58,7 @@ const ChangeUser: React.FC<ChangeUserProps> = ({ item, type }) => {
 
   return (
     <div className="relative" ref={ref}>
-      <UserAvatar orientation={"left"} onClick={() => setListOpen((prev) => !prev)} user={assignedUser} />
+      <UserAvatar orientation={orientation} onClick={() => setListOpen((prev) => !prev)} user={assignedUser} />
       {listOpen && (
         <div className="border border-normal-blue absolute right-[100%] bottom-0  flex flex-col rounded-xl bg-darkest-blue">
         <h4 className="text-sm text-center p-2 border-b border-slate-600">Company Users:</h4>

@@ -8,17 +8,18 @@ import { useProjectCtx } from "../../store/ProjectsContext";
 interface Params {
   exit: () => void
 }
-// TODO:
-//4. Add submition to projectContext
+
 
 const AddNewProjectForm: React.FC<Params> = ({exit}) => {
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
   const { companyUsers, company} = useCompanyCtx();
   const { addNewProject} = useProjectCtx();
   const { user, logOut } = useAuth();
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setButtonDisabled(true);
     setErrorMessage("");
     console.log("Submitted");
     const formData = new FormData(e.currentTarget);
@@ -48,15 +49,18 @@ const AddNewProjectForm: React.FC<Params> = ({exit}) => {
       const response = await addNewProject(data);
       if(response.status == "Success") {
         setErrorMessage("");
+        setButtonDisabled(false);
         return exit();
       }
       else {
         throw new Error(response.text)
       }
     } catch (err) {
+      setButtonDisabled(false);
       setErrorMessage(`Could not add new project. ${err}`);
       console.log(err);
     }
+    
   };
 
   return (
@@ -159,7 +163,7 @@ const AddNewProjectForm: React.FC<Params> = ({exit}) => {
         </select>
       </div>
       {errorMessage && <p className="font-[800] text-sm text-red-500">{errorMessage}</p>}
-      <Button>Save</Button>
+      <Button disabled={buttonDisabled}>Save</Button>
     </form>
   );
 };

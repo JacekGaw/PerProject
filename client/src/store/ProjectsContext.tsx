@@ -9,8 +9,11 @@ import {
 import { useCompanyCtx } from "./CompanyContext";
 import axios, { AxiosResponse } from "axios";
 import { useAuth } from "./AuthContext";
+import { useUserCtx } from "./UserContext";
 
-type ProjectStatus =
+export const projectStatuses = ["Active", "On Hold", "Completed", "Archive", "Maintaining"];
+
+export type ProjectStatus =
   | "Active"
   | "On Hold"
   | "Completed"
@@ -92,6 +95,7 @@ interface ProjectsContextProps {
     projectId: number,
     data: Partial<Project>
   ) => Promise<{ status: string; text: string }>;
+  deleteProject: (projectId: number) => Promise<{status:string, text: string}>
 }
 
 export const ProjectsContext = createContext<ProjectsContextProps | undefined>(
@@ -220,6 +224,28 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
+  const deleteProject = async (projectId: number) => {
+    if (!projectId) {
+      return {
+        status: "Error",
+        text: "Did not provide project ID to delete project",
+      };
+    }
+    try {
+      const response: AxiosResponse = await axios.delete(`http://localhost:3002/api/project/${projectId}`);
+      if(response.status == 200) {
+        return { status: "Success", text: "Deleted project" };
+      }
+      else {
+        throw new Error(response.statusText)
+      }
+    } catch (err: any){
+      console.log(err);
+      const errMessage = err.response?.data.message || err.message;
+      return { status: "Error", text: errMessage };
+    }
+  }
+
   const ctxValue = {
     addNewProject,
     getCompanyProjects,
@@ -228,6 +254,7 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
     bookmarkProject,
     getDashboardProjects,
     changeProject,
+    deleteProject
   };
 
   return (

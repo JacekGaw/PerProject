@@ -167,7 +167,7 @@ export const deleteProject: RequestHandler = async (req, res) => {
     console.log("Deleted project ", deletedProject);
     res.status(200).json({
       message: "Deleted single project",
-      project: deletedProject,
+      data: deletedProject,
     });
   } catch (err) {
     res.status(500).json({

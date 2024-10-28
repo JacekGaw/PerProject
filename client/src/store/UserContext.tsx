@@ -30,7 +30,8 @@ import axios from "axios";
   interface UserContextProps {
     user: UserObj | undefined,
     bookmarks: Bookmark[],
-    setBookmarks: Dispatch<SetStateAction<Bookmark[]>>
+    setBookmarks: Dispatch<SetStateAction<Bookmark[]>>,
+    getUserBookmarks: () => Promise<{status: string, data?: Bookmark[], text?: string}>
   }
   
   export const UserContext = createContext<UserContextProps | undefined>(
@@ -52,29 +53,33 @@ import axios from "axios";
     const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
 
     useEffect(() => {
-      const getUserBookmarks = async () => {
-        try {
-          if(user){
-            const response = await axios.get(`http://localhost:3002/api/user/${user.id}/bookmarks`);
-            const bookmarks = response.data.data;
-            setBookmarks(bookmarks);
-            return ({status: "Success", data : bookmarks});
-          }
-          return {status: "Error", text: "User not defined"};
-        } catch (err: any) {
-          console.log(err);
-          const errMessage = err.response?.data.message || err.message
-          return {status: "Error", text: errMessage};
-        }
-      }
       getUserBookmarks();
-    }, [user]);
+    }, []);
+
+    const getUserBookmarks = async () => {
+      try {
+        if(user){
+          const response = await axios.get(`http://localhost:3002/api/user/${user.id}/bookmarks`);
+          const bookmarks = response.data.data;
+          setBookmarks(bookmarks);
+          return ({status: "Success", data : bookmarks});
+        }
+        return {status: "Error", text: "User not defined"};
+      } catch (err: any) {
+        console.log(err);
+        const errMessage = err.response?.data.message || err.message
+        return {status: "Error", text: errMessage};
+      }
+    }
+
+    
     
   
     const ctxValue = {
         user,
         bookmarks,
-        setBookmarks
+        setBookmarks,
+        getUserBookmarks
     };
   
     return (

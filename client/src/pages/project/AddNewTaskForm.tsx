@@ -13,6 +13,7 @@ interface Params {
 
 const AddNewTaskForm: React.FC<Params> = ({exit}) => {
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [buttonDisabled, setButtonDisabled] = useState<boolean>(false)
   const { companyUsers, company} = useCompanyCtx();
   const { addNewProject} = useProjectCtx();
   const { user, logOut } = useAuth();
@@ -20,7 +21,7 @@ const AddNewTaskForm: React.FC<Params> = ({exit}) => {
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrorMessage("");
-    console.log("Submitted");
+    setButtonDisabled(true);
     const formData = new FormData(e.currentTarget);
     const name = formData.get("name") as string;
     const alias = formData.get("alias") as string;
@@ -48,12 +49,14 @@ const AddNewTaskForm: React.FC<Params> = ({exit}) => {
       const response = await addNewProject(data);
       if(response.status == "Success") {
         setErrorMessage("");
+        setButtonDisabled(false)
         return exit();
       }
       else {
-        throw new Error(response.text)
+        throw new Error(response.text);
       }
     } catch (err) {
+      setButtonDisabled(false)
       setErrorMessage(`Could not add new project. ${err}`);
       console.log(err);
     }
@@ -159,7 +162,7 @@ const AddNewTaskForm: React.FC<Params> = ({exit}) => {
         </select>
       </div>
       {errorMessage && <p className="font-[800] text-sm text-red-500">{errorMessage}</p>}
-      <Button>Save</Button>
+      <Button disabled={buttonDisabled}>Save</Button>
     </form>
   );
 };

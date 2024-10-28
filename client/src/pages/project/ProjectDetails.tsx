@@ -1,28 +1,41 @@
-import React, { useState, useEffect } from "react";
-import { Project, useProjectCtx } from "../../store/ProjectsContext";
+import React, { useState, useEffect, useRef } from "react";
+import {
+  Project,
+  useProjectCtx,
+  projectStatuses,
+  ProjectStatus,
+} from "../../store/ProjectsContext";
 import { useUserCtx } from "../../store/UserContext";
 import { useAuth } from "../../store/AuthContext";
 import bookmark_checked from "../../assets/img/bookmark_checked.svg";
 import bookmark_unchecked from "../../assets/img/bookmark_unchecked.svg";
 import { motion, AnimatePresence } from "framer-motion";
-import downArrowIcon from '../../assets/img/down_arrow.svg'
+import downArrowIcon from "../../assets/img/down_arrow.svg";
 import DateFormatted from "../../components/UI/DateFormatted";
 import UserAvatar from "../../components/UI/UserAvatar";
 import { useCompanyCtx } from "../../store/CompanyContext";
 import DescriptionComponent from "./DescriptionComponent";
+import ChangeUser from "../../components/UI/ChangeUser";
+import deleteIcon from "../../assets/img/delete.svg";
+import { useNavigate } from "react-router-dom";
 
 interface ProjectDetailsProps {
   project: Project;
 }
 
 const ProjectDetails: React.FC<ProjectDetailsProps> = ({ project }) => {
-  const { bookmarkProject } = useProjectCtx();
+  const { bookmarkProject, deleteProject, changeProject } = useProjectCtx();
   const [isBookmark, setIsBookmark] = useState<boolean>(false);
   const [isBookmarkLoading, setIsBookmarkLoading] = useState(false);
-  const {companyUsers} = useCompanyCtx();
+  const { companyUsers } = useCompanyCtx();
   const { bookmarks } = useUserCtx();
   const { user } = useAuth();
   const [detailsOpen, setDetailsOpen] = useState<boolean>(false);
+  const navigate = useNavigate();
+  const statusRef = useRef<HTMLSelectElement>(null);
+  const startDateRef = useRef<HTMLInputElement>(null);
+  const endDateRef = useRef<HTMLInputElement>(null);
+
 
   useEffect(() => {
     setIsBookmarkLoading(true);
@@ -45,74 +58,165 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({ project }) => {
     }
   };
 
+  const handleDeleteProject = async () => {
+    const deleteStatus = await deleteProject(project.id);
+    if (deleteStatus.status == "Success") {
+      navigate("/dashboard/projects", {replace: true});
+    }
+  };
+
+  const handleChangeStatus = async () => {
+    if (!statusRef.current) {
+      return;
+    }
+    if(project.status !== statusRef.current.value){
+      await changeProject(project.id, {
+        status: statusRef.current.value as ProjectStatus,
+      });
+    }
+   
+  };
+
+  const handleDateChange = async (type: "startDate" | "endDate") => {
+    if (!startDateRef.current && !endDateRef.current ) {
+      return;
+    }
+    await changeProject(project.id, {[type]: type == "startDate" ?  startDateRef.current!.value : endDateRef.current!.value});
+  };
+
   return (
     <section className="flex flex-col gap-2 ">
       <header className="w-full  flex justify-between gap-2 items-center py-2">
-        <h1 className="font-[400] text-slate-200 text-5xl">{project.name}</h1>
-        {isBookmarkLoading ? (
-          <button disabled>
-            <img
-              src={bookmark_unchecked}
-              className="w-8 max-h-8 p-2 opacity-50"
-            />
+        <h1 className="font-[400] text-slate-200 text-5xl">{project.name} <span className="text-slate-600">({project.alias})</span></h1>
+        <div className="inline-flex">
+          {isBookmarkLoading ? (
+            <button disabled>
+              <img
+                src={bookmark_unchecked}
+                className="w-8 max-h-8 p-2 opacity-50"
+              />
+            </button>
+          ) : isBookmark ? (
+            <button onClick={() => changeBookmark("delete")}>
+              <img src={bookmark_checked} className="w-8 max-h-8 p-2" />
+            </button>
+          ) : (
+            <button onClick={() => changeBookmark("add")}>
+              <img src={bookmark_unchecked} className="w-8 max-h-8 p-2" />
+            </button>
+          )}
+          <button onClick={handleDeleteProject}>
+            <img src={deleteIcon} className="w-8 max-h-8 p-2" />
           </button>
-        ) : isBookmark ? (
-          <button onClick={() => changeBookmark("delete")}>
-            <img src={bookmark_checked} className="w-8 max-h-8 p-2" />
-          </button>
-        ) : (
-          <button onClick={() => changeBookmark("add")}>
-            <img src={bookmark_unchecked} className="w-8 max-h-8 p-2" />
-          </button>
-        )}
+        </div>
       </header>
       <AnimatePresence mode="wait">
-        {detailsOpen && 
+        {detailsOpen && (
           <motion.div
-          initial={{height: 0, overflow: "visible"}}
-          animate={detailsOpen ? {height: "auto", overflow: "hidden"} : {height: 0, overflow: "visible"}}
-          exit={{height: 0}}
-          className=" w-full flex flex-col gap-2"
+            initial={{ height: 0, overflow: "visible" }}
+            animate={
+              detailsOpen
+                ? { height: "auto", overflow: "hidden" }
+                : { height: 0, overflow: "visible" }
+            }
+            exit={{ height: 0 }}
+            className=" w-full flex flex-col gap-2"
           >
-            <div className="w-full flex">   
-              <div className="w-1/2 p-5 text-base text-justify text-slate-400 leading-6">
-                <p className="font-[600] p-1 border-b border-slate-600 mb-2">Description: </p>
-                <DescriptionComponent type="project" task={project}  />
+            <div className="w-full flex flex-col md:flex-row">
+              <div className="w-full md:w-1/2 p-5 text-base text-justify text-slate-400 leading-6">
+                <p className="font-[600] p-1 border-b border-slate-600 mb-2">
+                  Description:{" "}
+                </p>
+                <DescriptionComponent type="project" task={project} />
               </div>
-              <div className="bg-[#03040f] flex flex-col gap-2 p-5 w-1/2">
-              <p className="font-[600] text-slate-400 p-1 border-b border-slate-600 mb-2">Info: </p>
-              <div className="flex justify-between items-center gap-2">
-              <p><DateFormatted dateObj={project.createdAt} label="Created: "  /></p>
-              <p><DateFormatted dateObj={project.startDate} label="Stard Date: "  /></p>
-              <p><DateFormatted dateObj={project.endDate} label="End Date: "  /></p>
-              </div>
-              <div className="flex justify-between items-center gap-2">
-                <p className="flex items-center gap-2">Author of the project: <UserAvatar user={companyUsers.find(user => user.id === project.authorId)} orientation="top" /></p>
-                <p className="flex items-center gap-2">Project Manager: {project.projectManagerId !== null ? <UserAvatar user={companyUsers.find(user => user.id === project.projectManagerId)} orientation="top" /> : "not set"}</p>
-              </div>
-              <p>Alias: {project.alias}</p>
-              <p>Status: {project.status}</p>
+              <div className="bg-[#03040f] flex flex-col gap-2 p-5 w-full md:w-1/2">
+                <p className="font-[600] text-slate-400 p-1 border-b border-slate-600 mb-2">
+                  Info:{" "}
+                </p>
+                <div className="flex justify-between items-center gap-2">
+                  <p>
+                    <DateFormatted
+                      dateObj={project.createdAt}
+                      label="Created: "
+                    />
+                  </p>
+                  <div className=" text-slate-400 font-[600]">
+                    <label htmlFor="projectStartDate">Start Date: </label>
+                    <input ref={startDateRef} onChange={() => handleDateChange("startDate")} id="projectStartDate" type="date" defaultValue={project.startDate?.toString()} className="bg-darkest-blue " />
+                  </div>
+                  <div className=" text-slate-400 font-[600]">
+                    <label htmlFor="projectEndDate">End Date: </label>
+                    <input ref={endDateRef} onChange={() => handleDateChange("endDate")} id="projectEndDate" type="date" defaultValue={project.endDate?.toString()} className="bg-darkest-blue" />
+                  </div>
+
+                  
+                </div>
+                <div className="flex justify-between items-center gap-2">
+                  <p className="flex items-center gap-2">
+                    Author of the project:{" "}
+                    <UserAvatar
+                      user={companyUsers.find(
+                        (user) => user.id === project.authorId
+                      )}
+                      orientation="top"
+                    />
+                  </p>
+                  <p className="flex items-center gap-2">
+                    Project Manager:{" "}
+                    {project.projectManagerId !== null ? (
+                      <ChangeUser
+                        type="project"
+                        item={project}
+                        orientation="left"
+                      />
+                    ) : (
+                      "not set"
+                    )}
+                  </p>
+                </div>
+                <div className="inline-flex">
+                  <label htmlFor="projectStatus">Status:</label>
+                  <select
+                    id="projectStatus"
+                    ref={statusRef}
+                    className="bg-darkest-blue"
+                    onChange={handleChangeStatus}
+                  >
+                    {projectStatuses.map((statusItem) => {
+                      return (
+                        <option
+                          key={statusItem}
+                          value={statusItem}
+                          selected={statusItem == project.status}
+                        >
+                          {statusItem}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
               </div>
             </div>
           </motion.div>
-        }
+        )}
       </AnimatePresence>
-      
+
       <p className="flex items-center justify-center w-full">
         <span className="flex-grow  border-b  border-slate-600 mx-2"></span>
         <button
-              onClick={() => setDetailsOpen((p) => !p)}
-              className=" flex justify-center items-center gap-2 "
-            >
-                <motion.img
-                initial={{rotate: 0}}
-                animate={detailsOpen ? {rotate: 180}: {rotate: 0}}
-                src={downArrowIcon} className="w-3" />
-              <p className="text-slate-300 text-sm font-[300]">Details</p>
-            </button>
-          <span className="flex-grow border-b  border-slate-600 mx-2"></span>
-        </p>
-      
+          onClick={() => setDetailsOpen((p) => !p)}
+          className=" flex justify-center items-center gap-2 "
+        >
+          <motion.img
+            initial={{ rotate: 0 }}
+            animate={detailsOpen ? { rotate: 180 } : { rotate: 0 }}
+            src={downArrowIcon}
+            className="w-3"
+          />
+          <p className="text-slate-300 text-sm font-[300]">Details</p>
+        </button>
+        <span className="flex-grow border-b  border-slate-600 mx-2"></span>
+      </p>
     </section>
   );
 };
