@@ -5,6 +5,7 @@ import {
     updateCompanyInDB,
     deleteCompanyFromDb,
     getCompanyStatisticsFromDB,
+    updateCompanyAISettingsInDB,
     getCompanyByUserId} from "../services/companyServices.js";
 
 
@@ -94,6 +95,27 @@ export const updateCompany: RequestHandler = async (req, res) => {
     console.log("Updated company ", updateCompany);
     return res.status(200).json({
       message: "Updated single company",
+      company: updateCompany,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      message: "Error",
+      error: (err as Error).message || "Unknown error",
+    });
+  }
+};
+
+export const updateCompanyAISettings: RequestHandler = async (req, res) => {
+  try {
+    const data = req.body;
+
+    const updateCompany = await updateCompanyAISettingsInDB(
+      data,
+      parseInt(req.params.id)
+    );
+    console.log("Updated company AI Settings ", updateCompany);
+    return res.status(200).json({
+      message: "Updated company AI settings",
       company: updateCompany,
     });
   } catch (err) {

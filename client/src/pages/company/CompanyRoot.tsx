@@ -1,10 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import { useCompanyCtx } from "../../store/CompanyContext";
 import CompanyUsersList from "./CompanyUsersList";
 import CompanyStatistics from "./CompanyStatistics";
+import CompanySettings from "./CompanySettings";
 
 const CompanyRoot: React.FC = () => {
     const { company} = useCompanyCtx();
+    const [selectedView, setSelectedView] = useState<number>(0);
+
+    const menuViews = [
+      {
+        label: "Overal",
+        component: <CompanyStatistics />
+      },
+      {
+        label: "Users",
+        component: <CompanyUsersList />
+      },
+      {
+        label: "Settings",
+        component: <CompanySettings />
+      },
+    ]
 
     return (
         <>
@@ -17,8 +34,14 @@ const CompanyRoot: React.FC = () => {
             <h2 className="font-[600] text-5xl">{company?.name}</h2>
             <p className="font-[200] text-xl" >{company?.description}</p>
         </header>
-        <CompanyStatistics />
-        <CompanyUsersList />
+        <div className="flex flex-col gap-2">
+        <div className="w-full flex justify-center items-center border-b border-slate-400 flex-nowrap">
+          {menuViews.map((item, index) => (
+            <button key={item.label} onClick={() => setSelectedView(index)} className="px-10 py-2 text-lg">{item.label}</button>
+          ))}
+        </div>
+        {menuViews[selectedView].component}
+        </div>
       </div>
       </section>
         </>

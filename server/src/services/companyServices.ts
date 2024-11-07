@@ -1,12 +1,16 @@
 import { eq, count, inArray } from "drizzle-orm";
 import db from "../database/db.js";
 import { companies, companyUsers, projects, users, tasks, subTasks } from "../database/schemas.js";
+import { decryptData, encryptData } from "../utils/encryption.js";
 
 
 interface CompanyUpdateData {
   name?: string;
   description?: string;
 }
+
+type CompanySettings = { AI: { available: boolean; model: string; apiKey: string } };
+
 
 export const getCompaniesFromDB = async (companyId?: number): Promise<{}> => {
   try {
@@ -33,15 +37,20 @@ export const getCompanyByUserId = async (userId: number): Promise<{}> => {
       id: companies.id,
       name: companies.name,
       description: companies.description,
-      createdAt: companies.createdAt
-      // joinDate: companyUsers.joinDate,
-      // active: companyUsers.active
+      createdAt: companies.createdAt,
+      settings: companies.settings
     }
     )
     .from(companies)
     .innerJoin(companyUsers, eq(companyUsers.companyId, companies.id)) // Join companyUsers with companies
     .where(eq(companyUsers.userId, userId));
-    const company = companyData[0];
+    const company= companyData[0];
+    const companySettings: CompanySettings = company.settings as CompanySettings
+    if(companySettings && companySettings.AI.apiKey !== "") {
+      console.log(decryptData(companySettings.AI.apiKey))
+      companySettings.AI.apiKey = decryptData(companySettings.AI.apiKey)
+    }
+    company.settings = companySettings;
     console.log(company);   
     if (!company) {
       throw new Error(`No company found for userId ${userId}`);
@@ -184,6 +193,25 @@ export const updateCompanyInDB = async (
     return updatedComyant;
   } catch (err) {
     console.error("Error updating company:", err);
+    throw err;
+  }
+};
+
+export const updateCompanyAISettingsInDB = async (
+  data: CompanySettings,
+  companyId: number
+): Promise<{}> => {
+  try {
+    const encryptedApiKey = encryptData(data.AI.apiKey);
+    data.AI.apiKey = encryptedApiKey;
+    const updatedCompany= await db
+      .update(companies)
+      .set({settings: data})
+      .where(eq(companies.id, companyId))
+      .returning();
+    return updatedCompany;
+  } catch (err) {
+    console.error("Error updating company AI settings:", err);
     throw err;
   }
 };

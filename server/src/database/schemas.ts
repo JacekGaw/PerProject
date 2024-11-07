@@ -1,4 +1,4 @@
-import { boolean, date, integer, pgEnum, pgTable, serial, text, timestamp, varchar } from 'drizzle-orm/pg-core';
+import { boolean, date, json, integer, pgEnum, pgTable, serial, text, timestamp, varchar } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 export const userRoleEnum = pgEnum("role", ["Developer", "Tester", "Product Owner", "Project Manager", "Other"]);
 
@@ -21,7 +21,8 @@ export const companies = pgTable('companies', {
     id: serial('id').primaryKey(),
     name: varchar('name', { length: 50 }).notNull(),
     description: text('description'),
-    createdAt: timestamp('createdAt').defaultNow()
+    createdAt: timestamp('createdAt').defaultNow(),
+    settings: json("settings").notNull().default({"AI": {available: false, model: "", api_key: ""}})
 });
 
 export const projects = pgTable('projects', {
@@ -45,6 +46,8 @@ export const companyUsers = pgTable('companyUsers', {
     joinDate: timestamp('joinDate').defaultNow(),
     active: boolean('active').default(true),
 });
+
+
 
 export const projectUsers = pgTable('projectUsers', {
     id: serial('id').primaryKey(),
