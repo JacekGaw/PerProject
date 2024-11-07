@@ -27,7 +27,7 @@ const NavigationSettings: React.FC<NavigationSettingsProps> = ({initials}: Navig
             <motion.div
             variants={childrenVariants}
             className="flex flex-col gap-2">
-                <Link to="/settings"><img src={settingsImg} className="w-6 invert" /></Link>
+                <Link to="/dashboard/user"><img src={settingsImg} className="w-6 invert" /></Link>
                 <button onClick={logOut}><img src={logoutImg} className="w-6 invert" /></button>
                 
             </motion.div>

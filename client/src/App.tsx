@@ -81,7 +81,7 @@ const App = () => {
                 },
                 {
                   path: "/dashboard/user",
-                  element: <CompanyRoot />
+                  element: <UserRoot />
                 }
               ]
             },

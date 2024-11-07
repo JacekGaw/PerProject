@@ -1,7 +1,7 @@
-import { eq } from "drizzle-orm";
+import { InferSelectModel, eq } from "drizzle-orm";
 import db from "../database/db.js";
 import { users, companyUsers, userFavourites } from "../database/schemas.js";
-import { hashPassword } from "../utils/passwordUtils.js";
+import { comparePasswords, hashPassword } from "../utils/passwordUtils.js";
 
 interface UserUpdateData {
   email?: string;
@@ -13,6 +13,11 @@ interface UserUpdateData {
   active?: boolean;
 }
 
+interface ChangePasswordData {
+  oldPassword: string;
+  newPassword: string;
+}
+
 interface NewUser {
   id: number;
   email: string;
@@ -20,6 +25,10 @@ interface NewUser {
   role: "Developer" | "Tester" | "Product Owner" | "Project Manager" | "Other";
   name?: string;
   surname?: string;
+}
+
+interface UserOBj  {
+  user: InferSelectModel<typeof users>
 }
 
 export const getUsersFromDB = async (userId?: number): Promise<{}> => {
@@ -35,6 +44,31 @@ export const getUsersFromDB = async (userId?: number): Promise<{}> => {
     return usersList;
   } catch (err) {
     console.error("Error getting users from the database:", err);
+    throw err;
+  }
+};
+
+export const getUserInfoFromDB = async (userId: number): Promise<{}> => {
+  try {
+    const userObject = await db
+      .select({
+        id: users.id,
+        email: users.email,
+        name: users.name,
+        surname: users.surname,
+        phone: users.phone,
+        role: users.role,
+        createdAt: users.createdAt,
+        joinDate: companyUsers.joinDate,
+      })
+      .from(users)
+      .innerJoin(companyUsers, eq(users.id, companyUsers.userId))
+      .where(eq(users.id, userId));
+
+    console.log(userObject);
+    return userObject;
+  } catch (err) {
+    console.error("Error getting user info from the database:", err);
     throw err;
   }
 };
@@ -112,12 +146,45 @@ export const updateUserInDB = async (
       .set(newUserData)
       .where(eq(users.id, userId))
       .returning();
-    return updatedUser;
+    return updatedUser[0];
   } catch (err) {
     console.error("Error updating user to the database:", err);
     throw err;
   }
 };
+
+export const changeUserPasswordInDB = async (
+  data: ChangePasswordData,
+  userId: number
+): Promise<{} | null> => {
+  try {
+    const userInfo = await db.query.users.findFirst({where: (users, {eq}) => eq(users.id, userId)});
+    if (!userInfo) {
+      throw new Error("User not found");
+    }
+
+    const isOldPasswordCorrect = await comparePasswords(data.oldPassword, userInfo.password);
+    if (!isOldPasswordCorrect) {
+      return null; 
+    }
+
+    const hashedNewPassword = await hashPassword(data.newPassword);
+
+    // Update the user's password in the database
+    const [updatedUser] = await db
+      .update(users)
+      .set({ password: hashedNewPassword })
+      .where(eq(users.id, userId))
+      .returning(); // Adjust returning syntax as per your ORM/database
+
+    return updatedUser;
+  } catch (err) {
+    console.error("Error updating user in the database:", err);
+    throw err;
+  }
+};
+
+
 
 export const assignUserToCompany = async (
   userId: number,

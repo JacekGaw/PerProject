@@ -1,8 +1,8 @@
-import { ReactNode, createContext, useContext, useEffect, useState } from "react";
+import { ReactNode, createContext, useContext, useEffect, useState, Dispatch, SetStateAction, } from "react";
 import axios from "axios";
 import api from "../api/api";
 
-interface UserObj {
+export interface UserObj {
   id: number;
   name: string;
   surname: string;
@@ -25,7 +25,8 @@ interface AuthContextProps {
     newUserData: SignUpCredentials
   ) => Promise<{ success: boolean; message: string }>;
   logOut: () => void;
-  user: UserObj | undefined
+  user: UserObj | undefined;
+  setUser: Dispatch<SetStateAction<UserObj | undefined>>
 }
 
 interface LoginCredentials {
@@ -151,7 +152,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     login,
     logOut,
     signup,
-    user
+    user,
+    setUser
   };
 
   return (

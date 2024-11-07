@@ -6,6 +6,8 @@ import {
   updateUserInDB,
   assignUserToCompany,
   getUserBookmarksFromDB,
+  getUserInfoFromDB,
+  changeUserPasswordInDB
 } from "../services/userServices.js";
 
 export const getUsers: RequestHandler = async (req, res) => {
@@ -30,6 +32,22 @@ export const getUser: RequestHandler = async (req, res) => {
     console.log("Getting single user ", singleUser);
     res.status(200).json({
       message: "Getting single user",
+      user: singleUser,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Error",
+      error: (err as Error).message || "Unknown error",
+    });
+  }
+};
+
+export const getUserInfo: RequestHandler = async (req, res) => {
+  try {
+    const singleUser = await getUserInfoFromDB(parseInt(req.params.id));
+    console.log("Getting user detailed info", singleUser);
+    res.status(200).json({
+      message: "Getting user detailed info",
       user: singleUser,
     });
   } catch (err) {
@@ -113,7 +131,35 @@ export const updateUser: RequestHandler = async (req, res) => {
     console.log("Updated user ", updatedUser);
     res.status(200).json({
       message: "Updated single user",
-      user: updatedUser,
+      data: updatedUser,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Error",
+      error: (err as Error).message || "Unknown error",
+    });
+  }
+};
+
+interface ChangePasswordData {
+  oldPassword: string;
+  newPassword: string;
+}
+
+export const changeUserPassword: RequestHandler = async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body as ChangePasswordData;
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({ message: "Old and new passwords are required" });
+    }
+
+    const updatedUser = await changeUserPasswordInDB({ oldPassword, newPassword }, parseInt(req.params.id));
+    if (!updatedUser) {
+      return res.status(400).json({ message: "Incorrect old password" });
+    }
+    res.status(200).json({
+      message: "Password updated successfully",
+      data: updatedUser,
     });
   } catch (err) {
     res.status(500).json({
