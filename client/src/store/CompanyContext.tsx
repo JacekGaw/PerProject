@@ -23,7 +23,17 @@ interface CompanyType {
   name: string,
   description: string,
   createdAt: Date,
-  settings: object
+  settings: SettingsType
+}
+
+interface SettingsType {
+  AI: AIDataType
+}
+
+export interface AIDataType {
+  available: boolean; // Available is a boolean value
+  model: string;
+  apiKey: string;
 }
 
 export interface StatisticsType {
@@ -43,7 +53,8 @@ interface CompanyContextProps {
   company: CompanyType | undefined;
   companyUsers: CompanyUserType[];
   getCompanyStatistics: () => Promise<StatisticsType>;
-  changeCompanyAISettings: (data: AIDataType) => Promise<{status: string, text: string}>
+  changeCompanyAISettings: (data: AIDataType) => Promise<{status: string, text: string}>;
+  changeCompanyAIAvailability: (changeAvailable: boolean) => Promise<{status: string, text: string}>
 }
 
 
@@ -118,6 +129,20 @@ export const CompanyProvider: React.FC<{ children: ReactNode }> = ({
     try {
       const newSettings = {AI: data}
       const response = await axios.patch(`http://localhost:3002/api/company/${company?.id}/settings/ai`, newSettings);
+      
+      return response.data.data;
+    } catch (err: any) {
+      console.log(err);
+      const errMessage = err.response?.data.message || err.message;
+      return { status: "Error", text: errMessage };
+    }
+  };
+
+  const changeCompanyAIAvailability = async (changeAvailable: boolean) => {
+    try {
+      const newSettings = {AI: {available: changeAvailable, model: company!.settings.AI.model, apiKey: company!.settings.AI.apiKey}}
+      const response = await axios.patch(`http://localhost:3002/api/company/${company?.id}/settings/ai`, newSettings);
+      console.log(response)
       return response.data.data;
     } catch (err: any) {
       console.log(err);
@@ -131,7 +156,8 @@ export const CompanyProvider: React.FC<{ children: ReactNode }> = ({
     company,
     companyUsers,
     getCompanyStatistics,
-    changeCompanyAISettings
+    changeCompanyAISettings,
+    changeCompanyAIAvailability
   };
 
   return (
