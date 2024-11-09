@@ -129,8 +129,16 @@ export const CompanyProvider: React.FC<{ children: ReactNode }> = ({
     try {
       const newSettings = {AI: data}
       const response = await axios.patch(`http://localhost:3002/api/company/${company?.id}/settings/ai`, newSettings);
-      
-      return response.data.data;
+      console.log(response)
+      if(response.status == 200) {
+        setCompany((company) => {
+          const newData: CompanyType = company!;
+          newData.settings = newSettings;
+          return newData
+        })
+        return {status: "Success", text: "Changed Availability"}
+      }
+      return {status: "Error", text: response?.data.message}
     } catch (err: any) {
       console.log(err);
       const errMessage = err.response?.data.message || err.message;
@@ -142,8 +150,15 @@ export const CompanyProvider: React.FC<{ children: ReactNode }> = ({
     try {
       const newSettings = {AI: {available: changeAvailable, model: company!.settings.AI.model, apiKey: company!.settings.AI.apiKey}}
       const response = await axios.patch(`http://localhost:3002/api/company/${company?.id}/settings/ai`, newSettings);
-      console.log(response)
-      return response.data.data;
+      if(response.status == 200) {
+        setCompany((company) => {
+          const newData: CompanyType = company!;
+          newData.settings.AI.available = changeAvailable;
+          return newData
+        })
+        return {status: "Success", text: "Changed Availability"}
+      }
+      return {status: "Error", text: response?.data.message}
     } catch (err: any) {
       console.log(err);
       const errMessage = err.response?.data.message || err.message;

@@ -12,22 +12,27 @@ interface CompanyUpdateData {
 type CompanySettings = { AI: { available: boolean; model: string; apiKey: string } };
 
 
-export const getCompaniesFromDB = async (companyId?: number): Promise<{}> => {
+export const getCompaniesFromDB = async (
+  companyId?: number
+): Promise<typeof companies.$inferSelect[] | typeof projects.$inferSelect[]> => {
   try {
-    let companiesList = {};
+    let companiesList: typeof companies.$inferSelect[] | typeof projects.$inferSelect[];
+    
     if (companyId) {
-        companiesList = await db.query.projects.findMany({
+      companiesList = await db.query.projects.findMany({
         where: eq(companies.id, companyId),
       });
     } else {
-        companiesList = await db.query.companies.findMany();
+      companiesList = await db.query.companies.findMany();
     }
+
     return companiesList;
   } catch (err) {
     console.error("Error getting companies from the database:", err);
     throw err;
   }
 };
+
 
 export const getCompanyByUserId = async (userId: number): Promise<{}> => {
   try {

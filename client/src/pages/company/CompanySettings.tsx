@@ -6,6 +6,7 @@ import ChangeAIConfig from "./ChangeAIConfig";
 
 const CompanySettings: React.FC = () => {
   const { changeCompanyAIAvailability, company } = useCompanyCtx();
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const [availableChecked, setAvailableChecked] = useState<boolean>(
     company!.settings.AI.available
   );
@@ -14,11 +15,14 @@ const CompanySettings: React.FC = () => {
   const modalRef = useRef<ModalRef | null>(null);
 
   const handleChangeAvailability = async (available: boolean) => {
+    setErrorMessage("");
     setAvailableChecked((p) => !p);
     console.log(available);
     const result = await changeCompanyAIAvailability(available);
-
-    console.log(result);
+    if(result.status && result.status == "Error") {
+      setAvailableChecked((p) => !p);
+      setErrorMessage(result.text);
+    }
   };
 
   return (
@@ -67,6 +71,8 @@ const CompanySettings: React.FC = () => {
                     }}
                   />
                 </div>
+                {errorMessage !== "" && <p className="text-xs font-[600] text-red-700">{errorMessage}</p>}
+                
               </div>
               <motion.button
                 initial={{ scale: 1 }}

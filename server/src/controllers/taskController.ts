@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
 import { NewTaskType, NewSubtaskType } from "../services/taskServices.js";
 import { getTaskFromDB, getTasksFromDB,getSubtaskFromDB, changeTaskInDB, deleteSubtaskFromDB, addNewTaskToDB, deleteTaskFromDB, addNewSubtaskToDB, changeSubtaskInDB } from "../services/taskServices.js";
-
+import { generateSubtasksUsingAI } from "../services/aiServices.js";
 
 export const getTask: RequestHandler = async (req,res) => {
     try {
@@ -24,6 +24,25 @@ export const getSubtask: RequestHandler = async (req,res) => {
       console.log(data);
       return res.status(200).json({message: "Getting subtask data", data: data});
   } catch (err) {
+  return res.status(500).json({
+    message: "Error",
+    error: (err as Error).message || "Unknown error"
+  });
+}
+}
+
+export const generateSubtasks: RequestHandler = async (req,res) => {
+    try {
+      const task = req.query.task as string;
+      const project = req.query.project as string;
+      const company = req.query.company as string;
+      console.log(task, project, company);
+      if(!task || !project || !company) {
+        return res.status(400).json({message: "Did not provide all required data"});
+      }
+      const generatedSubtasks = await generateSubtasksUsingAI(parseInt(task), parseInt(project), parseInt(company));
+      return res.status(200).json({message: "Generated subtasks", data: generatedSubtasks});
+    }catch (err) {
   return res.status(500).json({
     message: "Error",
     error: (err as Error).message || "Unknown error"
