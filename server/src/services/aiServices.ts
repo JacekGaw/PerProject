@@ -9,6 +9,7 @@ import OpenAI from "openai";
 import { decryptData } from "../utils/encryption.js";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { z } from "zod";
+import { generateSubtasksPrompt } from "../utils/prompts.js";
 
 type CompanySettings = { AI: { available: boolean; model: string; apiKey: string } };
 
@@ -53,7 +54,6 @@ export const testConfig = async (companyId: number): Promise<object> =>  {
             throw new Error("Config not ok")
         }
         return {message: "Success"}
-        
       } catch (err) {
         console.error("Error", err);
         throw err;
@@ -61,30 +61,31 @@ export const testConfig = async (companyId: number): Promise<object> =>  {
 }
 
 
-
-
 export const generateSubtasksUsingAI = async (
     task: number,
     project: number,
     company: number
-  ): Promise<object> => {
+  ): Promise<{} | null> => {
     try {
       
       const projectData = await db.select().from(projects).where(eq(projects.id, project));
       const taskData = await getTaskFromDB(task);
       const openAIClient = await initializeOpenAI(company);
+      const prompt = generateSubtasksPrompt(projectData[0], taskData);
+      if(!prompt) {
+        throw new Error("Could not build prompt");
+      }
       const completion = await openAIClient.beta.chat.completions.parse({
         model: "gpt-4o-2024-08-06",
         messages: [
-          { role: "system", content: "You are a subtasks generator for it company. Generate subtasks for provided project and task" },
-          { role: "user", content: "In this project we are doing website for vet. My current task is to create project of the UI" },
+          { role: "system", content: prompt.systemPrompt},
+          { role: "user", content: prompt.userPrompt },
         ],
         response_format: zodResponseFormat(SubtasksResponseType, "subtask"),
       });
       
       const subtasks = completion.choices[0].message.parsed;
-      console.log(subtasks)
-    return {output: subtasks}
+        return subtasks
     } catch (err) {
       console.error("Error trying to add task to db", err);
       throw err;

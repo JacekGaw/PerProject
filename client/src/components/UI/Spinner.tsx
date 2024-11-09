@@ -2,10 +2,10 @@ import React from "react";
 
 const Spinner: React.FC = () => {
   return (
-    <div role="status">
+    <div role="status" className="w-auto h-auto">
       <svg
         aria-hidden="true"
-        className="w-12 h-12 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+        className="w-full max-w-12 h-full max-h-12 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"

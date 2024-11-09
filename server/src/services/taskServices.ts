@@ -35,7 +35,7 @@ export interface NewSubtaskType {
   taskId: number;
 }
 
-export const getTaskFromDB = async (id: number): Promise<object> => {
+export const getTaskFromDB = async (id: number): Promise<{task: Task, subtasks: typeof subTasks.$inferSelect[]}> => {
   try {
     const taskToReturn = await db.select().from(tasks).where(eq(tasks.id, id));
     const subtasks = await db

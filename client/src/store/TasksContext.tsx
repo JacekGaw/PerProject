@@ -57,7 +57,7 @@ export interface TaskWithSubtasks extends Task {
       data: Partial<Task>
     ) => Promise<{ status: string; text: string }>;
     deleteTask: (type: "task" | "subtask", id: number) => Promise<{ status: string; text: string }>;
-    generateSubtasks: (taskId: number, projectId: number) => Promise<{status: string, text: string}>;
+    generateSubtasks: (taskId: number, projectId: number) => Promise<{status: string, text: string} | {status: string, text: string, data: {taskText: string, description: string}[]}>;
   }
   
   export const TasksContext = createContext<TasksContextProps | undefined>(
@@ -234,8 +234,10 @@ export interface TaskWithSubtasks extends Task {
         const response = await axios.get(
           `http://localhost:3002/api/subtasks/generate?task=${taksId}&project=${projectId}&company=${company!.id}`
         );
-        console.log(response.data.data)
-        return { status: "Success", text: "Subtasks generated" };
+        if(!response.data.data || !response.data.data.subtasks) {
+          throw new Error("No subtasks array");
+        }
+        return { status: "Success", text: "Generated subtasks", data:  response.data.data.subtasks};
       } catch (err: any) {
         console.log(err);
         const errMessage = err.response?.data.message || err.message;
