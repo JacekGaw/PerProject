@@ -54,7 +54,8 @@ export interface TaskWithSubtasks extends Task {
     ) => Promise<object>;
     addNewTask: (
       type: "task" | "subtask",
-      data: Partial<Task>
+      data: Partial<Task> | Partial<Task>[],
+      batch?: boolean
     ) => Promise<{ status: string; text: string }>;
     deleteTask: (type: "task" | "subtask", id: number) => Promise<{ status: string; text: string }>;
     generateSubtasks: (taskId: number, projectId: number) => Promise<{status: string, text: string} | {status: string, text: string, data: {taskText: string, description: string}[]}>;
@@ -80,8 +81,9 @@ export interface TaskWithSubtasks extends Task {
     const {company} = useCompanyCtx();
     const { user } = useAuth();
     const [tasks, setTasks] = useState<Task[]>([]);
-  const [subtasksArr, setSubtasksArr] = useState<SubTask[]>([]);
-  const [userAllTasks, setUserAllTasks] = useState<TaskWithSubtasks[]>([])
+    const [subtasksArr, setSubtasksArr] = useState<SubTask[]>([]);
+    const [userAllTasks, setUserAllTasks] = useState<TaskWithSubtasks[]>([])
+
     
     const getDashboardTasks = async () => {
       try {
@@ -123,24 +125,32 @@ export interface TaskWithSubtasks extends Task {
       }
     }
 
-    const addNewTask = async (type: "task" | "subtask", data: Partial<Task>) => {
+
+    const addNewTask = async (type: "task" | "subtask", data: Partial<Task> | Partial<Task>[], batch?: boolean) => {
       try {
         const url =
           type === "task"
             ? "http://localhost:3002/api/task"
             : "http://localhost:3002/api/subtask";
-        const response = await axios.post(url, data);
-        console.log(response);
-        if (type === "task") {
-          if (response.data.data) {
-            setTasks((prevState) => [...prevState, response.data.data]);
-          }
-        } else {
-          if (response.data.data) {
-            setSubtasksArr((prevState) => [...prevState, response.data.data]);
+        if(!batch) {
+          const response = await axios.post(url, data);
+          console.log(response);
+          if (type === "task") {
+            if (response.data.data) {
+              setTasks((prevState) => [...prevState, response.data.data]);
+            }
+          } else {
+            if (response.data.data) {
+              setSubtasksArr((prevState) => [...prevState, response.data.data]);
+            }
           }
         }
-  
+        else {
+          const response = await axios.post(url+"?batch=true", data);
+          if (response.data.data) {
+            setSubtasksArr((prevState) => [...prevState, ...response.data.data]); 
+          }
+        }
         return { status: "Success", text: "Added task" };
       } catch (err: any) {
         console.log(err);

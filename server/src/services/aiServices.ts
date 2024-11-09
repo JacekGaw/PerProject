@@ -10,6 +10,7 @@ import { decryptData } from "../utils/encryption.js";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { z } from "zod";
 import { generateSubtasksPrompt } from "../utils/prompts.js";
+import { getCompaniesFromDB } from "./companyServices.js";
 
 type CompanySettings = { AI: { available: boolean; model: string; apiKey: string } };
 
@@ -35,16 +36,20 @@ const initializeOpenAI = async (companyId: number) => {
     const companySettings: CompanySettings = company.settings as CompanySettings;
     
     const client = new OpenAI({apiKey: decryptData(companySettings.AI.apiKey)})
+    const model = companySettings.AI.model;
     if(!client) {
         throw new Error("Client not initialized")
     }
-    return client;
+    return {
+        client,
+        model
+    };
 }
 
 export const testConfig = async (companyId: number): Promise<object> =>  {
     try {
         const openAIClient = await initializeOpenAI(companyId);
-        const response = await openAIClient.chat.completions.create({
+        const response = await openAIClient.client.chat.completions.create({
             messages: [{ role: 'user', content: 'Say this is a test' }],
             model: 'gpt-4o-mini'
         });
@@ -75,8 +80,8 @@ export const generateSubtasksUsingAI = async (
       if(!prompt) {
         throw new Error("Could not build prompt");
       }
-      const completion = await openAIClient.beta.chat.completions.parse({
-        model: "gpt-4o-2024-08-06",
+      const completion = await openAIClient.client.beta.chat.completions.parse({
+        model: openAIClient.model,
         messages: [
           { role: "system", content: prompt.systemPrompt},
           { role: "user", content: prompt.userPrompt },

@@ -37,7 +37,7 @@ export const generateSubtasksPrompt = (project: Project, task: TaskObj) => {
         - subtask status ["To Do", "In Progress", "On Hold", "Done"]
 
         Given those informations, generate subtasks that will be helpful for completing the task. Do not change current subtasks if user provide array of them. Take them to account when you will generate yours. 
-        Generate as many subtasks as you think is appropriate. Try to make them specific.
+        Generate as many subtasks as you think is appropriate. Try to make them specific. If current subtasks cover the range to complete the task then do not generate more by force
         `,
         userPrompt: 
         `

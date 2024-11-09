@@ -48,7 +48,7 @@ const SubtasksList: React.FC<SubtasksListProps> = ({ subtasks, taskId }) => {
   return (
     <>
     <Modal ref={modalRef}>
-      {generatedSubtasks && <GeneratedSubtasksModal data={generatedSubtasks} />}
+      {generatedSubtasks && <GeneratedSubtasksModal taskId={taskId} data={generatedSubtasks} currentProjectId={project!.id} />}
       
     </Modal>
       <header className="w-full flex gap-5 justify-between items-center p-2 border-b border-normal-blue">
@@ -64,7 +64,7 @@ const SubtasksList: React.FC<SubtasksListProps> = ({ subtasks, taskId }) => {
       </header>
       {subtasksArr && subtasksArr.length > 0 && (
         <ul>
-          {subtasksArr.map((subtask) => (
+          { subtasksArr.map((subtask) => (
             <SubtaskListItem key={subtask.id} subtask={subtask} />
           ))}
         </ul>

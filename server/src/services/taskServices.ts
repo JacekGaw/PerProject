@@ -201,6 +201,22 @@ export const addNewSubtaskToDB = async (
   }
 };
 
+export const addSubtasksBatchToDB = async (
+  newTasks: NewTaskType[]
+): Promise<typeof subTasks.$inferSelect[]> => {
+  try {
+    const newSubtasksAdded = await db
+      .insert(subTasks)
+      .values(newTasks)
+      .returning();
+    console.log(newSubtasksAdded);
+    return newSubtasksAdded;
+  } catch (err) {
+    console.error("Error trying to add subtasks to db", err);
+    throw err;
+  }
+};
+
 export const deleteTaskFromDB = async (
   id: number
 ): Promise<typeof tasks.$inferSelect> => {
