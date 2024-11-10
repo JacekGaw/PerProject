@@ -9,7 +9,6 @@ import {
 import { useCompanyCtx } from "./CompanyContext";
 import axios, { AxiosResponse } from "axios";
 import { useAuth } from "./AuthContext";
-import { useUserCtx } from "./UserContext";
 
 export const projectStatuses = ["Active", "On Hold", "Completed", "Archive", "Maintaining"];
 
@@ -26,7 +25,7 @@ type TaskType = "Task" | "Story" | "Error";
 export interface SubtaskType {
   id: number;
   taskText: string;
-  description?: string | null; // Allowing `null` as well
+  description?: string | null;
   createdAt: Date;
   updatedAt: Date | null;
   type: "Task" | "Story" | "Error";
@@ -51,6 +50,7 @@ export interface Task {
   assignedTo: number | null;
   projectId: number;
   authorId: number;
+  sprintId: number | null;
 }
 
 export interface NewProjectType {

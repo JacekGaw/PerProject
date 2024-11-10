@@ -41,9 +41,6 @@ const SubtasksList: React.FC<SubtasksListProps> = ({ subtasks, taskId }) => {
     }
   }
 
-  const handleCloseModal = () => {
-    return modalRef.current && modalRef.current.close();
-  }
 
   return (
     <>

@@ -51,6 +51,7 @@ const GeneratedSubtasksModal: React.FC<GeneratedSubtasksModalProps> = ({
         ...item,
         projectId: currentProjectId,
         authorId: user!.id,
+        assignedTo: user!.id,
         taskId: taskId,
       })) as Partial<Task>[];
 

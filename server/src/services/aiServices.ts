@@ -10,8 +10,6 @@ import { decryptData } from "../utils/encryption.js";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { z } from "zod";
 import { generateSubtasksPrompt } from "../utils/prompts.js";
-import { getCompaniesFromDB } from "./companyServices.js";
-
 type CompanySettings = { AI: { available: boolean; model: string; apiKey: string } };
 
 const SubtaskType = z.object({

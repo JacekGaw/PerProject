@@ -74,7 +74,8 @@ export const tasks = pgTable('tasks', {
     status: taskStatusesEnum("status").notNull().default("To Do"),
     assignedTo: integer('assignedTo').references(() => users.id, { onDelete: 'set null' }),
     authorId: integer('authorId').references(() => users.id, {onDelete: 'set null'}),
-    projectId: integer('projectId').references(() => projects.id, { onDelete: 'cascade' })
+    projectId: integer('projectId').references(() => projects.id, { onDelete: 'cascade' }),
+    sprintId: integer('sprintId').references(() => sprints.id, { onDelete: 'set null' }),
 });
 
 export const subTasks = pgTable('subTasks', {
@@ -90,6 +91,19 @@ export const subTasks = pgTable('subTasks', {
     authorId: integer('authorId').references(() => users.id, {onDelete: 'set null'}),
     taskId: integer('taskId').references(() => tasks.id, { onDelete: 'cascade' })
 });
+
+export const sprintStatusEnum = pgEnum("sprintStatus", ["Planning", "Active", "Completed"]);
+
+
+export const sprints = pgTable('sprints', {
+    id: serial('id').primaryKey(),
+    name: text('name').notNull(),
+    target: text('target'),
+    dateFrom: date('dateFrom'),
+    dateTo: date('dateTo'),
+    status: sprintStatusEnum('status').notNull().default("Planning"),
+    projectId: integer('projectId').notNull().references(() => projects.id, { onDelete: 'cascade' }),
+})
 
 export const taskHistory = pgTable('taskHistory', {
     id: serial('id').primaryKey(),
@@ -108,13 +122,6 @@ export const userFavourites = pgTable('userFavourites', {
     addedAt: timestamp('addedAt').defaultNow(),
 });
 
-export const tasksRelations = relations(tasks, ({ many, one }) => ({
-    subTasks: many(subTasks),
-    project: one(projects, {
-        fields: [tasks.projectId],
-        references: [projects.id],
-    }),
-  }));
   
   export const subTasksRelations = relations(subTasks, ({ one }) => ({
     task: one(tasks, {
@@ -122,3 +129,24 @@ export const tasksRelations = relations(tasks, ({ many, one }) => ({
       references: [tasks.id],
     }),
   }));
+
+
+  export const sprintsRelations = relations(sprints, ({ many, one }) => ({
+    tasks: many(tasks),
+    project: one(projects, {
+        fields: [sprints.projectId],
+        references: [projects.id],
+    }),
+}));
+
+export const tasksRelations = relations(tasks, ({ many, one }) => ({
+    subTasks: many(subTasks),
+    project: one(projects, {
+        fields: [tasks.projectId],
+        references: [projects.id],
+    }),
+    sprint: one(sprints, {
+        fields: [tasks.sprintId],
+        references: [sprints.id],
+    }),
+}));

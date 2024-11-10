@@ -2,9 +2,6 @@ import { eq, desc, and, ne } from "drizzle-orm";
 import db from "../database/db.js";
 import {
   tasks,
-  taskPriorityEnum,
-  taskStatusesEnum,
-  taskTypeEnum,
   subTasks,
   projects,
 } from "../database/schemas.js";
@@ -21,6 +18,7 @@ export interface NewTaskType {
   assignedTo?: number | null;
   authorId: number;
   projectId: number;
+  sprintId?: number;
 }
 
 export interface NewSubtaskType {

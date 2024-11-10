@@ -5,7 +5,7 @@ import {
   LoaderFunctionArgs,
   useLoaderData,
 } from "react-router-dom";
-import { delay, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import closeIcon from "../../assets/img/close.svg";
 import axios from "axios";
 import deleteIcon from "../../assets/img/delete.svg";

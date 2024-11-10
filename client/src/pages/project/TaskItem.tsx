@@ -1,5 +1,5 @@
 import React, {useRef} from 'react';
-import { Task } from './ProjectRoot';
+import { Task } from '../../store/TasksContext';
 import errorIcon from "../../assets/img/errorIcon.svg";
 import taskIcon from "../../assets/img/taskIcon.svg";
 import storyIcon from "../../assets/img/storyIcon.svg";

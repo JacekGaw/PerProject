@@ -27,7 +27,7 @@ const CompanyUsersListItem: React.FC<{ user: CompanyUserType }> = ({
 
         <p>{user.active ? "ACTIVE" : "INACTIVE"}</p>
         <p className="flex-0">
-          <DateFormatted dateObj={user.joinDate} />
+          <DateFormatted dateObj={user!.joinDate} />
         </p>
         <div className="group relative">
           <button className="flex justify-center items-center p-2 z-10">

@@ -23,6 +23,7 @@ export interface Task {
   assignedTo: number | null;
   projectId: number;
   authorId: number;
+  sprintId: number | null;
 }
 
 export interface DashboardTaskType extends Partial<Task> {

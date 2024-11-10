@@ -6,6 +6,8 @@ interface PriorityProps {
   task: Task | SubTask;
 }
 
+type TaskPriority = "Low" | "Medium" | "High";
+
 const Priority: React.FC<PriorityProps> = ({ type = "task", task }) => {
   const [editingPriority, setEditingPriority] = useState<boolean>(false);
   const { changeTask } = useTasksCtx();
@@ -18,7 +20,7 @@ const Priority: React.FC<PriorityProps> = ({ type = "task", task }) => {
         return;
     }
       try {
-        await changeTask(type, task.id!, {priority: priority});
+        await changeTask(type, task.id!, {priority: priority as TaskPriority});
         location.reload();
       } catch (err){
         console.log(err);
