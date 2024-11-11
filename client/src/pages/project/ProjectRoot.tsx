@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { LoaderFunctionArgs, Outlet, useLoaderData } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useProjectCtx, Task, Project } from "../../store/ProjectsContext";
+import { SprintType, useSprintsCtx, SprintStatus } from "../../store/SprintsContext";
 import TaskList from "./TaskList";
 import ProjectDetails from "./ProjectDetails";
 import { useTasksCtx } from "../../store/TasksContext";
@@ -10,15 +11,17 @@ import { useTasksCtx } from "../../store/TasksContext";
 type LoaderData = {
   project: Project;
   tasks: Task[];
+  sprints: SprintType[]
 };
 
 const ProjectRoot: React.FC = () => {
   const { setProject } = useProjectCtx();
   const {setTasks} = useTasksCtx()
+  const {setSprints} = useSprintsCtx();
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
 
-  const { project, tasks } = useLoaderData() as LoaderData;
+  const { project, tasks, sprints } = useLoaderData() as LoaderData;
   useEffect(() => {
     setIsLoading(true);
     if (project) {
@@ -27,8 +30,11 @@ const ProjectRoot: React.FC = () => {
     if (tasks) {
       setTasks(tasks);
     }
+    if(sprints) {
+      setSprints({active: sprints.filter((sprint) => sprint.status === "Active"), planning: sprints.filter((sprint) => sprint.status === "Planning")})
+    }
     setIsLoading(false);
-  }, [project, tasks, setProject, setTasks]);
+  }, [project, tasks, sprints, setProject, setTasks]);
 
   
 
@@ -55,7 +61,7 @@ export default ProjectRoot;
 
 export const projectLoader = async ({
   params,
-}: LoaderFunctionArgs): Promise<{ project: Project; tasks: Task[] }> => {
+}: LoaderFunctionArgs): Promise<{ project: Project; tasks: Task[], sprints: SprintType[] }> => {
   const alias = params.alias;
 
   if (!alias) {
@@ -65,9 +71,11 @@ export const projectLoader = async ({
     const response = await axios.get(
       `http://localhost:3002/api/project/${alias}/tasks`
     );
+    console.log("DATA FROM LOADER ", response.data.data);
     return {
       project: response.data.data.project,
       tasks: response.data.data.tasks,
+      sprints: response.data.data.sprints
     };
   } catch (err) {
     throw new Response(`Project and tasks not found: ${err}`, { status: 404 });

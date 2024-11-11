@@ -9,6 +9,7 @@ interface AddButtonTypes {
     type: "task" | "subtask",
     placeholder?: string,
     taskId?: number
+    sprintId?: number
 }
 
 const button = {
@@ -22,7 +23,7 @@ const button = {
   };
 
 
-const AddButton: React.FC<AddButtonTypes> = ({type, placeholder, taskId}) => {
+const AddButton: React.FC<AddButtonTypes> = ({type, placeholder, taskId, sprintId}) => {
     const [inputVisible, setInputVisible] = useState<boolean>(false);
     const [isError, setIsError] = useState<boolean>(false);
     const { user, logOut } = useAuth();
@@ -37,13 +38,13 @@ const AddButton: React.FC<AddButtonTypes> = ({type, placeholder, taskId}) => {
         if(!user || !project) {
             return logOut();
         }
-        let data = {}
+        let data = {}   
         if(type === "task"){
             data = {
                 taskText: taskText,
                 authorId: user.id,
                 assignedTo: user.id,
-                projectId: project.id
+                projectId: project.id,
             }
         }
         else {
@@ -54,7 +55,12 @@ const AddButton: React.FC<AddButtonTypes> = ({type, placeholder, taskId}) => {
                 taskId: taskId
             }
         }
-        
+        if(sprintId) {
+            data = {...data, sprintId: sprintId}
+        }
+        else {
+            data = {...data, sprintId: null}
+        }
         
         try {
             const response = await addNewTask(type, data);

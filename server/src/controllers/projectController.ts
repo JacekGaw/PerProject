@@ -10,8 +10,10 @@ import {
   getProjectByAlias,
   getTasksFromProject,
   createBookmarkInDB,
-  deleteBookmarkInDB
+  deleteBookmarkInDB,
+  getTasksFromProjectAndSprints
 } from "../services/projectServices.js";
+import { getSprintsByProjectId } from "../services/sprintServices.js";
 
 export const getProjects: RequestHandler = async (req, res) => {
   try {
@@ -55,11 +57,12 @@ export const getProjectAndTasks: RequestHandler = async (req, res) => {
         .status(404)
         .json({ message: "Could not find project with provided alias" });
     }
-    const tasks = await getTasksFromProject(project.id);
-    console.log(project, tasks);
+    const sprints = await getSprintsByProjectId(project.id);
+    const tasks = await getTasksFromProjectAndSprints(project.id);
+    console.log(project, tasks, sprints);
     return res
       .status(201)
-      .json({ message: "Getting project and tasks", data: { project, tasks } });
+      .json({ message: "Getting project, tasks and sprints", data: { project, tasks, sprints } });
   } catch (err) {
     return res.status(500).json({
       message: "Error",

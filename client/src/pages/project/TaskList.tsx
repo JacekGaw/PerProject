@@ -1,29 +1,29 @@
 import React from "react";
-import TaskItem from "./TaskItem";
-import AddButton from "../../components/UI/AddButton";
-import { useTasksCtx } from "../../store/TasksContext";
 
+import { useTasksCtx } from "../../store/TasksContext";
+import { useSprintsCtx } from "../../store/SprintsContext";
+import BacklogList from "./BacklogList";
+import SprintView from "./SprintView";
 
 const TaskList: React.FC = () => {
-  const { tasks} = useTasksCtx();
-
+  const {tasks} = useTasksCtx();
+  const {sprints} = useSprintsCtx();
+  
+  console.log("TASKS", tasks);
+  console.log(tasks!.filter(task => task.sprintId == 1));
   return (
     <>
-      <section>
-        <header className=" p-2 flex justify-between items-center gap-2">
-          <h2 className="font-[300] text-light-blue text-xl">Tasks:</h2>
-          <div className="relative flex items-center">
-            <AddButton type="task" placeholder="Add task" />
-          </div>
-        </header>
-        {tasks && (
-          <ul className="w-full flex flex-col gap-2">
-            {tasks.map((task) => {
-              return <TaskItem key={task.id} item={task} />;
-            })}
-          </ul>
-        )}
-      </section>
+    <section className="flex flex-col gap-10">
+      {sprints.active && tasks && sprints.active.map((sprint) => {
+        console.log(sprint)
+        return <SprintView sprint={sprint} tasks={tasks.filter((task) => task.sprintId == sprint.id)} />
+      })}
+      {sprints.planning && tasks && sprints.planning.map((sprint) => {
+        return <SprintView sprint={sprint} tasks={tasks.filter((task) => task.sprintId == sprint.id)} />
+      })}
+      {tasks && <BacklogList tasks={tasks.filter((task) => task.sprintId == null)} />}    
+    </section>
+      
     </>
   );
 };

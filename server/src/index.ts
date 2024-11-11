@@ -9,6 +9,7 @@ import authRouter from "./routes/authRoutes.js";
 import taskRouter from "./routes/taskRoutes.js"
 import companyRouter from "./routes/companyRoutes.js"
 import dashboardRouter from "./routes/dashboardRoutes.js"
+import sprintRouter from "./routes/sprintRoutes.js"
 import { errorHandler } from "./middleware/errorHandler.js";
 runDB();
 
@@ -30,6 +31,7 @@ app.use("/api/", projectRouter);
 app.use("/auth/", authRouter);
 app.use("/api/", companyRouter);
 app.use("/api/", taskRouter);
+app.use("/api/", sprintRouter);
 app.use("/api/dashboard/", dashboardRouter);
 
 app.listen(PORT, () => {

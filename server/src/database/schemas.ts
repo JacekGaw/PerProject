@@ -102,6 +102,7 @@ export const sprints = pgTable('sprints', {
     dateFrom: date('dateFrom'),
     dateTo: date('dateTo'),
     status: sprintStatusEnum('status').notNull().default("Planning"),
+    created: timestamp('created').defaultNow(),
     projectId: integer('projectId').notNull().references(() => projects.id, { onDelete: 'cascade' }),
 })
 

@@ -1,4 +1,4 @@
-import { eq, and, or, exists } from "drizzle-orm";
+import { eq, and, or, exists, isNull } from "drizzle-orm";
 import db from "../database/db.js";
 import {
   projects,
@@ -6,6 +6,7 @@ import {
   tasks,
   userFavourites,
   subTasks,
+  sprints
 } from "../database/schemas.js";
 
 type Project = typeof projects.$inferSelect;
@@ -149,6 +150,35 @@ export const getTasksFromProject = async (
     throw err;
   }
 };
+
+
+  export const getTasksFromProjectAndSprints = async (
+    projectId: number
+  ): Promise<Task[] | null> => {
+    try {
+      const projectTasks = await db
+        .select()
+        .from(tasks)
+        .leftJoin(sprints, eq(tasks.sprintId, sprints.id)) // Join with sprints to check status
+        .where(
+          and(
+            eq(tasks.projectId, projectId),
+            or(
+              isNull(tasks.sprintId), // Include tasks with no sprint
+              eq(sprints.status, 'Planning'), // Include tasks in Planning sprints
+              eq(sprints.status, 'Active')    // Include tasks in Active sprints
+            )
+          )
+        )
+        .orderBy(tasks.createdAt);
+        console.log(projectTasks.map((entry) => entry.tasks));
+        return projectTasks.map((entry) => entry.tasks);
+    } catch (err) {
+      console.error("Error getting tasks from project with provided id: ", err);
+      throw err;
+    }
+  };
+
 
 export const createNewProjectInDB = async (
   params: CreateProjectBody
