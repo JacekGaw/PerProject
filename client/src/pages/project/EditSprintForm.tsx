@@ -1,36 +1,24 @@
 import React, { useState, useRef } from "react";
-import { Task } from "../../store/TasksContext";
 import Button from "../../components/UI/Button";
-import { useSprintsCtx, NewSprintType } from "../../store/SprintsContext";
+import { useSprintsCtx, NewSprintType, SprintType } from "../../store/SprintsContext";
 
-interface NewSprintFormProps {
-  tasks: Task[];
+interface EditSprintFormProps {
+  sprintData: SprintType;
   exit: () => void | undefined;
 }
 
-const NewSprintForm: React.FC<NewSprintFormProps> = ({ tasks, exit }) => {
-  const [checkedArr, setCheckedArr] = useState<number[]>([]);
-const { addNewSprint } = useSprintsCtx();
+const EditSprintForm: React.FC<EditSprintFormProps> = ({ sprintData, exit }) => {
+const { changeSprint } = useSprintsCtx();
 const formRef = useRef<HTMLFormElement>(null);
 const [buttonDisabled, setButtonDisabled] = useState<boolean>(false)
 
 
 
-  const handleToggleCheckbox = (index: number) => {
-    setCheckedArr(
-      (prevCheckedArr) =>
-        prevCheckedArr.includes(index)
-          ? prevCheckedArr.filter((i) => i !== index) // Uncheck if already checked
-          : [...prevCheckedArr, index] // Add if not checked
-    );
-  };
+
 
   const handleCreate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setButtonDisabled(true)
-    const selectedTasks = tasks
-      .filter((_, index) => checkedArr.includes(index))
-      .map((item) => item.id) as Partial<Task>[];
 
     const formData = new FormData(e.currentTarget);
     const sprintName = formData.get("name") as string;
@@ -49,11 +37,9 @@ const [buttonDisabled, setButtonDisabled] = useState<boolean>(false)
         target: sprintTarget,
         dateFrom: sprintDateFrom,
         dateTo: sprintDateTo,
-        tasks: selectedTasks
     } as NewSprintType
     try {
-        await addNewSprint(data);
-        setCheckedArr([]);
+        await changeSprint(sprintData.id, data);
         formRef.current?.reset();
         setButtonDisabled(false);
         exit();
@@ -63,9 +49,7 @@ const [buttonDisabled, setButtonDisabled] = useState<boolean>(false)
     }
   };
 
-  const handleResetSelection = () => {
-    setCheckedArr([]);
-  };
+
 
   return (
     <>
@@ -88,6 +72,7 @@ const [buttonDisabled, setButtonDisabled] = useState<boolean>(false)
                   name="name"
                   id="name"
                   type="text"
+                  defaultValue={sprintData.name}
                   required
                   className="bg-inherit border border-slate-500 group-hover:border-slate-200 transition-all duration-200 rounded-md p-2 text-sm"
                 />
@@ -101,6 +86,7 @@ const [buttonDisabled, setButtonDisabled] = useState<boolean>(false)
                 </label>
                 <textarea
                   name="target"
+                  defaultValue={sprintData.target ?? ""}
                   id="target"
                   className="bg-inherit border border-slate-500 group-hover:border-slate-200 transition-all duration-200 rounded-md p-2 text-sm"
                 />
@@ -117,6 +103,7 @@ const [buttonDisabled, setButtonDisabled] = useState<boolean>(false)
                     name="dateFrom"
                     id="dateFrom"
                     type="date"
+                    defaultValue={sprintData.dateFrom ? new Date(sprintData.dateFrom).toISOString().split("T")[0] : ""}
                     className="bg-inherit border border-slate-500 group-hover:border-slate-200 transition-all duration-200 rounded-md p-2 text-sm"
                   />
                 </div>
@@ -130,6 +117,7 @@ const [buttonDisabled, setButtonDisabled] = useState<boolean>(false)
                   <input
                     name="dateTo"
                     id="dateTo"
+                    defaultValue={sprintData.dateFrom ? new Date(sprintData.dateFrom).toISOString().split("T")[0] : ""}
                     type="date"
                     className="bg-inherit border border-slate-500 group-hover:border-slate-200 transition-all duration-200 rounded-md p-2 text-sm"
                   />
@@ -137,34 +125,9 @@ const [buttonDisabled, setButtonDisabled] = useState<boolean>(false)
               </div>
             </div>
           </div>
-          <div className="flex flex-col gap-2">
-            {tasks.map((task, index) => {
-              return (
-                <div
-                  key={task.taskText}
-                  onClick={() => handleToggleCheckbox(index)}
-                  className="p-2 bg-darkest-blue cursor-pointer flex gap-5 items-center"
-                >
-                  <input
-                    id={task.taskText}
-                    name="task"
-                    type="checkbox"
-                    checked={checkedArr.includes(index)}
-                  />
-                  <p>{task.taskText}</p>
-                </div>
-              );
-            })}
-          </div>
+          
           <div className="flex justify-end gap-5 items-center">
-            <button
-              type="button"
-              onClick={handleResetSelection}
-              className="underline text-sm text-slate-200"
-            >
-              Reset Selection
-            </button>
-            <Button disabled={buttonDisabled} type="submit">Create</Button>
+            <Button disabled={buttonDisabled} type="submit">Save</Button>
           </div>
         </form>
       </div>
@@ -172,4 +135,4 @@ const [buttonDisabled, setButtonDisabled] = useState<boolean>(false)
   );
 };
 
-export default NewSprintForm;
+export default EditSprintForm;

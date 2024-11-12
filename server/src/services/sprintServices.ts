@@ -25,7 +25,7 @@ export const getSprintsByProjectId = async (
       );
     return sprintsArr;
   } catch (err) {
-    console.error("Error getting company by alias from the database:", err);
+    console.error("Error getting sprint by project id from db:", err);
     throw err;
   }
 };
@@ -37,10 +37,23 @@ export const addNewSprintToDB = async (
     const newSprint = await db.insert(sprints).values(sprintData).returning();
     return newSprint[0];
   } catch (err) {
-    console.error("Error getting company by alias from the database:", err);
+    console.error("Error adding new sprint to db ", err);
     throw err;
   }
 };
+
+export const updateSprintInDB = async (
+    sprintId: number,
+    sprintData: Partial<typeof sprints.$inferSelect>
+  ): Promise<typeof sprints.$inferSelect> => {
+    try {
+      const updatedSprint = await db.update(sprints).set(sprintData).where(eq(sprints.id, sprintId)).returning();
+      return updatedSprint[0];
+    } catch (err) {
+      console.error("Error updating sprint in db ", err);
+      throw err;
+    }
+  };
 
 export const assignTasksToSprint = async (
   sprintId: number,
@@ -54,7 +67,19 @@ export const assignTasksToSprint = async (
 
     return updatedTasks;
   } catch (err) {
-    console.error("Error getting company by alias from the database:", err);
+    console.error("Error assigning tasks to sprint in the database:", err);
     throw err;
   }
 };
+
+export const deleteSprintFromDB = async (
+    sprintId: number
+  ) => {
+    try {
+      const deletedSprint = await db.delete(sprints).where(eq(sprints.id, sprintId)).returning();
+      return deletedSprint;
+    } catch (err) {
+      console.error("Error deleting sprint from the database:", err);
+      throw err;
+    }
+  };

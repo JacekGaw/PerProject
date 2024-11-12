@@ -12,7 +12,7 @@ const BacklogList: React.FC<{ tasks: Task[] }> = ({ tasks }) => {
   return (
     <>
     <Modal ref={modalRef} >
-        <NewSprintForm tasks={tasks} />
+        <NewSprintForm tasks={tasks} exit={() => modalRef.current?.close()} />
     </Modal>
       <div>
         <header className=" p-2 flex justify-between items-center gap-2">
