@@ -30,6 +30,21 @@ export const getSprintsByProjectId = async (
   }
 };
 
+export const getSprintBySprintId = async (
+    sprintId: number
+  ): Promise<typeof sprints.$inferSelect> => {
+    try {
+      const sprintsArr = await db
+        .select()
+        .from(sprints)
+        .where(eq(sprints.id, sprintId));
+      return sprintsArr[0];
+    } catch (err) {
+      console.error("Error getting sprint by project id from db:", err);
+      throw err;
+    }
+  };
+
 export const addNewSprintToDB = async (
   sprintData: NewSprintType
 ): Promise<typeof sprints.$inferSelect> => {
@@ -83,3 +98,27 @@ export const deleteSprintFromDB = async (
       throw err;
     }
   };
+
+export const endSprintInDB = async (sprintId: number, tasksAction: "done" | "backlog") => {
+    try {
+        let updatedTasks = []
+        // if(tasksAction == "done") {
+        //     updatedTasks = await db
+        //     .update(tasks)
+        //     .set({ status: "Done" })
+        //     .where(eq(tasks.sprintId, sprintId)).returning();
+        // }
+        // else {
+        //     updatedTasks = await db
+        //     .update(tasks)
+        //     .set({ sprintId: null })
+        //     .where(eq(tasks.sprintId, sprintId)).returning();
+        // }
+        const updatedSprint = await db.update(sprints).set({status: "Active"}).where(eq(sprints.id, sprintId)).returning();
+
+        return updatedSprint
+      } catch (err) {
+        console.error("Error assigning tasks to sprint in the database:", err);
+        throw err;
+      }
+}

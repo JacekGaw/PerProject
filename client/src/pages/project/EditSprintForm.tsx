@@ -117,7 +117,7 @@ const [buttonDisabled, setButtonDisabled] = useState<boolean>(false)
                   <input
                     name="dateTo"
                     id="dateTo"
-                    defaultValue={sprintData.dateFrom ? new Date(sprintData.dateFrom).toISOString().split("T")[0] : ""}
+                    defaultValue={sprintData.dateTo ? new Date(sprintData.dateTo).toISOString().split("T")[0] : ""}
                     type="date"
                     className="bg-inherit border border-slate-500 group-hover:border-slate-200 transition-all duration-200 rounded-md p-2 text-sm"
                   />

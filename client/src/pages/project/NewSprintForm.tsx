@@ -35,15 +35,15 @@ const [buttonDisabled, setButtonDisabled] = useState<boolean>(false)
     const formData = new FormData(e.currentTarget);
     const sprintName = formData.get("name") as string;
     const sprintTarget = formData.get("target") as string;
-    const sprintDateFrom = formData.get("dateFrom") as Date | null;
-    const sprintDateTo = formData.get("dateTo") as Date | null;
+    let sprintDateFrom = formData.get("dateFrom") as string | null;
+    let sprintDateTo = formData.get("dateTo") as string | null;
 
-    // if(sprintDateFrom == "") {
-    //     sprintDateFrom = null
-    // }
-    // if(sprintDateTo == "") {
-    //     sprintDateTo = null
-    // }
+    if(sprintDateFrom == "") {
+        sprintDateFrom = null
+    }
+    if(sprintDateTo == "") {
+        sprintDateTo = null
+    }
     const data = {
         name: sprintName,
         target: sprintTarget,

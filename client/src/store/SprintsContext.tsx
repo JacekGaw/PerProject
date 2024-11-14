@@ -10,6 +10,7 @@ import { Task } from "./ProjectsContext";
 import axios from "axios";
 import { useProjectCtx } from "./ProjectsContext";
 import { useTasksCtx } from "./TasksContext";
+import { useCompanyCtx } from "./CompanyContext";
 
 export interface SprintType {
   id: number;
@@ -25,8 +26,8 @@ export interface SprintType {
 export interface NewSprintType {
   name: string;
   target: string;
-  dateFrom: Date | null;
-  dateTo: Date | null;
+  dateFrom: string | null;
+  dateTo: string | null;
   tasks: { id: number }[];
 }
 
@@ -53,6 +54,11 @@ interface SprintsContextProps {
     sprintId: number,
     sprintData: Partial<SprintType>
   ) => Promise<{ status: string; text: string }>;
+  changeSprintStatus: (
+    sprintId: number,
+    sprintData: "Active" | "Planning"
+  ) => Promise<{ status: string; text: string }>;
+  endSprint: (sprintId: number, tasksAction: "backlog" | "done", retro: boolean) => Promise<{ status: string; text: string }>;
 }
 
 export const SprintsContext = createContext<SprintsContextProps | undefined>(
@@ -78,6 +84,7 @@ export const SprintsProvider: React.FC<{ children: ReactNode }> = ({
   });
   const { project } = useProjectCtx();
   const { setTasks } = useTasksCtx();
+  const { company } = useCompanyCtx();
 
   const addNewSprint = async (data: NewSprintType) => {
     try {
@@ -153,29 +160,101 @@ export const SprintsProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
-  const changeSprint = async (sprintId: number, sprintData: Partial<SprintType>) => {
+  const changeSprint = async (
+    sprintId: number,
+    sprintData: Partial<SprintType>
+  ) => {
     try {
       const response = await axios.patch(
-        `http://localhost:3002/api/sprint/${sprintId}`, sprintData
+        `http://localhost:3002/api/sprint/${sprintId}`,
+        sprintData
       );
       if (response.status == 200 || response.status == 201) {
         const updatedSprint: SprintType = response.data.data;
         if (updatedSprint.status == "Active") {
           setSprints((prevData) => ({
-            active: prevData.active!.map((item) => item.id === updatedSprint.id ? updatedSprint : item),
+            active: prevData.active!.map((item) =>
+              item.id === updatedSprint.id ? updatedSprint : item
+            ),
             planning: prevData.planning,
           }));
         } else if (updatedSprint.status == "Planning") {
           setSprints((prevData) => ({
             active: prevData.active,
-            planning: prevData.planning!.map((item) => item.id === updatedSprint.id ? updatedSprint : item)
+            planning: prevData.planning!.map((item) =>
+              item.id === updatedSprint.id ? updatedSprint : item
+            ),
           }));
         }
-        
+
         return { status: "Success", text: "Sprint updated" };
       }
       return { status: "Success", text: "Sprint updated" };
+    } catch (err: any) {
+      console.log(err);
+      const errMessage = err.response?.data.message || err.message;
+      return { status: "Error", text: errMessage };
+    }
+  };
 
+  const changeSprintStatus = async (
+    sprintId: number,
+    newStatus: "Active" | "Planning"
+  ) => {
+    try {
+      const response = await axios.patch(
+        `http://localhost:3002/api/sprint/${sprintId}`,
+        { status: newStatus }
+      );
+      if (response.status == 200 || response.status == 201) {
+        const updatedSprint: SprintType = response.data.data;
+        if (updatedSprint.status == "Active") {
+          setSprints((prevData) => ({
+            active: [...prevData.active!, updatedSprint],
+            planning: prevData.planning!.filter(
+              (item) => item.id !== updatedSprint.id
+            ),
+          }));
+        } else if (updatedSprint.status == "Planning") {
+          setSprints((prevData) => ({
+            active: prevData.active!.filter(
+              (item) => item.id !== updatedSprint.id
+            ),
+            planning: [...prevData.planning!, updatedSprint],
+          }));
+        }
+
+        return { status: "Success", text: "Sprint updated" };
+      }
+      return { status: "Success", text: "Sprint updated" };
+    } catch (err: any) {
+      console.log(err);
+      const errMessage = err.response?.data.message || err.message;
+      return { status: "Error", text: errMessage };
+    }
+  };
+
+  const endSprint = async (
+    sprintId: number,
+    tasksAction: "done" | "backlog",
+    retro: boolean
+  ) => {
+    try {
+      const response = await axios.patch(
+        `http://localhost:3002/api/sprint/${sprintId}/end?tasksAction=${tasksAction}&retro=${retro}&company=${
+          company!.id
+        }&project=${project!.id}`
+      );
+      if (response.status == 200 || response.status == 201) {
+        const responseData: {sprint: SprintType, retro: string | null} = response.data.data;
+        console.log(responseData);
+
+        return { status: "Success", text: responseData.retro };
+        
+
+        
+      }
+      return { status: "Success", text: "Sprint updated" };
     } catch (err: any) {
       console.log(err);
       const errMessage = err.response?.data.message || err.message;
@@ -188,7 +267,9 @@ export const SprintsProvider: React.FC<{ children: ReactNode }> = ({
     setSprints,
     addNewSprint,
     deleteSprint,
-    changeSprint
+    changeSprint,
+    changeSprintStatus,
+    endSprint
   };
 
   return (
