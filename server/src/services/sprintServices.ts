@@ -102,21 +102,21 @@ export const deleteSprintFromDB = async (
 export const endSprintInDB = async (sprintId: number, tasksAction: "done" | "backlog") => {
     try {
         let updatedTasks = []
-        // if(tasksAction == "done") {
-        //     updatedTasks = await db
-        //     .update(tasks)
-        //     .set({ status: "Done" })
-        //     .where(eq(tasks.sprintId, sprintId)).returning();
-        // }
-        // else {
-        //     updatedTasks = await db
-        //     .update(tasks)
-        //     .set({ sprintId: null })
-        //     .where(eq(tasks.sprintId, sprintId)).returning();
-        // }
-        const updatedSprint = await db.update(sprints).set({status: "Active"}).where(eq(sprints.id, sprintId)).returning();
+        if(tasksAction == "done") {
+            updatedTasks = await db
+            .update(tasks)
+            .set({ status: "Done" })
+            .where(eq(tasks.sprintId, sprintId)).returning();
+        }
+        else {
+            updatedTasks = await db
+            .update(tasks)
+            .set({ sprintId: null })
+            .where(eq(tasks.sprintId, sprintId)).returning();
+        }
+        const updatedSprint = await db.update(sprints).set({status: "Completed"}).where(eq(sprints.id, sprintId)).returning();
 
-        return updatedSprint
+        return updatedSprint[0]
       } catch (err) {
         console.error("Error assigning tasks to sprint in the database:", err);
         throw err;

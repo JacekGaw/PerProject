@@ -247,12 +247,8 @@ export const SprintsProvider: React.FC<{ children: ReactNode }> = ({
       );
       if (response.status == 200 || response.status == 201) {
         const responseData: {sprint: SprintType, retro: string | null} = response.data.data;
-        console.log(responseData);
-
+        
         return { status: "Success", text: responseData.retro };
-        
-
-        
       }
       return { status: "Success", text: "Sprint updated" };
     } catch (err: any) {
