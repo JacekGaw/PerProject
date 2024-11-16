@@ -4,6 +4,7 @@ import AddButton from "../../components/UI/AddButton";
 import { Task } from "../../store/TasksContext";
 import Modal, {ModalRef} from "../../components/UI/Modal";
 import NewSprintForm from "./NewSprintForm";
+import SortableTaskItem from "./SortableTaskItem";
 
 const BacklogList: React.FC<{ tasks: Task[] }> = ({ tasks }) => {
     const modalRef = useRef<ModalRef | null>(null);
@@ -28,7 +29,7 @@ const BacklogList: React.FC<{ tasks: Task[] }> = ({ tasks }) => {
         {tasks && (
           <ul className="w-full flex flex-col gap-2">
             {tasks.map((task) => {
-              return <TaskItem key={task.id} item={task} />;
+              return <SortableTaskItem key={task.id} item={task} />;
             })}
           </ul>
         )}

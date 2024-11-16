@@ -10,6 +10,7 @@ import Button from "../../components/UI/Button";
 import ButtonOutlined from "../../components/UI/ButtonOutlined";
 import EditSprintForm from "./EditSprintForm";
 import EndSprintConfirm from "./EndSprintConfirm";
+import SortableTaskItem from "./SortableTaskItem";
 
 const SprintView: React.FC<{ sprint: SprintType; tasks: Task[] }> = ({
   sprint,
@@ -36,8 +37,7 @@ const SprintView: React.FC<{ sprint: SprintType; tasks: Task[] }> = ({
   const handleChangeSprintStatus = async () => {
     try {
       setButtonDisabled(true);
-      const newSprintStatus =
-        sprint.status == "Active" ? "Completed" : "Active";
+      const newSprintStatus = "Active";
       const response = await changeSprintStatus(sprint.id, newSprintStatus);
       if (response.status == "Success") {
         setButtonDisabled(false);
@@ -138,9 +138,9 @@ const SprintView: React.FC<{ sprint: SprintType; tasks: Task[] }> = ({
         </header>
         {tasks && (
           <ul className="w-full flex flex-col gap-2">
-            {tasks.map((task) => {
-              return <TaskItem key={task.id} item={task} />;
-            })}
+            {tasks.length > 0 ? tasks.map((task) => {
+              return <SortableTaskItem key={task.id} item={task} />;
+            }) : <p>Drop tasks here</p>}
           </ul>
         )}
       </div>

@@ -52,7 +52,7 @@ export interface TaskWithSubtasks extends Task {
       type: "subtask" | "task",
       taskId: number,
       data: Partial<Task>
-    ) => Promise<object>;
+    ) => Promise<{ status: string; text: string }>;
     addNewTask: (
       type: "task" | "subtask",
       data: Partial<Task> | Partial<Task>[],
@@ -165,6 +165,8 @@ export interface TaskWithSubtasks extends Task {
       taskId: number,
       data: Partial<Task> | Partial<SubTask>
     ) => {
+      console.log("CHANG")
+      console.log(data)
       try {
         const response = await axios.patch(
           `http://localhost:3002/api/${type}/${taskId}`,
