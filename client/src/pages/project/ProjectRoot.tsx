@@ -3,10 +3,11 @@ import React, { useEffect, useState } from "react";
 import { LoaderFunctionArgs, Outlet, useLoaderData } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useProjectCtx, Task, Project } from "../../store/ProjectsContext";
-import { SprintType, useSprintsCtx, SprintStatus } from "../../store/SprintsContext";
-import TaskList from "./TaskList";
+import { SprintType, useSprintsCtx } from "../../store/SprintsContext";
+import SprintView from "./SprintView";
 import ProjectDetails from "./ProjectDetails";
 import { useTasksCtx } from "../../store/TasksContext";
+import AllTasksList from "./AllTasksList";
 
 type LoaderData = {
   project: Project;
@@ -14,11 +15,27 @@ type LoaderData = {
   sprints: SprintType[]
 };
 
+const sections = [
+  {
+    name: "Sprints View",
+    component: <SprintView />
+  },
+  {
+    name: "Kanban Table",
+    component: <SprintView />
+  },
+  {
+    name: "All Tasks",
+    component: <AllTasksList />
+  }
+]
+
 const ProjectRoot: React.FC = () => {
   const { setProject } = useProjectCtx();
   const {setTasks} = useTasksCtx()
   const {setSprints} = useSprintsCtx();
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [currentView, setCurrentView] = useState<number>(0)
 
 
   const { project, tasks, sprints } = useLoaderData() as LoaderData;
@@ -36,11 +53,10 @@ const ProjectRoot: React.FC = () => {
     setIsLoading(false);
   }, [project, tasks, sprints, setProject, setTasks]);
 
-  
 
   return (
     <>
-      <section className="w-full max-w-screen-xl mx-auto gap-10 flex flex-col">
+      <section className="w-full max-w-screen-2xl mx-auto gap-10 flex flex-col">
         <div>
           <Link
             to="/dashboard/projects"
@@ -50,7 +66,12 @@ const ProjectRoot: React.FC = () => {
           </Link>
           <ProjectDetails project={project} />
         </div>
-        {isLoading ? <div>Loading tasks...</div> : <TaskList />}
+        <div className="w-full flex justify-center gap-5 items-center border-b-4 border-dark-blue">
+          {sections.map((item, index) => {
+            return <button className={`py-2 px-5 font-[600] text-lg rounded-t-lg ${currentView === index && "bg-dark-blue"}`} key={item.name} onClick={() => setCurrentView(index)}>{item.name}</button>
+          })}
+        </div>
+        {isLoading ? <div>Loading tasks...</div> : sections[currentView].component}
       </section>
       <Outlet />
     </>

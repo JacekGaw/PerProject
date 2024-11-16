@@ -108,7 +108,7 @@ export const endSprintInDB = async (sprintId: number, tasksAction: "done" | "bac
             .set({ status: "Done" })
             .where(eq(tasks.sprintId, sprintId)).returning();
         }
-        else {
+        else if(tasksAction == "backlog") {
             updatedTasks = await db
             .update(tasks)
             .set({ sprintId: null })

@@ -16,8 +16,8 @@ export interface SprintType {
   id: number;
   name: string;
   target: string | null;
-  dateFrom: Date | null;
-  dateTo: Date | null;
+  dateFrom: string | null;
+  dateTo: string | null;
   status: "Active" | "Planning" | "Completed";
   created: string;
   projectId: number;
@@ -33,7 +33,7 @@ export interface NewSprintType {
 
 interface NewSprintResponseDataType {
   sprint: SprintType;
-  tasks: Task[];
+  tasks?: Task[];
 }
 
 interface SprintsStateType {
@@ -95,20 +95,24 @@ export const SprintsProvider: React.FC<{ children: ReactNode }> = ({
       );
       if (response.status == 200 || response.status == 201) {
         const responseData: NewSprintResponseDataType = response.data.data;
+        console.log("DATAAAAA",responseData);
         setSprints((prevData) => ({
           active: prevData.active,
           planning: [...(prevData.planning || []), responseData.sprint],
         }));
-        setTasks((prevTasks) =>
-          prevTasks.map((task) => {
-            // Find if the current task is in the updated tasks array
-            const updatedTask = responseData.tasks.find(
-              (t) => t.id === task.id
-            );
-            // Update only if task is in updatedTasks array, otherwise return the task as-is
-            return updatedTask ? { ...task, ...updatedTask } : task;
-          })
-        );
+        if(responseData.tasks) {
+          setTasks((prevTasks) =>
+            prevTasks.map((task) => {
+              // Find if the current task is in the updated tasks array
+              const updatedTask = responseData.tasks?.find(
+                (t) => t.id === task.id
+              );
+              // Update only if task is in updatedTasks array, otherwise return the task as-is
+              return updatedTask ? { ...task, ...updatedTask } : task;
+            })
+          );
+        }
+        
         console.log(response.data.data);
         return { status: "Success", text: "Sprint Created" };
       } else {

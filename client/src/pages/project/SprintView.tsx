@@ -1,150 +1,215 @@
-import React, { useRef, useState } from "react";
+import React, { ReactElement } from "react";
+import {
+  DndContext,
+  DragOverlay,
+  useSensors,
+  useSensor,
+  PointerSensor,
+  DragEndEvent,
+  DragStartEvent,
+  DragOverEvent,
+  useDroppable
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { useTasksCtx, Task } from "../../store/TasksContext";
+import { useSprintsCtx } from "../../store/SprintsContext";
+import BacklogList from "./BacklogList";
+import SprintList from "./SprintList";
 import TaskItem from "./TaskItem";
-import AddButton from "../../components/UI/AddButton";
-import { Task } from "../../store/TasksContext";
-import { SprintType, useSprintsCtx } from "../../store/SprintsContext";
-import DateFormatted from "../../components/UI/DateFormatted";
-import dotsIcon from "../../assets/img/vertical_dots.svg";
-import Modal, { ModalRef } from "../../components/UI/Modal";
-import Button from "../../components/UI/Button";
-import ButtonOutlined from "../../components/UI/ButtonOutlined";
-import EditSprintForm from "./EditSprintForm";
-import EndSprintConfirm from "./EndSprintConfirm";
-import SortableTaskItem from "./SortableTaskItem";
 
-const SprintView: React.FC<{ sprint: SprintType; tasks: Task[] }> = ({
-  sprint,
-  tasks,
-}) => {
-  const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
-  const { deleteSprint, changeSprintStatus } = useSprintsCtx();
-  const deleteModalRef = useRef<ModalRef | null>(null);
-  const editModalRef = useRef<ModalRef | null>(null);
-  const endSprintRef = useRef<ModalRef | null>(null);
+const DroppableContainer: React.FC<{id: string, children: ReactElement, isDragging: boolean}> = ({ id, children, isDragging }) => {
+  const { setNodeRef } = useDroppable({
+    id,
+  });
 
-  const handleDelete = async () => {
-    try {
-      setButtonDisabled(true);
-      const response = await deleteSprint(sprint);
-      if (response.status == "Success") {
-        setButtonDisabled(false);
-      }
-    } catch (err) {
-      setButtonDisabled(false);
+  return (
+    <div
+      ref={setNodeRef}
+      data-droppable-id={id}
+      className={`p-4 rounded-lg transition-colors min-h-[100px] ${
+        isDragging ? "bg-slate-800/50" : ""
+      }`}
+    >
+      {children}
+    </div>
+  );
+};
+
+const SprintView: React.FC = () => {
+  const { tasks, changeTask } = useTasksCtx();
+  const { sprints } = useSprintsCtx();
+  const [activeTask, setActiveTask] = React.useState<Task | null>(null);
+  const [isDragging, setIsDragging] = React.useState(false);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
+
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event;
+    const draggedTask = tasks?.find((task) => task.id === active.id);
+    if (draggedTask) {
+      setActiveTask(draggedTask);
+      setIsDragging(true);
     }
   };
 
-  const handleChangeSprintStatus = async () => {
-    try {
-      setButtonDisabled(true);
-      const newSprintStatus = "Active";
-      const response = await changeSprintStatus(sprint.id, newSprintStatus);
-      if (response.status == "Success") {
-        setButtonDisabled(false);
+  const handleDragOver = (event: DragOverEvent) => {
+    const { over } = event;
+    if (!over) return;
+  
+    // If over a task item, find its container
+    const overId = over.id.toString();
+    if (!overId.startsWith('sprint-') && overId !== 'backlog') {
+      const overTask = tasks?.find(task => task.id === over.id);
+      if (overTask) {
+        event.over = {
+          ...over,
+          id: overTask.sprintId ? `sprint-${overTask.sprintId}` : 'backlog'
+        };
       }
-    } catch (err) {
-      setButtonDisabled(false);
     }
+  };
+
+  const handleDragCancel = () => {
+    setActiveTask(null);
+    setIsDragging(false);
+  };
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    setActiveTask(null);
+    setIsDragging(false);
+  
+    if (!over) return;
+  
+    let overId = over.id.toString();
+    const activeTask = tasks?.find((task) => task.id === active.id);
+    if (!activeTask) return;
+
+    if (!overId.startsWith('sprint-') && overId !== 'backlog') {
+      const overTask = tasks?.find(task => task.id === over.id);
+      if (overTask) {
+        overId = overTask.sprintId ? `sprint-${overTask.sprintId}` : 'backlog';
+      }
+    }
+  
+    const currentSprintId = activeTask.sprintId;
+    const newSprintId = overId === "backlog" 
+      ? null 
+      : overId.startsWith("sprint-")
+        ? parseInt(overId.replace("sprint-", ""))
+        : currentSprintId; 
+  
+    if (currentSprintId === newSprintId) return;
+  
+    try {
+      const updateData: Partial<Task> = {
+        id: activeTask.id,
+        sprintId: newSprintId,
+      };
+  
+      const response = await changeTask("task", activeTask.id, updateData);
+      if (response.status === "Error") {
+        console.error("Failed to update task:", response.text);
+      }
+    } catch (error) {
+      console.error("Error updating task:", error);
+    }
+  };
+
+  const getTaskIds = (taskList: Task[] | undefined) => {
+    return taskList ? taskList.map((task) => task.id) : [];
   };
 
   return (
-    <>
-      <Modal ref={endSprintRef}>
-        <EndSprintConfirm
-          sprintData={sprint}
-          exit={() => endSprintRef.current?.close()}
-          tasksArr={tasks}
-        />
-      </Modal>
-      <Modal ref={editModalRef}>
-        <EditSprintForm
-          sprintData={sprint}
-          exit={() => editModalRef.current?.close()}
-        />
-      </Modal>
-      <Modal ref={deleteModalRef}>
-        <div className="w-full max-w-screen-md flex flex-col gap-5 p-5">
-          <header className="py-2 border-b flex flex-col gap-2 border-b-slate-400">
-            <h1 className="text-xl font-[600]">
-              Are you sure you want to delete sprint {sprint.name}?
-            </h1>
-            <p className="text-xs font-[400] text-slate-400">
-              Note, that this operation is irreversable!
-            </p>
-          </header>
-          <div className="flex justify-center items-center gap-2 ">
-            <Button onClick={() => deleteModalRef.current?.close()}>
-              Exit
-            </Button>
-            <ButtonOutlined disabled={buttonDisabled} onClick={handleDelete}>
-              Delete
-            </ButtonOutlined>
-          </div>
-        </div>
-      </Modal>
-      <div>
-        <header className="py-2 flex justify-between items-center gap-2">
-          <div className="flex flex-col justify-center items-start gap-2">
-            <h2 className=" font-[300] text-light-blue text-xl flex items-center gap-2">
-              <button className="relative rounded-md group p-2 bg-black-blue hover:bg-darkest-blue">
-                <img src={dotsIcon} className=" max-w-2 w-1 h-auto" />
-                <div className="z-50 group-hover:flex absolute left-[100%] top-0  hidden flex-col">
-                  <button
-                    onClick={() =>
-                      editModalRef.current && editModalRef.current.open()
-                    }
-                    className="text-sm bg-darkest-blue hover:bg-dark-blue py-2 px-4 font-[400]"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() =>
-                      deleteModalRef.current && deleteModalRef.current.open()
-                    }
-                    className="text-sm hover:bg-dark-blue bg-darkest-blue py-2 px-4 font-[400]"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </button>
+    <DndContext
+      sensors={sensors}
+      onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
+      onDragEnd={handleDragEnd}
+      onDragCancel={handleDragCancel}
+    >
+      <section className="flex flex-col gap-10">
+        {sprints.active &&
+          tasks &&
+          sprints.active.map((sprint) => (
+            <SortableContext
+              key={`sprint-${sprint.id}`}
+              id={`sprint-${sprint.id}`}
+              items={getTaskIds(
+                tasks.filter((task) => task.sprintId === sprint.id)
+              )}
+              strategy={verticalListSortingStrategy}
+            >
+              <DroppableContainer 
+                id={`sprint-${sprint.id}`}
+                isDragging={isDragging}
+              >
+                <SprintList
+                  sprint={sprint}
+                  tasks={tasks.filter((task) => task.sprintId === sprint.id)}
+                />
+              </DroppableContainer>
+            </SortableContext>
+          ))}
 
-              <p>
-                {sprint.status}: {sprint.name}
-              </p>
-            </h2>
-            <p className="text-xs  flex flex-col gap-1 font-[400] text-slate-400">
-              <p>Target: {sprint.target}</p>
-              <div className="flex gap-2">
-                <DateFormatted label="From: " dateObj={sprint.dateFrom} />
-                <DateFormatted label="To: " dateObj={sprint.dateTo} />
-              </div>
-            </p>
-          </div>
-          <div className="relative flex items-center gap-5">
-            {sprint.status == "Planning" ? (
-              <button onClick={handleChangeSprintStatus}>Start Sprint</button>
-            ) : (
-              <button onClick={() => endSprintRef.current?.open()}>
-                End Sprint
-              </button>
-            )}
+        {sprints.planning &&
+          tasks &&
+          sprints.planning.map((sprint) => (
+            <SortableContext
+              key={`sprint-${sprint.id}`}
+              id={`sprint-${sprint.id}`}
+              items={getTaskIds(
+                tasks.filter((task) => task.sprintId === sprint.id)
+              )}
+              strategy={verticalListSortingStrategy}
+            >
+              <DroppableContainer 
+                id={`sprint-${sprint.id}`}
+                isDragging={isDragging}
+              >
+                <SprintList
+                  sprint={sprint}
+                  tasks={tasks.filter((task) => task.sprintId === sprint.id)}
+                />
+              </DroppableContainer>
+            </SortableContext>
+          ))}
 
-            <AddButton
-              type="task"
-              placeholder="Add task"
-              sprintId={sprint.id}
-            />
-          </div>
-        </header>
         {tasks && (
-          <ul className="w-full flex flex-col gap-2">
-            {tasks.length > 0 ? tasks.map((task) => {
-              return <SortableTaskItem key={task.id} item={task} />;
-            }) : <p>Drop tasks here</p>}
-          </ul>
+          <SortableContext
+            id="backlog"
+            items={getTaskIds(tasks.filter((task) => task.sprintId === null))}
+            strategy={verticalListSortingStrategy}
+          >
+            <DroppableContainer 
+              id="backlog"
+              isDragging={isDragging}
+            >
+              <BacklogList
+                tasks={tasks.filter((task) => task.sprintId === null)}
+              />
+            </DroppableContainer>
+          </SortableContext>
         )}
-      </div>
-    </>
+      </section>
+
+      <DragOverlay dropAnimation={null}>
+        {activeTask ? (
+          <div className="opacity-80">
+            <TaskItem item={activeTask} />
+          </div>
+        ) : null}
+      </DragOverlay>
+    </DndContext>
   );
 };
 

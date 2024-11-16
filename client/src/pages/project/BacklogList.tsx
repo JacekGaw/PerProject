@@ -1,5 +1,4 @@
 import React, {useRef} from "react";
-import TaskItem from "./TaskItem";
 import AddButton from "../../components/UI/AddButton";
 import { Task } from "../../store/TasksContext";
 import Modal, {ModalRef} from "../../components/UI/Modal";

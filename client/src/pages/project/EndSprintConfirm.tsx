@@ -33,7 +33,6 @@ const EndSprintConfirm: React.FC<EditSprintFormProps> = ({
     const formData = new FormData(e.currentTarget);
     const tasksAction = formData.get("tasksAction") as "backlog" | "done";
     const retro = formData.get("retro") !== null; 
-
     try {
       const response = await endSprint(sprintData.id, tasksAction, retro);
       setSprintReport(response.text);
