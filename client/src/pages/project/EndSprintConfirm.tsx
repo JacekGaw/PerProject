@@ -1,8 +1,6 @@
 import React, { useState, useRef } from "react";
 import Button from "../../components/UI/Button";
 import MarkdownViewer from "../../components/UI/MarkdownViewer";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { useSprintsCtx, SprintType } from "../../store/SprintsContext";
 import { Task } from "../../store/TasksContext";
 import ButtonOutlined from "../../components/UI/ButtonOutlined";

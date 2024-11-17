@@ -8,6 +8,7 @@ import SprintView from "./SprintView";
 import ProjectDetails from "./ProjectDetails";
 import { useTasksCtx } from "../../store/TasksContext";
 import AllTasksList from "./AllTasksList";
+import KanbanView from "./KanbanView";
 
 type LoaderData = {
   project: Project;
@@ -22,7 +23,7 @@ const sections = [
   },
   {
     name: "Kanban Table",
-    component: <SprintView />
+    component: <KanbanView />
   },
   {
     name: "All Tasks",
