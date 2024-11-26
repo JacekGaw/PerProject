@@ -13,8 +13,12 @@ export default {
         "normal-blue": "#315993",
         "light-blue": "#B8C8DF",
         "vibrant-orange": "#fc4545",
-        "normal-orange": "#e0942e",
-        "light-orange": "#E6A957"
+        "normal-orange": "#ff9900",
+        "light-orange": "#E6A957",
+        "white-blue": "#E4E8EF",
+        "lightest-blue": "#C9CFD9",
+        "gradient-blue": "#3b82f6",
+        "gradient-violet": "#9333ea"
       }
     },
   },

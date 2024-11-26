@@ -49,14 +49,14 @@ export const companyUsers = pgTable('companyUsers', {
 
 
 
-export const projectUsers = pgTable('projectUsers', {
-    id: serial('id').primaryKey(),
-    projectId: integer('projectId').notNull().references(() => projects.id, { onDelete: 'cascade' }),
-    userId: integer('userId').notNull().references(() => users.id, { onDelete: 'cascade' }),
-    role: userRoleEnum('role').notNull(),
-    joinDate: timestamp('joinDate').defaultNow(),
-    active: boolean('active').default(true),
-});
+// export const projectUsers = pgTable('projectUsers', {
+//     id: serial('id').primaryKey(),
+//     projectId: integer('projectId').notNull().references(() => projects.id, { onDelete: 'cascade' }),
+//     userId: integer('userId').notNull().references(() => users.id, { onDelete: 'cascade' }),
+//     role: userRoleEnum('role').notNull(),
+//     joinDate: timestamp('joinDate').defaultNow(),
+//     active: boolean('active').default(true),
+// });
 
 export const taskStatusesEnum = pgEnum("taskStatuses", ["To Do", "In Progress", "On Hold", "Done"]);
 export const taskPriorityEnum = pgEnum('taskPriority', ["Low", "Medium", "High"]);
