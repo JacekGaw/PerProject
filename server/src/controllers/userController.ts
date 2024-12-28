@@ -7,7 +7,7 @@ import {
   assignUserToCompany,
   getUserBookmarksFromDB,
   getUserInfoFromDB,
-  changeUserPasswordInDB
+  changeUserPasswordInDB,
 } from "../services/userServices.js";
 
 export const getUsers: RequestHandler = async (req, res) => {
@@ -62,7 +62,6 @@ export const getUserBookmarks: RequestHandler = async (req, res) => {
   const userId = req.params.id;
   try {
     const bookmarks = await getUserBookmarksFromDB(parseInt(userId));
-    console.log("Getting user bookmarks: ", bookmarks);
     return res
       .status(201)
       .json({ message: "Getting user bookmarks", data: bookmarks });
@@ -110,7 +109,6 @@ export const createUser: RequestHandler = async (req, res) => {
 export const deleteUser: RequestHandler = async (req, res) => {
   try {
     const deletedUser = await deleteUserFromDb(parseInt(req.params.id));
-    console.log("Deleted user ", deletedUser);
     res.status(200).json({
       message: "Deleted single user",
       user: deletedUser,
@@ -126,9 +124,7 @@ export const deleteUser: RequestHandler = async (req, res) => {
 export const updateUser: RequestHandler = async (req, res) => {
   try {
     const data = req.body;
-
     const updatedUser = await updateUserInDB(data, parseInt(req.params.id));
-    console.log("Updated user ", updatedUser);
     res.status(200).json({
       message: "Updated single user",
       data: updatedUser,
@@ -150,10 +146,14 @@ export const changeUserPassword: RequestHandler = async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body as ChangePasswordData;
     if (!oldPassword || !newPassword) {
-      return res.status(400).json({ message: "Old and new passwords are required" });
+      return res
+        .status(400)
+        .json({ message: "Old and new passwords are required" });
     }
-
-    const updatedUser = await changeUserPasswordInDB({ oldPassword, newPassword }, parseInt(req.params.id));
+    const updatedUser = await changeUserPasswordInDB(
+      { oldPassword, newPassword },
+      parseInt(req.params.id)
+    );
     if (!updatedUser) {
       return res.status(400).json({ message: "Incorrect old password" });
     }
@@ -182,7 +182,6 @@ export const addUserToCompany: RequestHandler = async (req, res) => {
       parseInt(id),
       parseInt(companyId)
     );
-    console.log("Created assignment", newAssignment);
     return res.status(200).json({
       message: "Created assignment user to company",
       data: newAssignment,

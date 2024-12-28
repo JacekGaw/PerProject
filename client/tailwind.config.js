@@ -12,7 +12,7 @@ export default {
         "dark-blue": "#102543",
         "normal-blue": "#315993",
         "light-blue": "#B8C8DF",
-        "vibrant-orange": "#fc4545",
+        "vibrant-orange": "#962929",
         "normal-orange": "#ff9900",
         "light-orange": "#E6A957",
         "white-blue": "#E4E8EF",

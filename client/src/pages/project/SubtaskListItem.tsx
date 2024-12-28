@@ -47,7 +47,7 @@ const SubtaskListItem: React.FC<SubtaskListItemProps> = ({ subtask }) => {
   };
 
   return (
-    <li className="flex flex-col gap-2">
+    <li className="flex flex-col bg-black-blue bg-opacity-50 gap-2">
       <div className="relative group p-2 border-b border-slate-600 flex justify-between  items-center gap-5">
         <img src={taskIcon} className="max-w-4 fill-slate-100" />
         <TitleComponent type="subtask" task={subtask} />
@@ -57,7 +57,7 @@ const SubtaskListItem: React.FC<SubtaskListItemProps> = ({ subtask }) => {
           onChange={(e) =>
             changeStatus(subtask.id!, e.target.value as TaskStatus)
           }
-          className="bg-darkest-blue text-sm p-2 rounded-sm"
+          className="bg-black-blue text-sm p-2 rounded-sm"
         >
           {taskStatuses.map((status) => (
             <option key={status} value={status}>
@@ -69,7 +69,7 @@ const SubtaskListItem: React.FC<SubtaskListItemProps> = ({ subtask }) => {
         <Priority type="subtask" task={subtask} />
         <button
           onClick={() => setSubtaskDetailsOpen((p) => !p)}
-          className="hidden absolute bg-dark-blue left-0 z-50 top-0 h-full group-hover:flex justify-center items-center p-2"
+          className="hidden absolute bg-black-blue left-0 z-50 top-0 h-full group-hover:flex justify-center items-center p-2"
         >
           <img
             className={`${subtaskDetailsOpen && "rotate-180"} w-6 h-6`}

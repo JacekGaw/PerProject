@@ -6,7 +6,6 @@ import {
   getTasksFromDB,
   getSubtaskFromDB,
   changeTaskInDB,
-  deleteSubtaskFromDB,
   addNewTaskToDB,
   deleteTaskFromDB,
   addNewSubtaskToDB,
@@ -89,8 +88,14 @@ export const getTasks: RequestHandler = async (req, res) => {
 export const createTask: RequestHandler = async (req, res) => {
   try {
     const newTask = req.body as NewTaskType;
-    const addedTask = await addNewTaskToDB(newTask);
-    return res.status(200).json({ message: "Added new task", data: addedTask });
+    const type = req.query.type === "subtask";
+    let addedTask;
+    type
+      ? (addedTask = await addNewTaskToDB(newTask, "subTasks"))
+      : (addedTask = await addNewTaskToDB(newTask, "tasks"));
+    return res
+      .status(200)
+      .json({ message: "Added new task/subtask", data: addedTask });
   } catch (err) {
     console.log(err);
     return res.status(500).json({
@@ -112,7 +117,7 @@ export const createSubtask: RequestHandler = async (req, res) => {
         .json({ message: "Added new subtask", data: addedSubtask });
     } else {
       const newSubtasks = req.body as NewTaskType[];
-      console.log(newSubtasks)
+      console.log(newSubtasks);
       const addedSubtasks = await addSubtasksBatchToDB(newSubtasks);
       return res
         .status(200)
@@ -162,24 +167,12 @@ export const changeSubtask: RequestHandler = async (req, res) => {
 
 export const deleteTask: RequestHandler = async (req, res) => {
   try {
-    const { id: taskId } = req.params;
-    const deletedTask = await deleteTaskFromDB(parseInt(taskId));
+    const { id: taskId, type: taskType } = req.params;
+    const deletedTask = await deleteTaskFromDB(
+      parseInt(taskId),
+      taskType == "task" ? "tasks" : "subTasks"
+    );
     return res.status(200).json({ message: "Deleted task", data: deletedTask });
-  } catch (err) {
-    return res.status(500).json({
-      message: "Error",
-      error: (err as Error).message || "Unknown error",
-    });
-  }
-};
-
-export const deleteSubtask: RequestHandler = async (req, res) => {
-  try {
-    const { id: subtaskId } = req.params;
-    const deletedSubtask = await deleteSubtaskFromDB(parseInt(subtaskId));
-    return res
-      .status(200)
-      .json({ message: "Deleted subtask", data: deletedSubtask });
   } catch (err) {
     return res.status(500).json({
       message: "Error",

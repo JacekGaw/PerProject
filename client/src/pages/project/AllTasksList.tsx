@@ -8,10 +8,10 @@ const AllTasksList: React.FC = () => {
 
     return (
         <>
-            <div>
+            <div className='bg-darkest-blue rounded-lg p-5 m-5'>
         <header className=" p-2 flex justify-between items-center gap-2">
             <div className="flex justify-center items-center gap-2">
-          <h2 className="font-[300] text-light-blue text-xl">Backlog:</h2>
+          <h2 className="font-[300] text-light-blue text-xl">All Tasks:</h2>
           </div>
           <div className="relative flex items-center gap-5">
             <AddButton type="task" placeholder="Add task" />

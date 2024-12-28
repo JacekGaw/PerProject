@@ -61,7 +61,7 @@ const DescriptionComponent: React.FC<DescriptionComponentProps> = ({
           </div>
         </form>
       ) : (
-        <motion.div variants={ParentContainer} onClick={() => setEditDescription(true)} initial="init" whileHover="show"  className="cursor-pointer font-[200] text-sm p-2 border-b flex gap-2 justify-between" >
+        <motion.div variants={ParentContainer} onClick={() => setEditDescription(true)} initial="init" whileHover="show"  className="cursor-pointer font-[200] text-sm  flex gap-2 justify-between" >
             <p className={`whitespace-pre-line ${type == "project" && " text-base text-justify text-slate-400 leading-6"}`}>{task.description ? task.description : `No ${type} description`}</p>
             <motion.button variants={ChildrenComponent} className="flex justify-center items-center"><img src={editIcon} className="w-6 h-6" /></motion.button>
             </motion.div>

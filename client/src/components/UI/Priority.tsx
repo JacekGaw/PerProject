@@ -53,8 +53,8 @@ const Priority: React.FC<PriorityProps> = ({ type = "task", task }) => {
             name="priority"
             defaultChecked={task.priority === "Medium"}
             onChange={changePriority}
-            className={`w-[10px] h-[10px] checked:bg-normal-blue rounded-full ${
-              task.priority === "Medium" ? "bg-normal-blue" : "bg-slate-800"
+            className={`w-[10px] h-[10px] bg-normal-orange rounded-full ${
+              task.priority === "Medium" ? "bg-normal-orange" : "bg-slate-800"
             }`}
           />
 
@@ -74,20 +74,20 @@ const Priority: React.FC<PriorityProps> = ({ type = "task", task }) => {
         <div className="p-1 flex flex-col gap-1 justify-center items-center">
           <p
             className={`w-[7px] h-[7px] rounded-full ${
-              task.priority === "High" ? "bg-normal-orange" : "bg-slate-800"
+              task.priority === "High" ? "bg-red-600" : "bg-slate-800"
             }`}
           ></p>
           <p
             className={`w-[7px] h-[7px] rounded-full ${
               task.priority == "Low" && "bg-slate-800"
-            }   ${task.priority === "Medium" && "bg-normal-blue"} ${
-              task.priority === "High" && "bg-normal-orange"
+            }   ${task.priority === "Medium" && "bg-normal-orange"} ${
+              task.priority === "High" && "bg-red-600"
             }`}
           ></p>
           <p
             className={`w-[7px] h-[7px] rounded-full bg-light-blue ${
-              task.priority === "High" && "bg-normal-orange"
-            } ${task.priority === "Medium" && "bg-normal-blue"}`}
+              task.priority === "High" && "bg-red-600"
+            } ${task.priority === "Medium" && "bg-normal-orange"}`}
           ></p>
         </div>
       )}

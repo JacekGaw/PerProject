@@ -1,4 +1,12 @@
-import { ReactNode, createContext, useContext, useEffect, useState, Dispatch, SetStateAction, } from "react";
+import {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import axios from "axios";
 import api from "../api/api";
 
@@ -26,7 +34,7 @@ interface AuthContextProps {
   ) => Promise<{ success: boolean; message: string }>;
   logOut: () => void;
   user: UserObj | undefined;
-  setUser: Dispatch<SetStateAction<UserObj | undefined>>
+  setUser: Dispatch<SetStateAction<UserObj | undefined>>;
 }
 
 interface LoginCredentials {
@@ -67,9 +75,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       const token = localStorage.getItem("accessToken");
       if (token) {
         try {
-          const response = await api.get("http://localhost:3002/auth/verifyToken", {
-            headers: { Authorization: `Bearer ${token}` }
-          });
+          const response = await api.get(
+            "http://localhost:3002/auth/verifyToken",
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
           if (response.data) {
             setUser(response.data.user); // Set user data if available
             setIsAuthenticated(true);
@@ -85,10 +96,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       }
       setIsLoading(false); // Ensure loading is set to false
     };
-  
+
     checkAuthStatus();
   }, []);
-  
 
   const login = async (userData: LoginCredentials) => {
     try {
@@ -97,7 +107,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         "http://localhost:3002/auth/login",
         userData
       );
-      const {accessToken, refreshToken} = response.data;
+      const { accessToken, refreshToken } = response.data;
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
       setUser(response.data.user);
@@ -105,7 +115,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       setIsLoading(false);
       return { success: true, message: "Login successful!" };
     } catch (err: any) {
-        console.log(err);
       setIsAuthenticated(false);
       setIsLoading(false);
       let errorMessage = "An error occurred during login.";
@@ -122,17 +131,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     setIsAuthenticated(false);
-    setUser(undefined)
+    setUser(undefined);
   };
 
   const signup = async (newUserData: SignUpCredentials) => {
     try {
       setIsLoading(true);
-      const response = await axios.post(
-        "http://localhost:3002/auth/signup",
-        newUserData
-      );
-      console.log(response);
+      await axios.post("http://localhost:3002/auth/signup", newUserData);
       setIsLoading(false);
       return { success: true, message: "Successfully created an user" };
     } catch (err: any) {
@@ -153,7 +158,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     logOut,
     signup,
     user,
-    setUser
+    setUser,
   };
 
   return (

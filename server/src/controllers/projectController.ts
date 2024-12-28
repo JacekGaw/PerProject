@@ -11,16 +11,14 @@ import {
   getTasksFromProject,
   createBookmarkInDB,
   deleteBookmarkInDB,
-  getTasksFromProjectAndSprints
+  getTasksFromProjectAndSprints,
 } from "../services/projectServices.js";
 import { getSprintsByProjectId } from "../services/sprintServices.js";
 
 export const getProjects: RequestHandler = async (req, res) => {
   try {
     const companyId = req.query.companyId as string | undefined;
-
     const projects = await getProjectsFromDB(companyId);
-    console.log("All projects ", projects);
     res.status(200).json({
       message: "Getting all projects",
       projects: projects,
@@ -62,7 +60,10 @@ export const getProjectAndTasks: RequestHandler = async (req, res) => {
     console.log(project, tasks, sprints);
     return res
       .status(201)
-      .json({ message: "Getting project, tasks and sprints", data: { project, tasks, sprints } });
+      .json({
+        message: "Getting project, tasks and sprints",
+        data: { project, tasks, sprints },
+      });
   } catch (err) {
     return res.status(500).json({
       message: "Error",
@@ -74,44 +75,25 @@ export const getProjectAndTasks: RequestHandler = async (req, res) => {
 export const createProject: RequestHandler = async (req, res) => {
   try {
     const {
-      name,
-      alias,
-      description,
-      status,
-      startDate,
-      endDate,
-      authorId,
-      projectManagerId,
-      companyId,
+      name, alias, description, status, startDate, endDate, authorId,
+      projectManagerId, companyId,
     } = req.body as CreateProjectBody;
-
-    // Validate required fields
     if (!name || !alias || !companyId) {
       return res.status(400).json({
         message: "Name, alias, and companyId are required",
       });
     }
-
-    // Check if project with this alias already exists
     const projectExists = await checkProjectExists(alias);
     if (projectExists) {
       return res.status(409).json({
         message: "A project with this alias already exists",
       });
     }
-
-    const newProject = await createNewProjectInDB({
-      name,
-      alias,
-      description,
-      status,
-      startDate,
-      endDate,
-      authorId,
+    const newProject = await createNewProjectInDB({ name, alias,
+      description, status, startDate, endDate, authorId, 
       projectManagerId,
       companyId,
     });
-
     res.status(201).json({
       message: "Created new project",
       project: newProject,
@@ -125,19 +107,31 @@ export const createProject: RequestHandler = async (req, res) => {
   }
 };
 
-export const createBookmark: RequestHandler = async (req, res) => {
+export const toggleBookmark: RequestHandler = async (req, res) => {
+  const method = req.method;
   const { projectId, userId } = req.params;
   try {
-    const bookmark = await createBookmarkInDB(parseInt(projectId), parseInt(userId));
-    console.log("Added bookmark to db: ", bookmark);
+    let bookmark;
+    if(method == "POST") {
+      bookmark = await createBookmarkInDB(
+        parseInt(projectId),
+        parseInt(userId)
+      );
+    }
+    else if (method == "DELETE") {
+      bookmark = await deleteBookmarkInDB(
+        parseInt(projectId),
+        parseInt(userId)
+      );
+    }
     res.status(201).json({
-      message: "Added new bookmark",
+      message: "Bookmark toggled",
       data: bookmark,
     });
   } catch (err) {
-    console.error("Error creating new bookmark:", err);
+    console.error("Error toggling new bookmark:", err);
     res.status(500).json({
-      message: "An error occurred while creating new bookmark",
+      message: "An error occurred while toggling new bookmark",
       error: (err as Error).message,
     });
   }
@@ -146,12 +140,10 @@ export const createBookmark: RequestHandler = async (req, res) => {
 export const updateProject: RequestHandler = async (req, res) => {
   try {
     const data = req.body;
-
     const updatedProject = await updateProjectInDB(
       data,
       parseInt(req.params.id)
     );
-    console.log("Updated project ", updatedProject);
     res.status(200).json({
       message: "Updated single project",
       data: updatedProject,
@@ -167,7 +159,6 @@ export const updateProject: RequestHandler = async (req, res) => {
 export const deleteProject: RequestHandler = async (req, res) => {
   try {
     const deletedProject = await deleteProjectFromDb(parseInt(req.params.id));
-    console.log("Deleted project ", deletedProject);
     res.status(200).json({
       message: "Deleted single project",
       data: deletedProject,
@@ -183,8 +174,10 @@ export const deleteProject: RequestHandler = async (req, res) => {
 export const deleteBookmark: RequestHandler = async (req, res) => {
   const { projectId, userId } = req.params;
   try {
-    const deletedBookmark = await deleteBookmarkInDB(parseInt(projectId), parseInt(userId));
-    console.log("Deleted bookmark from db: ", deletedBookmark);
+    const deletedBookmark = await deleteBookmarkInDB(
+      parseInt(projectId),
+      parseInt(userId)
+    );
     res.status(201).json({
       message: "Deleted bookmark",
       data: deletedBookmark,

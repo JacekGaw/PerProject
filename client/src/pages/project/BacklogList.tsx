@@ -14,7 +14,7 @@ const BacklogList: React.FC<{ tasks: Task[] }> = ({ tasks }) => {
     <Modal ref={modalRef} >
         <NewSprintForm tasks={tasks} exit={() => modalRef.current?.close()} />
     </Modal>
-      <div>
+      <div className="bg-darkest-blue rounded-lg p-5">
         <header className=" p-2 flex justify-between items-center gap-2">
             <div className="flex justify-center items-center gap-2">
           <h2 className="font-[300] text-light-blue text-xl">Backlog:</h2>
@@ -26,7 +26,7 @@ const BacklogList: React.FC<{ tasks: Task[] }> = ({ tasks }) => {
           </div>
         </header>
         {tasks && (
-          <ul className="w-full flex flex-col gap-2">
+          <ul className="w-full flex flex-col gap-2 p-2">
             {tasks.map((task) => {
               return <SortableTaskItem key={task.id} item={task} />;
             })}

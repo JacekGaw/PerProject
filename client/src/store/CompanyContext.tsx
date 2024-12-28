@@ -7,6 +7,7 @@ import {
 } from "react";
 import { useAuth } from "./AuthContext";
 import axios from "axios";
+import api from "../api/api";
 
 export interface CompanyUserType {
   id: number;
@@ -116,7 +117,7 @@ export const CompanyProvider: React.FC<{ children: ReactNode }> = ({
 
   const getCompanyStatistics = async () => {
     try {
-      const response = await axios.get(`http://localhost:3002/api/company/${company?.id}/statistics`);
+      const response = await api.get(`http://localhost:3002/api/company/${company?.id}/statistics`); 
       return response.data.data;
     } catch (err: any) {
       console.log(err);

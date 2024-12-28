@@ -47,9 +47,7 @@ interface UserContextProps {
     data: { oldPassword: string; newPassword: string },
     userId?: number
   ) => Promise<{ status: string; text: string }>;
-  deleteUser: (
-    userId?: number
-  ) => Promise<{ status: string; text: string }>
+  deleteUser: (userId?: number) => Promise<{ status: string; text: string }>;
 }
 
 export const UserContext = createContext<UserContextProps | undefined>(
@@ -116,28 +114,18 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
-  const changeUser = async (data: Partial<UserObj>, userId?: number) => {
+  const changeUser = async (data: Partial<UserObj>, userId: number) => {
     try {
-      let userChanged;
-      if (userId) {
-        userChanged = await axios.patch(
-          `http://localhost:3002/api/users/${userId}`,
-          data
-        );
-      } else if (user) {
-        userChanged = await axios.patch(
-          `http://localhost:3002/api/users/${user.id}`,
-          data
-        );
-      }
+      const userChanged = await axios.patch(
+        `http://localhost:3002/api/users/${userId}`,
+        data
+      );
       if (userChanged) {
-        console.log("RESPONSE USER", userChanged);
         setUserInfo(userChanged.data.data);
         return { status: "Success", text: "User updated successfully" };
       }
       return { status: "Error", text: "Cannot change user" };
     } catch (err: any) {
-      console.error(err);
       const errMessage = err.response?.data.message || err.message;
       return { status: "Error", text: errMessage };
     }
@@ -145,23 +133,14 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
 
   const changeUserPassword = async (
     data: { oldPassword: string; newPassword: string },
-    userId?: number
+    userId: number
   ) => {
     try {
-      let userChanged;
-      if (userId) {
-        userChanged = await axios.patch(
-          `http://localhost:3002/api/users/${userId}/change-password`,
-          data
-        );
-      } else if (user) {
-        userChanged = await axios.patch(
-          `http://localhost:3002/api/users/${user.id}/change-password`,
-          data
-        );
-      }
+      const userChanged = await axios.patch(
+        `http://localhost:3002/api/users/${userId}/change-password`,
+        data
+      );
       if (userChanged) {
-        console.log("User password updated successfully");
         return {
           status: "Success",
           text: "User password updated successfully",
@@ -169,27 +148,18 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
       }
       return { status: "Error", text: "Cannot change user password" };
     } catch (err: any) {
-      console.error(err);
       const errMessage = err.response?.data.message || err.message;
       return { status: "Error", text: errMessage };
     }
   };
 
-  const deleteUser = async (userId?: number) => {
+  const deleteUser = async (userId: number) => {
     try {
-      let deletedUser;
-      if (userId) {
-        deletedUser = await axios.delete(
-          `http://localhost:3002/api/users/${userId}`
-        );
-      } else if (user) {
-        deletedUser = await axios.delete(
-          `http://localhost:3002/api/users/${user.id}`
-        );
-      }
+      const deletedUser = await axios.delete(
+        `http://localhost:3002/api/users/${userId}`
+      );
       if (deletedUser) {
-        console.log("User deleted successfuly");
-        if(user && user.id == userId) {
+        if (user && user.id == userId) {
           logOut();
         }
         return {
@@ -213,7 +183,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
     changeUser,
     userInfo,
     changeUserPassword,
-    deleteUser
+    deleteUser,
   };
 
   return (

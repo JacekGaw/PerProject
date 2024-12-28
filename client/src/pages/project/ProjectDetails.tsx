@@ -36,7 +36,6 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({ project }) => {
   const startDateRef = useRef<HTMLInputElement>(null);
   const endDateRef = useRef<HTMLInputElement>(null);
 
-
   useEffect(() => {
     setIsBookmarkLoading(true);
     if (bookmarks) {
@@ -61,7 +60,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({ project }) => {
   const handleDeleteProject = async () => {
     const deleteStatus = await deleteProject(project.id);
     if (deleteStatus.status == "Success") {
-      navigate("/dashboard/projects", {replace: true});
+      navigate("/dashboard/projects", { replace: true });
     }
   };
 
@@ -69,26 +68,51 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({ project }) => {
     if (!statusRef.current) {
       return;
     }
-    if(project.status !== statusRef.current.value){
+    if (project.status !== statusRef.current.value) {
       await changeProject(project.id, {
         status: statusRef.current.value as ProjectStatus,
       });
     }
-   
   };
 
   const handleDateChange = async (type: "startDate" | "endDate") => {
-    if (!startDateRef.current && !endDateRef.current ) {
+    if (!startDateRef.current && !endDateRef.current) {
       return;
     }
-    await changeProject(project.id, {[type]: type == "startDate" ?  startDateRef.current!.value : endDateRef.current!.value});
+    await changeProject(project.id, {
+      [type]:
+        type == "startDate"
+          ? startDateRef.current!.value
+          : endDateRef.current!.value,
+    });
   };
 
   return (
     <section className="flex flex-col gap-2 ">
       <header className="w-full  flex justify-between gap-2 items-center py-2">
-        <h1 className="font-[400] text-slate-200 text-5xl">{project.name} <span className="text-slate-600">({project.alias})</span></h1>
+        <h1 className="font-[200] text-slate-200 text-5xl">
+          <span className="text-normal-orange font-[400]">{project.alias}</span>{" "}
+          | {project.name}{" "}
+        </h1>
         <div className="inline-flex">
+          <select
+            id="projectStatus"
+            ref={statusRef}
+            className="bg-black-blue hover:bg-darkest-blue cursor-pointer transition-all duration-200 text-xl text-right text-slate-200 p-2 font-[200] appearance-none"
+            onChange={handleChangeStatus}
+          >
+            {projectStatuses.map((statusItem) => {
+              return (
+                <option
+                  key={statusItem}
+                  value={statusItem}
+                  selected={statusItem == project.status}
+                >
+                  {statusItem}
+                </option>
+              );
+            })}
+          </select>
           {isBookmarkLoading ? (
             <button disabled>
               <img
@@ -123,16 +147,12 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({ project }) => {
             className=" w-full flex flex-col gap-2"
           >
             <div className="w-full flex flex-col md:flex-row">
-              <div className="w-full md:w-1/2 p-5 text-base text-justify text-slate-400 leading-6">
-                <p className="font-[600] p-1 border-b border-slate-600 mb-2">
-                  Description:{" "}
-                </p>
+              <div className="w-full md:w-1/2 p-5 gap-2 flex flex-col text-base text-justify text-slate-400 leading-6">
+                <p className="font-[600] text-lg">Description: </p>
                 <DescriptionComponent type="project" task={project} />
               </div>
-              <div className="bg-[#03040f] flex flex-col gap-2 p-5 w-full md:w-1/2">
-                <p className="font-[600] text-slate-400 p-1 border-b border-slate-600 mb-2">
-                  Info:{" "}
-                </p>
+              <div className="bg-[#050A16] flex flex-col gap-2 p-5 w-full md:w-1/2">
+                <p className="font-[600] text-slate-400 text-lg">Info: </p>
                 <div className="flex justify-between items-center gap-2">
                   <p>
                     <DateFormatted
@@ -142,16 +162,28 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({ project }) => {
                   </p>
                   <div className=" text-slate-400 font-[600]">
                     <label htmlFor="projectStartDate">Start Date: </label>
-                    <input ref={startDateRef} onChange={() => handleDateChange("startDate")} id="projectStartDate" type="date" defaultValue={project.startDate?.toString()} className="bg-darkest-blue " />
+                    <input
+                      ref={startDateRef}
+                      onChange={() => handleDateChange("startDate")}
+                      id="projectStartDate"
+                      type="date"
+                      defaultValue={project.startDate?.toString()}
+                      className="bg-darkest-blue "
+                    />
                   </div>
                   <div className=" text-slate-400 font-[600]">
                     <label htmlFor="projectEndDate">End Date: </label>
-                    <input ref={endDateRef} onChange={() => handleDateChange("endDate")} id="projectEndDate" type="date" defaultValue={project.endDate?.toString()} className="bg-darkest-blue" />
+                    <input
+                      ref={endDateRef}
+                      onChange={() => handleDateChange("endDate")}
+                      id="projectEndDate"
+                      type="date"
+                      defaultValue={project.endDate?.toString()}
+                      className="bg-darkest-blue"
+                    />
                   </div>
-
-                  
                 </div>
-                <div className="flex justify-between items-center gap-2">
+                <div className="flex justify-around text-slate-400 items-center gap-2">
                   <p className="flex items-center gap-2">
                     Author of the project:{" "}
                     <UserAvatar
@@ -173,27 +205,6 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({ project }) => {
                       "not set"
                     )}
                   </p>
-                </div>
-                <div className="inline-flex">
-                  <label htmlFor="projectStatus">Status:</label>
-                  <select
-                    id="projectStatus"
-                    ref={statusRef}
-                    className="bg-darkest-blue"
-                    onChange={handleChangeStatus}
-                  >
-                    {projectStatuses.map((statusItem) => {
-                      return (
-                        <option
-                          key={statusItem}
-                          value={statusItem}
-                          selected={statusItem == project.status}
-                        >
-                          {statusItem}
-                        </option>
-                      );
-                    })}
-                  </select>
                 </div>
               </div>
             </div>

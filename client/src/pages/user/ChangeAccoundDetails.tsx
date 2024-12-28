@@ -2,7 +2,6 @@ import React, { useRef, useState } from "react";
 import { useUserCtx, UserObj } from "../../store/UserContext";
 import Button from "../../components/UI/Button";
 
-
 interface UserDataInterface {
   name: string;
   surname: string;
@@ -19,9 +18,7 @@ const ChangeAccoundDetails: React.FC<{ user: UserObj }> = ({ user }) => {
     useState<responseMessageInterface>({ status: "Status", text: "" });
   const nameInputRef = useRef<HTMLInputElement>(null);
   const surnameInputRef = useRef<HTMLInputElement>(null);
-  const { changeUser} = useUserCtx()
-  
-
+  const { changeUser } = useUserCtx();
 
   const handleSubmit: (event: React.SyntheticEvent) => Promise<void> = async (
     event: React.SyntheticEvent
@@ -37,7 +34,6 @@ const ChangeAccoundDetails: React.FC<{ user: UserObj }> = ({ user }) => {
         const response = await changeUser(userData, user.id);
         setResponseMessage(response);
         setButtonDisabled(false);
-        
       } catch (err) {
         setButtonDisabled(false);
         setResponseMessage({
@@ -58,30 +54,29 @@ const ChangeAccoundDetails: React.FC<{ user: UserObj }> = ({ user }) => {
           className="flex flex-col gap-5 justify-center  items-stretch"
           onSubmit={handleSubmit}
         >
+          <div className="flex flex-col gap-2">
+            <label htmlFor="name">Name</label>
+            <input
+              id="name"
+              ref={nameInputRef}
+              name="name"
+              type="name"
+              required
+              className="bg-transparent border border-slate-500 rounded-sm p-2"
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="surname">Surname</label>
+            <input
+              id="surname"
+              ref={surnameInputRef}
+              name="surname"
+              type="surname"
+              required
+              className="bg-transparent border border-slate-500 rounded-sm p-2"
+            />
+          </div>
 
-            <div className="flex flex-col gap-2">
-              <label htmlFor="name">Name</label>
-              <input
-                id="name"
-                ref={nameInputRef}
-                name="name"
-                type="name"
-                required
-                className="bg-transparent border border-slate-500 rounded-sm p-2"
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <label htmlFor="surname">Surname</label>
-              <input
-                id="surname"
-                ref={surnameInputRef}
-                name="surname"
-                type="surname"
-                required
-                className="bg-transparent border border-slate-500 rounded-sm p-2"
-              />
-            </div>
-          
           {responseMessage.text !== "" && (
             <p
               className={`${
@@ -100,6 +95,6 @@ const ChangeAccoundDetails: React.FC<{ user: UserObj }> = ({ user }) => {
       </section>
     </>
   );
-}
+};
 
 export default ChangeAccoundDetails;

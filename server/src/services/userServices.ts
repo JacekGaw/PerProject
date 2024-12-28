@@ -27,8 +27,8 @@ interface NewUser {
   surname?: string;
 }
 
-interface UserOBj  {
-  user: InferSelectModel<typeof users>
+interface UserOBj {
+  user: InferSelectModel<typeof users>;
 }
 
 export const getUsersFromDB = async (userId?: number): Promise<{}> => {
@@ -87,13 +87,16 @@ export const getUserByEmail = async (userEmail: string) => {
 
 export const getUserBookmarksFromDB = async (userId: number) => {
   try {
-    const bookmarks = await db.select().from(userFavourites).where(eq(userFavourites.userId, userId));
+    const bookmarks = await db
+      .select()
+      .from(userFavourites)
+      .where(eq(userFavourites.userId, userId));
     return bookmarks;
   } catch (err) {
     console.error("Error getting user bookmarks: ", err);
     throw err;
   }
-}
+};
 
 export const createUserInDB = async (
   email: string,
@@ -137,13 +140,10 @@ export const updateUserInDB = async (
   userId: number
 ): Promise<{}> => {
   try {
-    const newUserData = { ...data };
-    if (newUserData.password) {
-      newUserData.password = await hashPassword(newUserData.password);
-    }
+    
     const updatedUser = await db
       .update(users)
-      .set(newUserData)
+      .set(data)
       .where(eq(users.id, userId))
       .returning();
     return updatedUser[0];
@@ -158,24 +158,28 @@ export const changeUserPasswordInDB = async (
   userId: number
 ): Promise<{} | null> => {
   try {
-    const userInfo = await db.query.users.findFirst({where: (users, {eq}) => eq(users.id, userId)});
+    const userInfo = await db.query.users.findFirst({
+      where: (users, { eq }) => eq(users.id, userId),
+    });
     if (!userInfo) {
       throw new Error("User not found");
     }
 
-    const isOldPasswordCorrect = await comparePasswords(data.oldPassword, userInfo.password);
+    const isOldPasswordCorrect = await comparePasswords(
+      data.oldPassword,
+      userInfo.password
+    );
     if (!isOldPasswordCorrect) {
-      return null; 
+      return null;
     }
 
     const hashedNewPassword = await hashPassword(data.newPassword);
 
-    // Update the user's password in the database
     const [updatedUser] = await db
       .update(users)
       .set({ password: hashedNewPassword })
       .where(eq(users.id, userId))
-      .returning(); // Adjust returning syntax as per your ORM/database
+      .returning();
 
     return updatedUser;
   } catch (err) {
@@ -183,8 +187,6 @@ export const changeUserPasswordInDB = async (
     throw err;
   }
 };
-
-
 
 export const assignUserToCompany = async (
   userId: number,

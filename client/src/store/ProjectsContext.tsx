@@ -10,7 +10,13 @@ import { useCompanyCtx } from "./CompanyContext";
 import axios, { AxiosResponse } from "axios";
 import { useAuth } from "./AuthContext";
 
-export const projectStatuses = ["Active", "On Hold", "Completed", "Archive", "Maintaining"];
+export const projectStatuses = [
+  "Active",
+  "On Hold",
+  "Completed",
+  "Archive",
+  "Maintaining",
+];
 
 export type ProjectStatus =
   | "Active"
@@ -36,8 +42,6 @@ export interface SubtaskType {
   authorId: number;
   taskId: number;
 }
-
-
 
 export interface Task {
   id: number;
@@ -97,7 +101,9 @@ interface ProjectsContextProps {
     projectId: number,
     data: Partial<Project>
   ) => Promise<{ status: string; text: string }>;
-  deleteProject: (projectId: number) => Promise<{status:string, text: string}>
+  deleteProject: (
+    projectId: number
+  ) => Promise<{ status: string; text: string }>;
 }
 
 export const ProjectsContext = createContext<ProjectsContextProps | undefined>(
@@ -148,7 +154,6 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
           `http://localhost:3002/api/projects?companyId=${company.id}`
         );
         const data = response.data;
-        console.log(data);
         return data.projects;
       }
     } catch (err: any) {
@@ -201,23 +206,13 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
     userId: number
   ) => {
     if (!projectId || !userId) {
-      return {
-        status: "Error",
+      return { status: "Error",
         text: "Did not provide all required info to bookmark project",
       };
     }
     try {
-      let response: AxiosResponse;
-      if (method === "add")
-        response = await axios.post(
-          `http://localhost:3002/api/project/bookmark/${projectId}/${userId}`
-        );
-      else
-        response = await axios.delete(
-          `http://localhost:3002/api/project/bookmark/${projectId}/${userId}`
-        );
-      const bookmark = response.data.data;
-      console.log("Bookmark from endpoint: ", bookmark);
+      const url = `http://localhost:3002/api/project/bookmark/${projectId}/${userId}`
+      method === "add" ? await axios.post(url) : await axios.delete(url)
       return { status: "Success", text: "Added/deleted bookmark" };
     } catch (err: any) {
       console.log(err);
@@ -228,25 +223,21 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
 
   const deleteProject = async (projectId: number) => {
     if (!projectId) {
-      return {
-        status: "Error",
+      return { status: "Error",
         text: "Did not provide project ID to delete project",
       };
     }
     try {
-      const response: AxiosResponse = await axios.delete(`http://localhost:3002/api/project/${projectId}`);
-      if(response.status == 200) {
-        return { status: "Success", text: "Deleted project" };
-      }
-      else {
-        throw new Error(response.statusText)
-      }
-    } catch (err: any){
+      const response: AxiosResponse = await axios.delete(
+        `http://localhost:3002/api/project/${projectId}`
+      );
+      response.status == 200 && { status: "Success", text: "Deleted project" };
+    } catch (err: any) {
       console.log(err);
       const errMessage = err.response?.data.message || err.message;
       return { status: "Error", text: errMessage };
     }
-  }
+  };
 
   const ctxValue = {
     addNewProject,
@@ -256,7 +247,7 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
     bookmarkProject,
     getDashboardProjects,
     changeProject,
-    deleteProject
+    deleteProject,
   };
 
   return (

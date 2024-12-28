@@ -62,7 +62,7 @@ const SprintList: React.FC<{ sprint: SprintType; tasks: Task[] }> = ({
         />
       </Modal>
       <Modal ref={deleteModalRef}>
-        <div className="w-full max-w-screen-md flex flex-col gap-5 p-5">
+        <div className="w-full max-w-screen-md flex  flex-col gap-5 p-5">
           <header className="py-2 border-b flex flex-col gap-2 border-b-slate-400">
             <h1 className="text-xl font-[600]">
               Are you sure you want to delete sprint {sprint.name}?
@@ -81,7 +81,7 @@ const SprintList: React.FC<{ sprint: SprintType; tasks: Task[] }> = ({
           </div>
         </div>
       </Modal>
-      <div>
+      <div className="bg-darkest-blue rounded-lg p-5">
         <header className="py-2 flex justify-between items-center gap-2">
           <div className="flex flex-col justify-center items-start gap-2">
             <h2 className=" font-[300] text-light-blue text-xl flex items-center gap-2">
@@ -120,6 +120,13 @@ const SprintList: React.FC<{ sprint: SprintType; tasks: Task[] }> = ({
             </div>
           </div>
           <div className="relative flex items-center gap-5">
+            
+
+            <AddButton
+              type="task"
+              placeholder="Add task"
+              sprintId={sprint.id}
+            />
             {sprint.status == "Planning" ? (
               <button onClick={handleChangeSprintStatus}>Start Sprint</button>
             ) : (
@@ -127,16 +134,10 @@ const SprintList: React.FC<{ sprint: SprintType; tasks: Task[] }> = ({
                 End Sprint
               </button>
             )}
-
-            <AddButton
-              type="task"
-              placeholder="Add task"
-              sprintId={sprint.id}
-            />
           </div>
         </header>
         {tasks && (
-          <ul className="w-full flex flex-col gap-2">
+          <ul className="w-full flex flex-col gap-2 p-2">
             {tasks.length > 0 ? tasks.map((task) => {
               return <SortableTaskItem key={task.id} item={task} />;
             }) : <p className="px-5 py-2 font-[400] text-slate-600 font-sm">Drop tasks here</p>}

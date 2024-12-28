@@ -57,7 +57,7 @@ const ProjectRoot: React.FC = () => {
 
   return (
     <>
-      <section className="w-full max-w-screen-2xl mx-auto gap-10 flex flex-col">
+      <section className="w-full max-w-screen-2xl  gap-10 flex flex-col">
         <div>
           <Link
             to="/dashboard/projects"
@@ -67,12 +67,17 @@ const ProjectRoot: React.FC = () => {
           </Link>
           <ProjectDetails project={project} />
         </div>
-        <div className="w-full flex justify-center gap-5 items-center border-b-4 border-dark-blue">
+        <div className="flex flex-col gap-0">
+        <div className="w-full flex justify-left ml-[10%] gap-5 items-center ">
           {sections.map((item, index) => {
-            return <button className={`py-2 px-5 font-[600] text-lg rounded-t-lg ${currentView === index && "bg-dark-blue"}`} key={item.name} onClick={() => setCurrentView(index)}>{item.name}</button>
+            return <button className={`py-2 px-5 lg:px-20 font-[200] text-slate-200 text-lg rounded-t-lg ${currentView === index && "bg-dark-blue"}`} key={item.name} onClick={() => setCurrentView(index)}>{item.name}</button>
           })}
         </div>
+        <div className=" border-4  rounded-xl border-dark-blue">
         {isLoading ? <div>Loading tasks...</div> : sections[currentView].component}
+        </div>
+        </div>
+        
       </section>
       <Outlet />
     </>

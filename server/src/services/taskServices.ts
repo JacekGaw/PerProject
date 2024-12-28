@@ -1,10 +1,6 @@
 import { eq, desc, and, ne } from "drizzle-orm";
 import db from "../database/db.js";
-import {
-  tasks,
-  subTasks,
-  projects,
-} from "../database/schemas.js";
+import { tasks, subTasks, projects } from "../database/schemas.js";
 
 type Task = typeof tasks.$inferSelect;
 
@@ -33,7 +29,9 @@ export interface NewSubtaskType {
   taskId: number;
 }
 
-export const getTaskFromDB = async (id: number): Promise<{task: Task, subtasks: typeof subTasks.$inferSelect[]}> => {
+export const getTaskFromDB = async (
+  id: number
+): Promise<{ task: Task; subtasks: (typeof subTasks.$inferSelect)[] }> => {
   try {
     const taskToReturn = await db.select().from(tasks).where(eq(tasks.id, id));
     const subtasks = await db
@@ -69,7 +67,7 @@ export const getTasksFromDB = async (
     if (!withSubtasks) {
       const tasksToReturn = await db.query.tasks.findMany({
         where: (tasks, { eq }) => eq(tasks.assignedTo, userId),
-        orderBy: (tasks, {asc}) => [asc(tasks.createdAt)],
+        orderBy: (tasks, { asc }) => [asc(tasks.createdAt)],
         with: {
           project: {
             columns: {
@@ -84,11 +82,11 @@ export const getTasksFromDB = async (
     } else {
       const tasksToReturn = await db.query.tasks.findMany({
         where: (tasks, { eq }) => eq(tasks.assignedTo, userId),
-        orderBy: (tasks, {asc}) => [asc(tasks.createdAt)],
+        orderBy: (tasks, { asc }) => [asc(tasks.createdAt)],
         with: {
           subTasks: {
             where: (subTasks, { eq }) => eq(subTasks.assignedTo, userId),
-            orderBy: (subTasks, {asc}) => [asc(subTasks.createdAt)],
+            orderBy: (subTasks, { asc }) => [asc(subTasks.createdAt)],
           },
           project: {
             columns: {
@@ -173,13 +171,17 @@ export const changeSubtaskInDB = async (
 };
 
 export const addNewTaskToDB = async (
-  newTask: NewTaskType
-): Promise<typeof tasks.$inferSelect> => {
+  newTask: NewTaskType,
+  table: "tasks" | "subTasks"
+): Promise<typeof tasks.$inferSelect | typeof subTasks.$inferSelect> => {
   try {
-    const newTaskAdded = await db.insert(tasks).values(newTask).returning();
+    let newTaskAdded;
+    table == "tasks"
+      ? (newTaskAdded = await db.insert(tasks).values(newTask).returning())
+      : (newTaskAdded = await db.insert(subTasks).values(newTask).returning());
     return newTaskAdded[0];
   } catch (err) {
-    console.error("Error trying to add task to db", err);
+    console.error("Error trying to add task or subtask to db", err);
     throw err;
   }
 };
@@ -201,7 +203,7 @@ export const addNewSubtaskToDB = async (
 
 export const addSubtasksBatchToDB = async (
   newTasks: NewTaskType[]
-): Promise<typeof subTasks.$inferSelect[]> => {
+): Promise<(typeof subTasks.$inferSelect)[]> => {
   try {
     const newSubtasksAdded = await db
       .insert(subTasks)
@@ -216,31 +218,23 @@ export const addSubtasksBatchToDB = async (
 };
 
 export const deleteTaskFromDB = async (
-  id: number
-): Promise<typeof tasks.$inferSelect> => {
+  id: number,
+  table: "tasks" | "subTasks"
+): Promise<typeof tasks.$inferSelect | typeof subTasks.$inferSelect> => {
   try {
-    const deletedTask = await db
-      .delete(tasks)
-      .where(eq(tasks.id, id))
-      .returning();
+    let deletedTask;
+    table == "tasks"
+      ? (deletedTask = await db
+          .delete(tasks)
+          .where(eq(tasks.id, id))
+          .returning())
+      : (deletedTask = await db
+          .delete(subTasks)
+          .where(eq(subTasks.id, id))
+          .returning());
     return deletedTask[0];
   } catch (err) {
     console.error("Error trying to delete task from db", err);
-    throw err;
-  }
-};
-
-export const deleteSubtaskFromDB = async (
-  id: number
-): Promise<typeof subTasks.$inferSelect> => {
-  try {
-    const deletedSubtask = await db
-      .delete(subTasks)
-      .where(eq(subTasks.id, id))
-      .returning();
-    return deletedSubtask[0];
-  } catch (err) {
-    console.error("Error trying to delete subtask from db", err);
     throw err;
   }
 };

@@ -21,19 +21,12 @@ const SignUp: React.FC = () => {
     setErrorMessage("");
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const email = formData.get("email") as string | null;
-    const password = formData.get("password") as string | null;
-    const repeatPassword = formData.get("password-repeat") as string | null;
-    const name = formData.get("name") as string | null;
-    const surname = formData.get("surname") as string | null;
-    if (
-      !formData ||
-      !email ||
-      !password ||
-      !repeatPassword ||
-      !name ||
-      !surname
-    ) {
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const repeatPassword = formData.get("password-repeat") as string;
+    const name = formData.get("name") as string;
+    const surname = formData.get("surname") as string;
+    if (!formData || email || password || repeatPassword || name || surname) {
       setErrorMessage("Did not provided all required informations.");
       return;
     }
@@ -45,10 +38,7 @@ const SignUp: React.FC = () => {
       name,
       surname,
     };
-    if (
-      data.password?.toString().trim() !==
-      data.repeatPassword?.toString().trim()
-    ) {
+    if (data.password?.toString().trim() !== data.repeatPassword?.toString().trim()) {
       setErrorMessage("Passwords do not match!");
       return;
     }
@@ -56,11 +46,8 @@ const SignUp: React.FC = () => {
       const result = await signup(data);
       if (result.success) {
         navigate("/login");
-        console.log("New user added successfully");
       } else {
-        setErrorMessage(
-          result.message || "Adding new user failed. Please try again."
-        );
+        setErrorMessage(result.message || "Adding new user failed. Please try again.");
       }
     }
   };
@@ -70,9 +57,7 @@ const SignUp: React.FC = () => {
       <div className="flex flex-col justify-center items-center gap-10">
         <header>
           <h1 className="font-[800] text-5xl sm:text-6xl tracking-wider">
-            <span className="text-darkest-blue dark:text-lightest-blue">
-              Per
-            </span>
+            <span className="text-darkest-blue dark:text-lightest-blue">Per</span>
             <span className="text-normal-orange">Project</span>
           </h1>
         </header>
@@ -135,18 +120,13 @@ const SignUp: React.FC = () => {
           <Button className="self-center" type="submit">
             SIGNUP
           </Button>
-          <Link
-            to="/login"
-            className="group text-sm text-center font-[600] text-slate-600"
-          >
-            Already have an account?{" "}
-            <span className="text-normal-orange">Log In</span>!
+          <Link to="/login" className="group text-sm text-center font-[600] text-slate-600">
+            Already have an account? <span className="text-normal-orange">Log In</span>!
           </Link>
         </form>
       </div>
       <p className="fixed bottom-0 left0 w-full text-center p-2 mb-2 font-[400] text-xs md:text-sm  text-slate-600 ">
-        Read about{" "}
-        <span className="font-[600] text-slate-500">Privacy Policy</span> and{" "}
+        Read about <span className="font-[600] text-slate-500">Privacy Policy</span> and{" "}
         <span className="font-[600] text-slate-500">Terms Of Use</span>
       </p>
     </section>

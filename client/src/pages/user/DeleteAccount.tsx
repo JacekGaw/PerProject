@@ -1,4 +1,4 @@
-import React, {  useState } from "react";
+import React, { useState } from "react";
 import { useUserCtx, UserObj } from "../../store/UserContext";
 import Button from "../../components/UI/Button";
 import { CompanyUserType } from "../../store/CompanyContext";
@@ -41,16 +41,11 @@ const DeleteAccount: React.FC<{ userObject: UserObj | CompanyUserType }> = ({
             Delete account for: {userObject.name} {userObject.surname}
           </h2>
         </header>
-        {user && userObject.id !== user.id ? (
+        {user && (
           <p>
             Are you sure you want to delete this account? Note that this
             operation is IRREVERSIBLE! Click Delete to proceed or close this
             modal if you do not want to do it.
-          </p>
-        ) : (
-          <p>
-            Cannot delete currently logged in user! Todo that, go to User
-            Settings.
           </p>
         )}
         {responseMessage.text !== "" && (
@@ -64,7 +59,7 @@ const DeleteAccount: React.FC<{ userObject: UserObj | CompanyUserType }> = ({
             {responseMessage.text}
           </p>
         )}
-        {user && userObject.id !== user.id && (
+        {user && (
           <Button
             onClick={handleSubmit}
             disabled={buttonDisabled ? true : false}

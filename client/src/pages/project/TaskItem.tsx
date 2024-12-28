@@ -22,7 +22,6 @@ type TaskStatus = "To Do" | "In Progress" | "On Hold" | "Done";
 
 const taskStatuses = ["To Do", "In Progress", "On Hold", "Done"];
 const taskTypes: taskType[] = [{type: "Task", icon: taskIcon}, {type: "Story", icon: storyIcon}, {type: "Error", icon: errorIcon}];
-// const taskPriority = ["Low", "Medium", "High"];
 
 const TaskItem: React.FC<TaskItemProps > = ({item}) => {
     const { changeTask } = useTasksCtx();
@@ -55,10 +54,9 @@ const TaskItem: React.FC<TaskItemProps > = ({item}) => {
 
     return (    
         <>
-            <li className='flex gap-2 w-full items-center justify-between p-1  bg-darkest-blue bg-opacity-50 rounded-sm'>
-                <div onClick={openSelect} className={`w-24 relative  flex justify-left items-center gap-1 text-xs p-2`}>
-                    <img src={taskType.icon} className='max-w-4 fill-slate-100' />
-                    <p className='font-[200]'>{taskType.type}</p>
+            <li className='flex gap-2 w-full items-center justify-between p-1  bg-black-blue bg-opacity-50 rounded-sm'>
+                <div onClick={openSelect} className={`w-8 relative  flex justify-left items-center gap-1 text-xs p-2`}>
+                    <img src={taskType.icon} className='max-w-8 w-8 h-auto fill-slate-100' />
                 </div>
                 <Link to={`task/${item.id}`} className='text-left w-full font-[300] px-5 py-2'>{item.taskText}</Link>
                 <select value={item.status}  onChange={changeStatus} ref={statusRef}   className='bg-darkest-blue text-sm p-2 rounded-sm'>

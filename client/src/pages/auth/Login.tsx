@@ -19,17 +19,12 @@ const Login: React.FC = () => {
       setErrorMessage("Email and password are required.");
       return;
     }
-
-    const data = {
-      email,
-      password,
-    };
+    const data = { email, password };
 
     if (login) {
       const result = await login(data);
       if (result.success) {
         navigate("/dashboard");
-        console.log("User logged in successfully");
       } else {
         setErrorMessage(result.message || "Login failed. Please try again.");
       }

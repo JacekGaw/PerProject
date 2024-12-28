@@ -205,6 +205,24 @@ export const createBookmarkInDB = async (projectId: number, userId: number) => {
   }
 };
 
+export const deleteBookmarkInDB = async (projectId: number, userId: number) => {
+  try {
+    const deletedBookmark = await db
+      .delete(userFavourites)
+      .where(
+        and(
+          eq(userFavourites.projectId, projectId),
+          eq(userFavourites.userId, userId)
+        )
+      )
+      .returning();
+    return deletedBookmark;
+  } catch (err) {
+    console.error("Error deleting bookmark from db:", err);
+    throw err;
+  }
+};
+
 export const deleteProjectFromDb = async (projectId: number): Promise<{}> => {
   try {
     const deletedProject = await db
@@ -249,20 +267,4 @@ export const checkProjectExists = async (alias: string): Promise<boolean> => {
   }
 };
 
-export const deleteBookmarkInDB = async (projectId: number, userId: number) => {
-  try {
-    const deletedBookmark = await db
-      .delete(userFavourites)
-      .where(
-        and(
-          eq(userFavourites.projectId, projectId),
-          eq(userFavourites.userId, userId)
-        )
-      )
-      .returning();
-    return deletedBookmark;
-  } catch (err) {
-    console.error("Error deleting bookmark from db:", err);
-    throw err;
-  }
-};
+

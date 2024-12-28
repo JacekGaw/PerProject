@@ -37,13 +37,13 @@ const ProjectsRoot: React.FC = () => {
         </div>
       </Modal>
       <section className="w-full max-w-screen-xl mx-auto gap-10 flex flex-col">
-        <header className="w-full border-b py-5 flex justify-between gap-2 items-center">
-          <h1 className="font-[800] text-slate-200 text-2xl">Projects</h1>
+        <header className="w-full border-b border-b-slate-400 py-5 flex justify-between gap-2 items-center">
+          <h1 className="font-[200] text-slate-200 text-4xl">Projects</h1>
           <motion.button
             initial={{ scale: 1 }}
             whileHover={{ scale: 1.1 }}
             onClick={openModal}
-            className="bg-gradient-to-r from-normal-orange to-vibrant-orange p-2 rounded-full w-8 h-8 flex justify-center items-center"
+            className="bg-gradient-to-r from-normal-orange to-vibrant-orange p-2 rounded-full w-10 h-10 flex justify-center items-center"
           >
             <img src={plusIcon} alt="Add New Project" className="w-4" />
           </motion.button>
