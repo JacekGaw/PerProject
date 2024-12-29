@@ -4,8 +4,7 @@ import {
   projects,
   companies,
   sprints,
-  tasks,
-  subTasks,
+  tasks
 } from "../database/schemas.js";
 import { getTaskFromDB } from "./taskServices.js";
 import OpenAI from "openai";
@@ -20,14 +19,14 @@ type CompanySettings = {
   AI: { available: boolean; model: string; apiKey: string };
 };
 
-const SubtaskType = z.object({
+export const SubtaskType = z.object({
   taskText: z.string(),
   description: z.string(),
 });
 
-const SubtasksArrType = z.array(SubtaskType);
+export const SubtasksArrType = z.array(SubtaskType);
 
-const SubtasksResponseType = z.object({
+export const SubtasksResponseType = z.object({
   subtasks: SubtasksArrType,
 });
 

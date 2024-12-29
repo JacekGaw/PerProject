@@ -17,6 +17,9 @@ export function encryptData(data: string): string {
     const cipher = crypto.createCipheriv(encryptionMethod, key, iv);
     let encrypted = cipher.update(data, 'utf8', 'hex');
     encrypted += cipher.final('hex');
+    if (!encrypted) {
+      throw new Error('Encryption failed: Unable to encrypt data.');
+    }
     return Buffer.from(encrypted, 'hex').toString('base64');
   } catch (error: any) {
     throw new Error(`Encryption failed: ${error.message}`);
@@ -29,8 +32,12 @@ export function decryptData(encryptedData: string): string {
     const decipher = crypto.createDecipheriv(encryptionMethod, key, iv);
     let decrypted = decipher.update(encryptedHex, 'hex', 'utf8');
     decrypted += decipher.final('utf8');
+    if (!decrypted) {
+      throw new Error('Decryption failed: Data is corrupted or tampered.');
+    }
     return decrypted;
   } catch (error: any) {
     throw new Error(`Decryption failed: ${error.message}`);
   }
 }
+
