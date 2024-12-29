@@ -67,6 +67,11 @@ const [buttonDisabled, setButtonDisabled] = useState<boolean>(false)
     setCheckedArr([]);
   };
 
+  const handleSelectAll = () => {
+    const arr = tasks.map((_, index) => index);
+    setCheckedArr(arr);
+  };
+
   return (
     <>
       <div className="w-full max-w-screen-md flex flex-col gap-5 p-5">
@@ -157,6 +162,13 @@ const [buttonDisabled, setButtonDisabled] = useState<boolean>(false)
             })}
           </div>
           <div className="flex justify-end gap-5 items-center">
+          <button
+              type="button"
+              onClick={handleSelectAll}
+              className="underline text-sm text-slate-200"
+            >
+              Select All
+            </button>
             <button
               type="button"
               onClick={handleResetSelection}

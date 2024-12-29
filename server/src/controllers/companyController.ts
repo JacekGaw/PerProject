@@ -84,12 +84,10 @@ export const createCompany: RequestHandler = async (req, res) => {
 export const updateCompany: RequestHandler = async (req, res) => {
   try {
     const data = req.body;
-
     const updateCompany = await updateCompanyInDB(
       data,
       parseInt(req.params.id)
     );
-    console.log("Updated company ", updateCompany);
     return res.status(200).json({
       message: "Updated single company",
       company: updateCompany,
@@ -105,12 +103,10 @@ export const updateCompany: RequestHandler = async (req, res) => {
 export const updateCompanyAISettings: RequestHandler = async (req, res) => {
   try {
     const data = req.body;
-
     const updateCompany = await updateCompanyAISettingsInDB(
       data,
       parseInt(req.params.id)
     );
-    console.log("Updated company AI Settings ", updateCompany);
     return res.status(200).json({
       message: "Updated company AI settings",
       company: updateCompany,

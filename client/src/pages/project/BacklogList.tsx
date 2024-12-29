@@ -20,9 +20,8 @@ const BacklogList: React.FC<{ tasks: Task[] }> = ({ tasks }) => {
           <h2 className="font-[300] text-light-blue text-xl">Backlog:</h2>
           </div>
           <div className="relative flex items-center gap-5">
+          <AddButton type="task" placeholder="Add task" />
           <button onClick={() => modalRef.current && modalRef.current.open()} >Create Sprint</button>
-
-            <AddButton type="task" placeholder="Add task" />
           </div>
         </header>
         {tasks && (

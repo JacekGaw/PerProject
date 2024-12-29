@@ -87,12 +87,12 @@ const SprintList: React.FC<{ sprint: SprintType; tasks: Task[] }> = ({
             <h2 className=" font-[300] text-light-blue text-xl flex items-center gap-2">
               <div className="relative rounded-md group p-2 bg-black-blue hover:bg-darkest-blue">
                 <img src={dotsIcon} className=" max-w-2 w-1 h-auto" />
-                <div className="z-50 cursor-pointer group-hover:flex absolute left-[100%] top-0  hidden flex-col">
+                <div className="z-50 cursor-pointer rounded-md bg-black-blue overflow-hidden group-hover:flex absolute left-[100%] top-0  hidden flex-col">
                   <button
                     onClick={() =>
                       editModalRef.current && editModalRef.current.open()
                     }
-                    className="text-sm bg-darkest-blue hover:bg-dark-blue py-2 px-4 font-[400]"
+                    className="text-sm bg-black-blue hover:bg-dark-blue py-2 px-4 font-[400]"
                   >
                     Edit
                   </button>
@@ -100,7 +100,7 @@ const SprintList: React.FC<{ sprint: SprintType; tasks: Task[] }> = ({
                     onClick={() =>
                       deleteModalRef.current && deleteModalRef.current.open()
                     }
-                    className="text-sm hover:bg-dark-blue bg-darkest-blue py-2 px-4 font-[400]"
+                    className="text-sm hover:bg-dark-blue bg-black-blue py-2 px-4 font-[400]"
                   >
                     Delete
                   </button>

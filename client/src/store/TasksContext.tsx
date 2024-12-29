@@ -184,11 +184,9 @@ export const TasksProvider: React.FC<{ children: ReactNode }> = ({
     taskId: number,
     data: Partial<Task> | Partial<SubTask>
   ) => {
-    console.log("CHANG");
-    console.log(data);
     try {
       const response = await axios.patch(
-        `http://localhost:3002/api/${type}/${taskId}`,
+        `http://localhost:3002/api/change/${type}/${taskId}`,
         data
       );
       if (type === "task") {
@@ -214,19 +212,18 @@ export const TasksProvider: React.FC<{ children: ReactNode }> = ({
               const updatedSubTasks = task.subTasks.map((subtask) =>
                 subtask.id === taskId ? { ...subtask, ...data } : subtask
               );
-
-              // Return the updated task with modified subtasks
               return { ...task, subTasks: updatedSubTasks };
             }
-            return task; // If no subtasks, return the task unchanged
+            return task;
           })
         );
       }
       return { status: "Success", text: response.data.message };
     } catch (err: any) {
-      console.log(err);
-      const errMessage = err.response?.data.message || err.message;
-      return { status: "Error", text: errMessage };
+      return {
+        status: "Error",
+        text: err.response?.data.message || err.message,
+      };
     }
   };
 

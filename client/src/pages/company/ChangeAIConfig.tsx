@@ -74,7 +74,7 @@ const ChangeAIConfig: React.FC = () => {
                 id="apiKey"
                 name="apiKey"
                 defaultValue={company?.settings.AI.apiKey}
-                type="text"
+                type="password"
                 className="bg-transparent border border-slate-500 rounded-sm p-2"
               />
             </div>

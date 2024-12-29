@@ -13,31 +13,30 @@ import KanbanView from "./KanbanView";
 type LoaderData = {
   project: Project;
   tasks: Task[];
-  sprints: SprintType[]
+  sprints: SprintType[];
 };
 
 const sections = [
   {
     name: "Sprints View",
-    component: <SprintView />
+    component: <SprintView />,
   },
   {
     name: "Kanban Table",
-    component: <KanbanView />
+    component: <KanbanView />,
   },
   {
     name: "All Tasks",
-    component: <AllTasksList />
-  }
-]
+    component: <AllTasksList />,
+  },
+];
 
 const ProjectRoot: React.FC = () => {
   const { setProject } = useProjectCtx();
-  const {setTasks} = useTasksCtx()
-  const {setSprints} = useSprintsCtx();
+  const { setTasks } = useTasksCtx();
+  const { setSprints } = useSprintsCtx();
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [currentView, setCurrentView] = useState<number>(0)
-
+  const [currentView, setCurrentView] = useState<number>(0);
 
   const { project, tasks, sprints } = useLoaderData() as LoaderData;
   useEffect(() => {
@@ -48,12 +47,14 @@ const ProjectRoot: React.FC = () => {
     if (tasks) {
       setTasks(tasks);
     }
-    if(sprints) {
-      setSprints({active: sprints.filter((sprint) => sprint.status === "Active"), planning: sprints.filter((sprint) => sprint.status === "Planning")})
+    if (sprints) {
+      setSprints({
+        active: sprints.filter((sprint) => sprint.status === "Active"),
+        planning: sprints.filter((sprint) => sprint.status === "Planning"),
+      });
     }
     setIsLoading(false);
   }, [project, tasks, sprints, setProject, setTasks]);
-
 
   return (
     <>
@@ -68,16 +69,29 @@ const ProjectRoot: React.FC = () => {
           <ProjectDetails project={project} />
         </div>
         <div className="flex flex-col gap-0">
-        <div className="w-full flex justify-left ml-[10%] gap-5 items-center ">
-          {sections.map((item, index) => {
-            return <button className={`py-2 px-5 lg:px-20 font-[200] text-slate-200 text-lg rounded-t-lg ${currentView === index && "bg-dark-blue"}`} key={item.name} onClick={() => setCurrentView(index)}>{item.name}</button>
-          })}
+          <div className="w-full flex justify-left ml-[10%] gap-5 items-center ">
+            {sections.map((item, index) => {
+              return (
+                <button
+                  className={`py-2 px-5 lg:px-20 font-[200] text-slate-200 text-lg rounded-t-lg ${
+                    currentView === index && "bg-dark-blue"
+                  }`}
+                  key={item.name}
+                  onClick={() => setCurrentView(index)}
+                >
+                  {item.name}
+                </button>
+              );
+            })}
+          </div>
+          <div className=" border-4  rounded-xl border-dark-blue">
+            {isLoading ? (
+              <div>Loading tasks...</div>
+            ) : (
+              sections[currentView].component
+            )}
+          </div>
         </div>
-        <div className=" border-4  rounded-xl border-dark-blue">
-        {isLoading ? <div>Loading tasks...</div> : sections[currentView].component}
-        </div>
-        </div>
-        
       </section>
       <Outlet />
     </>
@@ -88,7 +102,11 @@ export default ProjectRoot;
 
 export const projectLoader = async ({
   params,
-}: LoaderFunctionArgs): Promise<{ project: Project; tasks: Task[], sprints: SprintType[] }> => {
+}: LoaderFunctionArgs): Promise<{
+  project: Project;
+  tasks: Task[];
+  sprints: SprintType[];
+}> => {
   const alias = params.alias;
 
   if (!alias) {
@@ -98,11 +116,10 @@ export const projectLoader = async ({
     const response = await axios.get(
       `http://localhost:3002/api/project/${alias}/tasks`
     );
-    console.log("DATA FROM LOADER ", response.data.data);
     return {
       project: response.data.data.project,
       tasks: response.data.data.tasks,
-      sprints: response.data.data.sprints
+      sprints: response.data.data.sprints,
     };
   } catch (err) {
     throw new Response(`Project and tasks not found: ${err}`, { status: 404 });

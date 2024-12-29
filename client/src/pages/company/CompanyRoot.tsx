@@ -3,6 +3,7 @@ import { useCompanyCtx } from "../../store/CompanyContext";
 import CompanyUsersList from "./CompanyUsersList";
 import CompanyStatistics from "./CompanyStatistics";
 import CompanySettings from "./CompanySettings";
+import DateFormatted from "../../components/UI/DateFormatted";
 
 const CompanyRoot: React.FC = () => {
     const { company} = useCompanyCtx();
@@ -33,6 +34,11 @@ const CompanyRoot: React.FC = () => {
         <header className="flex justify-center items-center flex-col gap-2 max-w-screen-sm mx-auto">
             <h2 className="font-[600] text-5xl">{company?.name}</h2>
             <p className="font-[200] text-xl" >{company?.description}</p>
+            <div>
+        {/* <p className="font-[300] text-xl text-slate-800 inline-flex">
+          From: <DateFormatted dateObj={new Date(company!.createdAt)} />{" "} 
+        </p> */}
+      </div>
         </header>
         <div className="flex flex-col gap-2">
         <div className="w-full flex justify-center items-center border-b border-slate-400 flex-nowrap">

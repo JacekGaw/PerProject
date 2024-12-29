@@ -140,7 +140,6 @@ export const updateUserInDB = async (
   userId: number
 ): Promise<{}> => {
   try {
-    
     const updatedUser = await db
       .update(users)
       .set(data)

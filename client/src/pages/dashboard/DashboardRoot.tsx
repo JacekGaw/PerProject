@@ -26,7 +26,7 @@ const DashboardRoot: React.FC = () => {
                 <SprintsProvider>
                 <div className="flex">
                   <Navigation />
-                  <main className="p-5 w-full pl-[60px] flex justify-center overflow-x-hidden">
+                  <main className="ml-[60px] p-5 w-full  flex justify-center overflow-x-hidden">
                     <Outlet />
                   </main>
                 </div>

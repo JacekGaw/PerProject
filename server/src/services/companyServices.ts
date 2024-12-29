@@ -196,10 +196,9 @@ export const updateCompanyInDB = async (
   companyId: number
 ): Promise<{}> => {
   try {
-    const newCompanyData = { ...data };
     const updatedComyant = await db
       .update(companies)
-      .set(newCompanyData)
+      .set(data)
       .where(eq(companies.id, companyId))
       .returning();
     return updatedComyant;
@@ -209,13 +208,14 @@ export const updateCompanyInDB = async (
   }
 };
 
+
+
 export const updateCompanyAISettingsInDB = async (
   data: CompanySettings,
   companyId: number
 ): Promise<{}> => {
   try {
-    const encryptedApiKey = encryptData(data.AI.apiKey);
-    data.AI.apiKey = encryptedApiKey;
+    data.AI.apiKey = encryptData(data.AI.apiKey);
     const updatedCompany = await db
       .update(companies)
       .set({ settings: data })

@@ -136,42 +136,31 @@ export const getDashboardTasksFromDB = async (
 
 export const changeTaskInDB = async (
   taskId: number,
-  changeTask: Partial<NewTaskType>
-): Promise<typeof tasks.$inferSelect> => {
-  const date = new Date();
+  changeTask: Partial<NewTaskType>,
+  type: "task" | "subtask"
+): Promise<typeof tasks.$inferSelect | typeof subTasks.$inferSelect> => {
   try {
-    const changedTask = await db
-      .update(tasks)
-      .set({ ...changeTask, updatedAt: date }) // Now changeTask matches the DB types correctly
-      .where(eq(tasks.id, taskId))
-      .returning(); // Ensure you return the updated task
-    return changedTask[0]; // Return the first result (usually only 1)
+    let changedTask;
+    type == "task"
+      ? (changedTask = await db
+          .update(tasks)
+          .set({ ...changeTask, updatedAt: new Date() })
+          .where(eq(tasks.id, taskId))
+          .returning())
+      : (changedTask = await db
+          .update(subTasks)
+          .set({ ...changeTask, updatedAt: new Date() })
+          .where(eq(subTasks.id, taskId))
+          .returning());
+    return changedTask[0];
   } catch (err) {
     console.error("Error trying to update task in db", err);
     throw err;
   }
 };
 
-export const changeSubtaskInDB = async (
-  taskId: number,
-  changeTask: Partial<NewSubtaskType>
-): Promise<typeof subTasks.$inferSelect> => {
-  const date = new Date();
-  try {
-    const changedSubtask = await db
-      .update(subTasks)
-      .set({ ...changeTask, updatedAt: date }) // Now changeTask matches the DB types correctly
-      .where(eq(subTasks.id, taskId))
-      .returning(); // Ensure you return the updated task
-    return changedSubtask[0]; // Return the first result (usually only 1)
-  } catch (err) {
-    console.error("Error trying to update subtask in db", err);
-    throw err;
-  }
-};
-
 export const addNewTaskToDB = async (
-  newTask: NewTaskType,
+  newTask: NewTaskType | NewSubtaskType,
   table: "tasks" | "subTasks"
 ): Promise<typeof tasks.$inferSelect | typeof subTasks.$inferSelect> => {
   try {
@@ -209,7 +198,6 @@ export const addSubtasksBatchToDB = async (
       .insert(subTasks)
       .values(newTasks)
       .returning();
-    console.log(newSubtasksAdded);
     return newSubtasksAdded;
   } catch (err) {
     console.error("Error trying to add subtasks to db", err);

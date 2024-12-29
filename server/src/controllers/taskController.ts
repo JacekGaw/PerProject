@@ -9,7 +9,6 @@ import {
   addNewTaskToDB,
   deleteTaskFromDB,
   addNewSubtaskToDB,
-  changeSubtaskInDB,
 } from "../services/taskServices.js";
 import { generateSubtasksUsingAI } from "../services/aiServices.js";
 
@@ -48,7 +47,6 @@ export const generateSubtasks: RequestHandler = async (req, res) => {
     const task = req.query.task as string;
     const project = req.query.project as string;
     const company = req.query.company as string;
-    console.log(task, project, company);
     if (!task || !project || !company) {
       return res
         .status(400)
@@ -87,7 +85,7 @@ export const getTasks: RequestHandler = async (req, res) => {
 
 export const createTask: RequestHandler = async (req, res) => {
   try {
-    const newTask = req.body as NewTaskType;
+    const newTask = req.body as NewTaskType | NewSubtaskType;
     const type = req.query.type === "subtask";
     let addedTask;
     type
@@ -108,7 +106,6 @@ export const createTask: RequestHandler = async (req, res) => {
 export const createSubtask: RequestHandler = async (req, res) => {
   try {
     const batch = req.query.batch === "true";
-    console.log(batch);
     if (!batch) {
       const newSubtask = req.body as NewTaskType;
       const addedSubtask = await addNewSubtaskToDB(newSubtask);
@@ -117,7 +114,6 @@ export const createSubtask: RequestHandler = async (req, res) => {
         .json({ message: "Added new subtask", data: addedSubtask });
     } else {
       const newSubtasks = req.body as NewTaskType[];
-      console.log(newSubtasks);
       const addedSubtasks = await addSubtasksBatchToDB(newSubtasks);
       return res
         .status(200)
@@ -134,29 +130,14 @@ export const createSubtask: RequestHandler = async (req, res) => {
 
 export const changeTask: RequestHandler = async (req, res) => {
   try {
-    const { id: taskId } = req.params;
+    const { id: taskId, type: taskType } = req.params;
     const changeTask = req.body as Partial<NewTaskType>;
-    const changedTask = await changeTaskInDB(parseInt(taskId), changeTask);
-    return res.status(200).json({ message: "Changed task", data: changedTask });
-  } catch (err) {
-    return res.status(500).json({
-      message: "Error",
-      error: (err as Error).message || "Unknown error",
-    });
-  }
-};
-
-export const changeSubtask: RequestHandler = async (req, res) => {
-  try {
-    const { id: taskId } = req.params;
-    const changeSubtask = req.body as Partial<NewSubtaskType>;
-    const changedSubtask = await changeSubtaskInDB(
+    const changedTask = await changeTaskInDB(
       parseInt(taskId),
-      changeSubtask
+      changeTask,
+      taskType as "task" | "subtask"
     );
-    return res
-      .status(200)
-      .json({ message: "Changed subtask", data: changedSubtask });
+    return res.status(200).json({ message: "Changed task", data: changedTask });
   } catch (err) {
     return res.status(500).json({
       message: "Error",

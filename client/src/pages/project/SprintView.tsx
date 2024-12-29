@@ -8,7 +8,7 @@ import {
   DragEndEvent,
   DragStartEvent,
   DragOverEvent,
-  useDroppable
+  useDroppable,
 } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -20,7 +20,11 @@ import BacklogList from "./BacklogList";
 import SprintList from "./SprintList";
 import TaskItem from "./TaskItem";
 
-const DroppableContainer: React.FC<{id: string, children: ReactElement, isDragging: boolean}> = ({ id, children, isDragging }) => {
+const DroppableContainer: React.FC<{
+  id: string;
+  children: ReactElement;
+  isDragging: boolean;
+}> = ({ id, children, isDragging }) => {
   const { setNodeRef } = useDroppable({
     id,
   });
@@ -64,15 +68,13 @@ const SprintView: React.FC = () => {
   const handleDragOver = (event: DragOverEvent) => {
     const { over } = event;
     if (!over) return;
-  
-    // If over a task item, find its container
     const overId = over.id.toString();
-    if (!overId.startsWith('sprint-') && overId !== 'backlog') {
-      const overTask = tasks?.find(task => task.id === over.id);
+    if (!overId.startsWith("sprint-") && overId !== "backlog") {
+      const overTask = tasks?.find((task) => task.id === over.id);
       if (overTask) {
         event.over = {
           ...over,
-          id: overTask.sprintId ? `sprint-${overTask.sprintId}` : 'backlog'
+          id: overTask.sprintId ? `sprint-${overTask.sprintId}` : "backlog",
         };
       }
     }
@@ -87,35 +89,36 @@ const SprintView: React.FC = () => {
     const { active, over } = event;
     setActiveTask(null);
     setIsDragging(false);
-  
+
     if (!over) return;
-  
+
     let overId = over.id.toString();
     const activeTask = tasks?.find((task) => task.id === active.id);
     if (!activeTask) return;
 
-    if (!overId.startsWith('sprint-') && overId !== 'backlog') {
-      const overTask = tasks?.find(task => task.id === over.id);
+    if (!overId.startsWith("sprint-") && overId !== "backlog") {
+      const overTask = tasks?.find((task) => task.id === over.id);
       if (overTask) {
-        overId = overTask.sprintId ? `sprint-${overTask.sprintId}` : 'backlog';
+        overId = overTask.sprintId ? `sprint-${overTask.sprintId}` : "backlog";
       }
     }
-  
+
     const currentSprintId = activeTask.sprintId;
-    const newSprintId = overId === "backlog" 
-      ? null 
-      : overId.startsWith("sprint-")
+    const newSprintId =
+      overId === "backlog"
+        ? null
+        : overId.startsWith("sprint-")
         ? parseInt(overId.replace("sprint-", ""))
-        : currentSprintId; 
-  
+        : currentSprintId;
+
     if (currentSprintId === newSprintId) return;
-  
+
     try {
       const updateData: Partial<Task> = {
         id: activeTask.id,
         sprintId: newSprintId,
       };
-  
+
       const response = await changeTask("task", activeTask.id, updateData);
       if (response.status === "Error") {
         console.error("Failed to update task:", response.text);
@@ -137,7 +140,7 @@ const SprintView: React.FC = () => {
       onDragEnd={handleDragEnd}
       onDragCancel={handleDragCancel}
     >
-      <section className="flex flex-col gap-10">
+      <section className="flex flex-col">
         {sprints.active &&
           tasks &&
           sprints.active.map((sprint) => (
@@ -149,7 +152,7 @@ const SprintView: React.FC = () => {
               )}
               strategy={verticalListSortingStrategy}
             >
-              <DroppableContainer 
+              <DroppableContainer
                 id={`sprint-${sprint.id}`}
                 isDragging={isDragging}
               >
@@ -172,7 +175,7 @@ const SprintView: React.FC = () => {
               )}
               strategy={verticalListSortingStrategy}
             >
-              <DroppableContainer 
+              <DroppableContainer
                 id={`sprint-${sprint.id}`}
                 isDragging={isDragging}
               >
@@ -190,10 +193,7 @@ const SprintView: React.FC = () => {
             items={getTaskIds(tasks.filter((task) => task.sprintId === null))}
             strategy={verticalListSortingStrategy}
           >
-            <DroppableContainer 
-              id="backlog"
-              isDragging={isDragging}
-            >
+            <DroppableContainer id="backlog" isDragging={isDragging}>
               <BacklogList
                 tasks={tasks.filter((task) => task.sprintId === null)}
               />

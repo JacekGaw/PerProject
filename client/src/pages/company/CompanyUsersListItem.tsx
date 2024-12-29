@@ -15,14 +15,14 @@ const CompanyUsersListItem: React.FC<{ user: CompanyUserType }> = ({
       <Modal ref={modalRef}>
         <DeleteAccount userObject={user} />
       </Modal>
-      <li className="p-4 text-sm flex justify-between items-center">
+      <li className="p-4 text-sm flex gap-5 justify-between items-center">
         <div className="flex-0 flex gap-2 items-center">
           <UserAvatar user={user} />
           <p>
             {user.name} {user.surname}
           </p>
         </div>
-        <p>{user.email}</p>
+        <p className="flex-1">{user.email}</p>
         <p>{user.role}</p>
 
         <p>{user.active ? "ACTIVE" : "INACTIVE"}</p>

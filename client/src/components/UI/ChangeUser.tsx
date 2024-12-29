@@ -15,15 +15,13 @@ const ChangeUser: React.FC<ChangeUserProps> = ({ item, type ,orientation }) => {
   const [listOpen, setListOpen] = useState<boolean>(false);
   const { companyUsers } = useCompanyCtx();
   const {changeTask} = useTasksCtx()
-  const ref = useRef<HTMLDivElement>(null); // Ref to track clicks outside
+  const ref = useRef<HTMLDivElement>(null);
   const { changeProject} = useProjectCtx()
 
   const assignedUser: CompanyUserType | undefined = companyUsers.find((user) => {
     if (type === "project") {
-      // For projects, we use projectManagerId
       return user.id === (item as Project).projectManagerId;
     } else if (type === "task" || type === "subtask") {
-      // For tasks and subtasks, we use assignedTo
       return user.id === (item as Task | SubTask).assignedTo;
     }
   });
@@ -58,9 +56,11 @@ const ChangeUser: React.FC<ChangeUserProps> = ({ item, type ,orientation }) => {
 
   return (
     <div className="relative" ref={ref}>
+      <div className={`${listOpen && "border-slate-200 rounded-full"} border border-darkest-blue`}>
       <UserAvatar orientation={orientation} onClick={() => setListOpen((prev) => !prev)} user={assignedUser} />
+      </div>
       {listOpen && (
-        <div className="border border-normal-blue absolute right-[100%] bottom-0  flex flex-col rounded-xl bg-darkest-blue">
+        <div className="border border-normal-blue absolute right-[110%] bottom-0  flex flex-col rounded-xl bg-darkest-blue">
         <h4 className="text-sm text-center p-2 border-b border-slate-600">Company Users:</h4>
         <ul className=" max-h-64 overflow-y-auto ">
           {companyUsers.map((user) => (

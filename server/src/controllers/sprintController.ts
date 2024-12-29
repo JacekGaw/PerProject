@@ -26,21 +26,15 @@ interface SprintType {
 
 export const addNewSprint: RequestHandler = async (req, res) => {
   try {
-    const { tasks, ...rest } = req.body;
-    const sprintData = rest;
+    const { tasks, ...sprintData } = req.body;
     const newSprint = await addNewSprintToDB(sprintData);
-
-    // Explicitly type dataToReturn
     let dataToReturn: SprintResponse = {
       sprint: newSprint,
     };
-
     if (newSprint && tasks.length > 0) {
       const tasksAddedToSprint = await assignTasksToSprint(newSprint.id, tasks);
       dataToReturn = { tasks: tasksAddedToSprint, ...dataToReturn };
-      console.log(tasksAddedToSprint);
     }
-    console.log("All projects ", newSprint);
     res.status(200).json({
       message: "Sprint created successfully",
       data: dataToReturn,
@@ -56,9 +50,7 @@ export const addNewSprint: RequestHandler = async (req, res) => {
 export const deleteSprint: RequestHandler = async (req, res) => {
   try {
     const sprintId = req.params.id as unknown as number;
-
     const deletedSprint = await deleteSprintFromDB(sprintId);
-
     res.status(200).json({
       message: "Sprint deleted successfully",
       data: deletedSprint,
@@ -75,7 +67,6 @@ export const updateSprint: RequestHandler = async (req, res) => {
   try {
     const sprintData = req.body as Partial<SprintType>;
     const sprintId = req.params.id as unknown as number;
-
     const updatedSprint = await updateSprintInDB(sprintId, sprintData);
     return res.status(200).json({
       message: "Sprint updated successfully",
@@ -94,25 +85,11 @@ export const endSprint: RequestHandler = async (req, res) => {
     const sprintId = req.params.id as unknown as number;
     const tasksAction = req.query.tasksAction as unknown as "done" | "backlog";
     const retro = req.query.retro as unknown as string;
-    const company = req.query.company as unknown as number;
+    const company = req.params.companyId as unknown as number;
     const project = req.query.project as unknown as number;
-    console.log(
-      "TasksAction",
-      tasksAction,
-      " Retro:",
-      retro,
-      " Company: ",
-      company,
-      " Project:",
-      project
-    );
-    let retroData: string | null = null;
-    if (retro === "true") {
-      retroData = await generateRetro(sprintId, project, company);
-      console.log(retroData);
-    }
+    const retroData =
+      retro === "true" ? await generateRetro(sprintId, project, company) : null;
     const endedSprint = await endSprintInDB(sprintId, tasksAction);
-    console.log(endedSprint);
     return res.status(200).json({
       message: "Sprint updated successfully",
       data: { sprint: endedSprint, retro: retroData },

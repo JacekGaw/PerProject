@@ -31,19 +31,19 @@ export const getSprintsByProjectId = async (
 };
 
 export const getSprintBySprintId = async (
-    sprintId: number
-  ): Promise<typeof sprints.$inferSelect> => {
-    try {
-      const sprintsArr = await db
-        .select()
-        .from(sprints)
-        .where(eq(sprints.id, sprintId));
-      return sprintsArr[0];
-    } catch (err) {
-      console.error("Error getting sprint by project id from db:", err);
-      throw err;
-    }
-  };
+  sprintId: number
+): Promise<typeof sprints.$inferSelect> => {
+  try {
+    const sprintsArr = await db
+      .select()
+      .from(sprints)
+      .where(eq(sprints.id, sprintId));
+    return sprintsArr[0];
+  } catch (err) {
+    console.error("Error getting sprint by project id from db:", err);
+    throw err;
+  }
+};
 
 export const addNewSprintToDB = async (
   sprintData: NewSprintType
@@ -58,17 +58,21 @@ export const addNewSprintToDB = async (
 };
 
 export const updateSprintInDB = async (
-    sprintId: number,
-    sprintData: Partial<typeof sprints.$inferSelect>
-  ): Promise<typeof sprints.$inferSelect> => {
-    try {
-      const updatedSprint = await db.update(sprints).set(sprintData).where(eq(sprints.id, sprintId)).returning();
-      return updatedSprint[0];
-    } catch (err) {
-      console.error("Error updating sprint in db ", err);
-      throw err;
-    }
-  };
+  sprintId: number,
+  sprintData: Partial<typeof sprints.$inferSelect>
+): Promise<typeof sprints.$inferSelect> => {
+  try {
+    const updatedSprint = await db
+      .update(sprints)
+      .set(sprintData)
+      .where(eq(sprints.id, sprintId))
+      .returning();
+    return updatedSprint[0];
+  } catch (err) {
+    console.error("Error updating sprint in db ", err);
+    throw err;
+  }
+};
 
 export const assignTasksToSprint = async (
   sprintId: number,
@@ -78,7 +82,8 @@ export const assignTasksToSprint = async (
     const updatedTasks = await db
       .update(tasks)
       .set({ sprintId })
-      .where(inArray(tasks.id, tasksToAssign)).returning();
+      .where(inArray(tasks.id, tasksToAssign))
+      .returning();
 
     return updatedTasks;
   } catch (err) {
@@ -87,38 +92,47 @@ export const assignTasksToSprint = async (
   }
 };
 
-export const deleteSprintFromDB = async (
-    sprintId: number
-  ) => {
-    try {
-      const deletedSprint = await db.delete(sprints).where(eq(sprints.id, sprintId)).returning();
-      return deletedSprint;
-    } catch (err) {
-      console.error("Error deleting sprint from the database:", err);
-      throw err;
+export const deleteSprintFromDB = async (sprintId: number) => {
+  try {
+    const deletedSprint = await db
+      .delete(sprints)
+      .where(eq(sprints.id, sprintId))
+      .returning();
+    return deletedSprint;
+  } catch (err) {
+    console.error("Error deleting sprint from the database:", err);
+    throw err;
+  }
+};
+
+export const endSprintInDB = async (
+  sprintId: number,
+  tasksAction: "done" | "backlog"
+) => {
+  try {
+    let updatedTasks = [];
+    if (tasksAction == "done") {
+      updatedTasks = await db
+        .update(tasks)
+        .set({ status: "Done" })
+        .where(eq(tasks.sprintId, sprintId))
+        .returning();
+    } else if (tasksAction == "backlog") {
+      updatedTasks = await db
+        .update(tasks)
+        .set({ sprintId: null })
+        .where(eq(tasks.sprintId, sprintId))
+        .returning();
     }
-  };
+    const updatedSprint = await db
+      .update(sprints)
+      .set({ status: "Completed" })
+      .where(eq(sprints.id, sprintId))
+      .returning();
 
-export const endSprintInDB = async (sprintId: number, tasksAction: "done" | "backlog") => {
-    try {
-        let updatedTasks = []
-        if(tasksAction == "done") {
-            updatedTasks = await db
-            .update(tasks)
-            .set({ status: "Done" })
-            .where(eq(tasks.sprintId, sprintId)).returning();
-        }
-        else if(tasksAction == "backlog") {
-            updatedTasks = await db
-            .update(tasks)
-            .set({ sprintId: null })
-            .where(eq(tasks.sprintId, sprintId)).returning();
-        }
-        const updatedSprint = await db.update(sprints).set({status: "Completed"}).where(eq(sprints.id, sprintId)).returning();
-
-        return updatedSprint[0]
-      } catch (err) {
-        console.error("Error assigning tasks to sprint in the database:", err);
-        throw err;
-      }
-}
+    return updatedSprint[0];
+  } catch (err) {
+    console.error("Error assigning tasks to sprint in the database:", err);
+    throw err;
+  }
+};

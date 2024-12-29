@@ -58,7 +58,11 @@ interface SprintsContextProps {
     sprintId: number,
     sprintData: "Active" | "Planning"
   ) => Promise<{ status: string; text: string }>;
-  endSprint: (sprintId: number, tasksAction: "backlog" | "done", retro: boolean) => Promise<{ status: string; text: string }>;
+  endSprint: (
+    sprintId: number,
+    tasksAction: "backlog" | "done",
+    retro: boolean
+  ) => Promise<{ status: string; text: string }>;
 }
 
 export const SprintsContext = createContext<SprintsContextProps | undefined>(
@@ -95,33 +99,29 @@ export const SprintsProvider: React.FC<{ children: ReactNode }> = ({
       );
       if (response.status == 200 || response.status == 201) {
         const responseData: NewSprintResponseDataType = response.data.data;
-        console.log("DATAAAAA",responseData);
         setSprints((prevData) => ({
           active: prevData.active,
           planning: [...(prevData.planning || []), responseData.sprint],
         }));
-        if(responseData.tasks) {
+        if (responseData.tasks) {
           setTasks((prevTasks) =>
             prevTasks.map((task) => {
-              // Find if the current task is in the updated tasks array
               const updatedTask = responseData.tasks?.find(
                 (t) => t.id === task.id
               );
-              // Update only if task is in updatedTasks array, otherwise return the task as-is
               return updatedTask ? { ...task, ...updatedTask } : task;
             })
           );
         }
-        
-        console.log(response.data.data);
         return { status: "Success", text: "Sprint Created" };
       } else {
         throw new Error(response.statusText);
       }
     } catch (err: any) {
-      console.log(err);
-      const errMessage = err.response?.data.message || err.message;
-      return { status: "Error", text: errMessage };
+      return {
+        status: "Error",
+        text: err.response?.data.message || err.message,
+      };
     }
   };
 
@@ -245,13 +245,14 @@ export const SprintsProvider: React.FC<{ children: ReactNode }> = ({
   ) => {
     try {
       const response = await axios.patch(
-        `http://localhost:3002/api/sprint/${sprintId}/end?tasksAction=${tasksAction}&retro=${retro}&company=${
+        `http://localhost:3002/api/sprint/${sprintId}/${
           company!.id
-        }&project=${project!.id}`
+        }/end?tasksAction=${tasksAction}&retro=${retro}&project=${project!.id}`
       );
       if (response.status == 200 || response.status == 201) {
-        const responseData: {sprint: SprintType, retro: string | null} = response.data.data;
-        
+        const responseData: { sprint: SprintType; retro: string | null } =
+          response.data.data;
+
         return { status: "Success", text: responseData.retro };
       }
       return { status: "Success", text: "Sprint updated" };
@@ -269,7 +270,7 @@ export const SprintsProvider: React.FC<{ children: ReactNode }> = ({
     deleteSprint,
     changeSprint,
     changeSprintStatus,
-    endSprint
+    endSprint,
   };
 
   return (

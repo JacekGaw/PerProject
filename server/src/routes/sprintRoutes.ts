@@ -4,7 +4,7 @@ import { addNewSprint, deleteSprint, updateSprint, endSprint } from "../controll
 
 router.post("/sprint", addNewSprint);
 router.patch("/sprint/:id", updateSprint);
-router.patch("/sprint/:id/end", endSprint);
+router.patch("/sprint/:id/:companyId/end", endSprint);
 router.delete("/sprint/:id", deleteSprint);
 
 
