@@ -11,18 +11,36 @@ import companyRouter from "./routes/companyRoutes.js"
 import dashboardRouter from "./routes/dashboardRoutes.js"
 import sprintRouter from "./routes/sprintRoutes.js"
 import { errorHandler } from "./middleware/errorHandler.js";
+
 runDB();
 
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors());
+
+app.use((req, res, next) => {
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src 'self'; script-src 'self' 'nonce-randomvalue';"
+  );
+  next();
+});
+
+const corsOptions = {
+  origin: ['http://localhost:8082', 'http://localhost:5173'],
+  methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+app.use(cors(corsOptions));
 
 const PORT = process.env.PORT;
 
 app.get("/", (req, res) => {
   res.status(200).send("Connected to API");
 });
+
+
 
 app.use(errorHandler);
 
