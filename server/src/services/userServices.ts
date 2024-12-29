@@ -158,7 +158,7 @@ export const changeUserPasswordInDB = async (
 ): Promise<{} | null> => {
   try {
     const userInfo = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.id, userId),
+      where: eq(users.id, userId),
     });
     if (!userInfo) {
       throw new Error("User not found");

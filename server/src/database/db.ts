@@ -5,7 +5,7 @@ import { migrate } from 'drizzle-orm/node-postgres/migrator';
 const { Pool } = pkg;
 import * as schema from "./schemas.js";
 
-const pool = new Pool({
+export const pool = new Pool({
   connectionString: process.env.DB_URL,
 });
 

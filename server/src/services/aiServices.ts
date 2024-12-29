@@ -19,16 +19,6 @@ type CompanySettings = {
   AI: { available: boolean; model: string; apiKey: string };
 };
 
-export const SubtaskType = z.object({
-  taskText: z.string(),
-  description: z.string(),
-});
-
-export const SubtasksArrType = z.array(SubtaskType);
-
-export const SubtasksResponseType = z.object({
-  subtasks: SubtasksArrType,
-});
 
 const initializeOpenAI = async (companyId: number) => {
   const company = await db.query.companies.findFirst({
@@ -67,6 +57,15 @@ export const testConfig = async (companyId: number): Promise<object> => {
     throw err;
   }
 };
+
+export const SubtaskType = z.object({
+  taskText: z.string(),
+  description: z.string(),
+});
+export const SubtasksArrType = z.array(SubtaskType);
+export const SubtasksResponseType = z.object({
+  subtasks: SubtasksArrType,
+});
 
 export const generateSubtasksUsingAI = async (
   task: number,

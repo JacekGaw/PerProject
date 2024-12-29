@@ -3,7 +3,6 @@ import { useCompanyCtx } from "../../store/CompanyContext";
 import CompanyUsersList from "./CompanyUsersList";
 import CompanyStatistics from "./CompanyStatistics";
 import CompanySettings from "./CompanySettings";
-import DateFormatted from "../../components/UI/DateFormatted";
 
 const CompanyRoot: React.FC = () => {
     const { company} = useCompanyCtx();

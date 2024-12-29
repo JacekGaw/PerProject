@@ -66,7 +66,7 @@ export const getTasksFromDB = async (
   try {
     if (!withSubtasks) {
       const tasksToReturn = await db.query.tasks.findMany({
-        where: (tasks, { eq }) => eq(tasks.assignedTo, userId),
+        where: eq(tasks.assignedTo, userId),
         orderBy: (tasks, { asc }) => [asc(tasks.createdAt)],
         with: {
           project: {
@@ -81,11 +81,11 @@ export const getTasksFromDB = async (
       return tasksToReturn;
     } else {
       const tasksToReturn = await db.query.tasks.findMany({
-        where: (tasks, { eq }) => eq(tasks.assignedTo, userId),
+        where: eq(tasks.assignedTo, userId),
         orderBy: (tasks, { asc }) => [asc(tasks.createdAt)],
         with: {
           subTasks: {
-            where: (subTasks, { eq }) => eq(subTasks.assignedTo, userId),
+            where: eq(subTasks.assignedTo, userId),
             orderBy: (subTasks, { asc }) => [asc(subTasks.createdAt)],
           },
           project: {

@@ -10,7 +10,7 @@
     "outDir": "./dist",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
-    "moduleDetection": "force"
+    "moduleDetection": "force"  
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]

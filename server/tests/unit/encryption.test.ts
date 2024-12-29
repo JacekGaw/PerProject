@@ -1,4 +1,4 @@
-import { encryptData, decryptData } from '../src/utils/encryption';
+import { encryptData, decryptData } from '../../src/utils/encryption';
 
 describe('Encryption and Decryption', () => {
   const testString = 'This is a test string';
