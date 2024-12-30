@@ -58,10 +58,10 @@ export const getCompanyByUserId = async (userId: number): Promise<{}> => {
     const company = companyData[0];
     const companySettings: CompanySettings =
       company.settings as CompanySettings;
-    if (companySettings && companySettings.AI.apiKey !== "") {
-      console.log(decryptData(companySettings.AI.apiKey));
-      companySettings.AI.apiKey = decryptData(companySettings.AI.apiKey);
-    }
+      if (companySettings && companySettings.AI.apiKey) {
+        console.log(decryptData(companySettings.AI.apiKey));
+        companySettings.AI.apiKey = decryptData(companySettings.AI.apiKey);
+      }
     company.settings = companySettings;
     console.log(company);
     if (!company) {

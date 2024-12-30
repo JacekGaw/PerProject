@@ -77,24 +77,21 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         try {
           const response = await api.get(
             "http://localhost:3002/auth/verifyToken",
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
+            { headers: { Authorization: `Bearer ${token}` } }
           );
           if (response.data) {
-            setUser(response.data.user); // Set user data if available
+            setUser(response.data.user);
             setIsAuthenticated(true);
           } else {
             localStorage.removeItem("accessToken");
             localStorage.removeItem("refreshToken");
           }
         } catch (error) {
-          console.error("Error verifying token:", error);
           localStorage.removeItem("accessToken");
           localStorage.removeItem("refreshToken");
         }
       }
-      setIsLoading(false); // Ensure loading is set to false
+      setIsLoading(false);
     };
 
     checkAuthStatus();

@@ -6,7 +6,7 @@ const secretIV = process.env.CRYPTO_SECRET_IV;
 const encryptionMethod = process.env.CRYPTO_ENCRYPTION_METHOD || 'aes-256-cbc';
 
 if (!secretKey || !secretIV || !encryptionMethod) {
-  throw new Error('CRYPTO_SECRET_KEY, CRYPTO_SECRET_IV, and CRYPTO_ENCRYPTION_METHOD are required');
+  throw new Error('Env variable for crypto missing.');
 }
 
 const key = crypto.createHash('sha256').update(secretKey).digest('base64').substring(0, 32);

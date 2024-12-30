@@ -103,7 +103,8 @@ export const createUserInDB = async (
   password: string,
   role: "Developer" | "Tester" | "Product Owner" | "Project Manager" | "Other",
   name?: string,
-  surname?: string
+  surname?: string,
+  admin?: boolean
 ): Promise<NewUser> => {
   try {
     const hashedPassword = await hashPassword(password);
@@ -113,6 +114,7 @@ export const createUserInDB = async (
       role: role,
       name: name,
       surname: surname,
+      admin: admin
     };
     const [newUser] = await db.insert(users).values(params).returning();
     return newUser as NewUser;

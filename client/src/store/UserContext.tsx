@@ -40,7 +40,7 @@ interface UserContextProps {
   }>;
   changeUser: (
     data: Partial<UserObj>,
-    userId?: number
+    userId: number | undefined
   ) => Promise<{ status: string; text: string }>;
   userInfo: UserObj | undefined;
   changeUserPassword: (
@@ -114,7 +114,10 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
-  const changeUser = async (data: Partial<UserObj>, userId: number) => {
+  const changeUser = async (data: Partial<UserObj>, userId: number | undefined) => {
+    if (userId === undefined) {
+      return { status: "Error", text: "User ID is required" };
+    }
     try {
       const userChanged = await axios.patch(
         `http://localhost:3002/api/users/${userId}`,
@@ -133,7 +136,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
 
   const changeUserPassword = async (
     data: { oldPassword: string; newPassword: string },
-    userId: number
+    userId: number | undefined
   ) => {
     try {
       const userChanged = await axios.patch(
@@ -153,7 +156,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
-  const deleteUser = async (userId: number) => {
+  const deleteUser = async (userId: number | undefined) => {
     try {
       const deletedUser = await axios.delete(
         `http://localhost:3002/api/users/${userId}`

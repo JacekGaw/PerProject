@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 import { useCompanyCtx } from "./CompanyContext";
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import { useAuth } from "./AuthContext";
 
 export const projectStatuses = [
@@ -136,7 +136,7 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
       if (response.status == 200 || response.status == 201) {
         return { status: "Success", text: "Project Created" };
       } else {
-        throw new Error(response.statusText);
+        throw new Error(response.statusText as string);
       }
     } catch (err: any) {
       console.log(err);
@@ -222,18 +222,19 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const deleteProject = async (projectId: number) => {
-    if (!projectId) {
-      return { status: "Error",
-        text: "Did not provide project ID to delete project",
-      };
-    }
     try {
-      const response: AxiosResponse = await axios.delete(
+      const deletedProject = await axios.delete(
         `http://localhost:3002/api/project/${projectId}`
       );
-      response.status == 200 && { status: "Success", text: "Deleted project" };
+      if (deletedProject) {
+        return {
+          status: "Success",
+          text: "Project deleted successfully",
+        };
+      }
+      return { status: "Error", text: "Cannot delete project" };
     } catch (err: any) {
-      console.log(err);
+      console.error(err);
       const errMessage = err.response?.data.message || err.message;
       return { status: "Error", text: errMessage };
     }
