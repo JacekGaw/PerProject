@@ -109,7 +109,7 @@ export const TasksProvider: React.FC<{ children: ReactNode }> = ({
         return { status: "Error", text: "Company or user is not defined" };
       } else {
         const response = await axios.get(
-          `http://localhost:3002/api/dashboard/tasks/${company.id}/${user.id}`
+          `/api/dashboard/tasks/${company.id}/${user.id}`
         );
         1;
         console.log("GETTING TASKS: ", response);
@@ -130,7 +130,7 @@ export const TasksProvider: React.FC<{ children: ReactNode }> = ({
         return { status: "Error", text: "User is not defined" };
       } else {
         const response = await axios.get(
-          `http://localhost:3002/api/tasks/${user.id}?withSubtasks=true`
+          `/api/tasks/${user.id}?withSubtasks=true`
         );
         1;
         console.log("GETTING TASKS with subtask: ", response);
@@ -153,7 +153,7 @@ export const TasksProvider: React.FC<{ children: ReactNode }> = ({
     try {
       if (!batch) {
         const response = await axios.post(
-          `http://localhost:3002/api/task?type=${type}`,
+          `/api/task?type=${type}`,
           data
         );
         if (type === "task") {
@@ -165,7 +165,7 @@ export const TasksProvider: React.FC<{ children: ReactNode }> = ({
         }
       } else {
         const response = await axios.post(
-          "http://localhost:3002/api/subtask?batch=true",
+          "/api/subtask?batch=true",
           data
         );
         response.data.data &&
@@ -186,7 +186,7 @@ export const TasksProvider: React.FC<{ children: ReactNode }> = ({
   ) => {
     try {
       const response = await axios.patch(
-        `http://localhost:3002/api/change/${type}/${taskId}`,
+        `/api/change/${type}/${taskId}`,
         data
       );
       if (type === "task") {
@@ -233,7 +233,7 @@ export const TasksProvider: React.FC<{ children: ReactNode }> = ({
         return { status: "Error", text: "Did not provide task id" };
       }
       const response = await axios.delete(
-        `http://localhost:3002/api/delete/${type}/${id}`
+        `/api/delete/${type}/${id}`
       );
       const deletedTask = response.data.data;
       type == "task"
@@ -258,7 +258,7 @@ export const TasksProvider: React.FC<{ children: ReactNode }> = ({
         return { status: "Error", text: "Did not provide task id" };
       }
       const response = await axios.get(
-        `http://localhost:3002/api/subtasks/generate?task=${taksId}&project=${projectId}&company=${
+        `/api/subtasks/generate?task=${taksId}&project=${projectId}&company=${
           company!.id
         }`
       );

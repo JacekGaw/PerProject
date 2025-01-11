@@ -76,7 +76,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       if (token) {
         try {
           const response = await api.get(
-            "http://localhost:3002/auth/verifyToken",
+            "/auth/verifyToken",
             { headers: { Authorization: `Bearer ${token}` } }
           );
           if (response.data) {
@@ -101,7 +101,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     try {
       setIsLoading(true);
       const response = await api.post(
-        "http://localhost:3002/auth/login",
+        "/auth/login",
         userData
       );
       const { accessToken, refreshToken } = response.data;
@@ -134,7 +134,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const signup = async (newUserData: SignUpCredentials) => {
     try {
       setIsLoading(true);
-      await axios.post("http://localhost:3002/auth/signup", newUserData);
+      await axios.post("/auth/signup", newUserData);
       setIsLoading(false);
       return { success: true, message: "Successfully created an user" };
     } catch (err: any) {

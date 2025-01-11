@@ -67,13 +67,13 @@ const UserForm: React.FC<UserFormStepProps> = ({
                 setInputsDisabled(true);
                 setButtonDisabled(true);
                 const userResponse = await axios.post(
-                  "http://localhost:3002/api/users",
+                  "/api/users",
                   userData
                 );
                 const createdUser = userResponse.data.user;
                 console.log(createdUser);
                 const assignmentResponse = await axios.post(
-                    `http://localhost:3002/api/users/${createdUser.id}/assign-company`,
+                    `/api/users/${createdUser.id}/assign-company`,
                   {companyId: companyId}
                 )
                 const createdAssignment = assignmentResponse.data;

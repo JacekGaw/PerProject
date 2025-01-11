@@ -15,6 +15,19 @@ import { errorHandler } from "./middleware/errorHandler.js";
 runDB();
 
 const app = express();
+const corsOptions = {
+  origin: [
+      "http://localhost:8088",
+      "http://localhost:5173",
+      "https://devperpro.bieda.it"
+  ],
+  methods: ["GET", "POST", "PATCH", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true
+};
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); 
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -26,13 +39,16 @@ app.use((req, res, next) => {
   next();
 });
 
-const corsOptions = {
-  origin: ["http://localhost:8088", "http://localhost:5173"],
-  methods: ["GET", "POST", "PATCH", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
+// const corsOptions = {
+//   origin: ["http://localhost:8088", "http://localhost:5173", "https://devperpro.bieda.it", "http://frontend:8088"],
+//   methods: ["GET", "POST", "PATCH", "DELETE"],
+//   // allowedHeaders: ["Content-Type", "Authorization"],
+//   credentials:true
+// };
 
-app.use(cors(corsOptions));
+
+
+
 
 const PORT = process.env.PORT;
 

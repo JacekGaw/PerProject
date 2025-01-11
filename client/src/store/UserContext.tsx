@@ -80,7 +80,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
     if (user) {
       try {
         const response = await axios.get(
-          `http://localhost:3002/api/users/${user.id}`
+          `/api/users/${user.id}`
         );
         if (response.data.user[0]) {
           console.log(response);
@@ -100,7 +100,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
     try {
       if (user) {
         const response = await axios.get(
-          `http://localhost:3002/api/user/${user.id}/bookmarks`
+          `/api/user/${user.id}/bookmarks`
         );
         const bookmarks = response.data.data;
         setBookmarks(bookmarks);
@@ -120,7 +120,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
     }
     try {
       const userChanged = await axios.patch(
-        `http://localhost:3002/api/users/${userId}`,
+        `/api/users/${userId}`,
         data
       );
       if (userChanged) {
@@ -140,7 +140,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
   ) => {
     try {
       const userChanged = await axios.patch(
-        `http://localhost:3002/api/users/${userId}/change-password`,
+        `/api/users/${userId}/change-password`,
         data
       );
       if (userChanged) {
@@ -159,7 +159,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
   const deleteUser = async (userId: number | undefined) => {
     try {
       const deletedUser = await axios.delete(
-        `http://localhost:3002/api/users/${userId}`
+        `/api/users/${userId}`
       );
       if (deletedUser) {
         if (user && user.id == userId) {

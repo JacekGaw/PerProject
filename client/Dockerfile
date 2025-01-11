@@ -14,10 +14,12 @@ RUN npm install
 COPY . ./
 
 # Build the React application
+ENV NODE_ENV=production
 RUN npm run build
 
 # Use an Nginx image to serve the static files
 FROM nginx:stable-alpine
 COPY --from=build /app/dist /usr/share/nginx/html
+COPY default.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

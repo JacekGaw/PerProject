@@ -13,7 +13,7 @@ const MainRoot: React.FC = () => {
 
 export const loader = async (): Promise<[] | Error> => {
   try {
-    const response = await axios.get("http://localhost:3002/api/company");
+    const response = await axios.get("/api/company");
     return response.data?.companies || [];
   } catch (err) {
     throw new Response("Failed to load companies" + err, { status: 500 });

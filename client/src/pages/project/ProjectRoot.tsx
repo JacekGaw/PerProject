@@ -1,4 +1,3 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { LoaderFunctionArgs, Outlet, useLoaderData } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -9,6 +8,7 @@ import ProjectDetails from "./ProjectDetails";
 import { useTasksCtx } from "../../store/TasksContext";
 import AllTasksList from "./AllTasksList";
 import KanbanView from "./KanbanView";
+import api from "../../api/api";
 
 type LoaderData = {
   project: Project;
@@ -113,8 +113,8 @@ export const projectLoader = async ({
     throw new Response("Missing project alias", { status: 400 });
   }
   try {
-    const response = await axios.get(
-      `http://localhost:3002/api/project/${alias}/tasks`
+    const response = await api.get(
+      `/api/project/${alias}/tasks`
     );
     return {
       project: response.data.data.project,

@@ -87,7 +87,7 @@ export const CompanyProvider: React.FC<{ children: ReactNode }> = ({
       }
       try {
         const response = await axios.get(
-          `http://localhost:3002/api/company/user/${user.id}`
+          `/api/company/user/${user.id}`
         );
         const data = response.data;
         if (!data) {
@@ -117,7 +117,7 @@ export const CompanyProvider: React.FC<{ children: ReactNode }> = ({
 
   const getCompanyStatistics = async () => {
     try {
-      const response = await api.get(`http://localhost:3002/api/company/${company?.id}/statistics`); 
+      const response = await api.get(`/api/company/${company?.id}/statistics`); 
       return response.data.data;
     } catch (err: any) {
       console.log(err);
@@ -129,7 +129,7 @@ export const CompanyProvider: React.FC<{ children: ReactNode }> = ({
   const changeCompanyAISettings = async (data: AIDataType) => {
     try {
       const newSettings = {AI: data}
-      const response = await axios.patch(`http://localhost:3002/api/company/${company?.id}/settings/ai`, newSettings);
+      const response = await axios.patch(`/api/company/${company?.id}/settings/ai`, newSettings);
       console.log(response)
       if(response.status == 200) {
         setCompany((company) => {
@@ -150,7 +150,7 @@ export const CompanyProvider: React.FC<{ children: ReactNode }> = ({
   const changeCompanyAIAvailability = async (changeAvailable: boolean) => {
     try {
       const newSettings = {AI: {available: changeAvailable, model: company!.settings.AI.model, apiKey: company!.settings.AI.apiKey}}
-      const response = await axios.patch(`http://localhost:3002/api/company/${company?.id}/settings/ai`, newSettings);
+      const response = await axios.patch(`/api/company/${company?.id}/settings/ai`, newSettings);
       if(response.status == 200) {
         setCompany((company) => {
           const newData: CompanyType = company!;

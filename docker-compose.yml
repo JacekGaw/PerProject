@@ -9,6 +9,11 @@ services:
       - pgdata:/var/lib/postgresql/data
     networks:
       - internal_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     restart: always
 
   backend:
@@ -18,12 +23,17 @@ services:
     environment:
       DB_URL: ${DB_URL}
       PORT: ${PORT}
+      HTTPS: true
     networks:
       - internal_network
+      - external_network
     ports:
       - "3002:3002"
+    volumes:
+      - ./ssl:/app/ssl
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     restart: always
 
   frontend:
@@ -32,6 +42,9 @@ services:
       - external_network
     ports:
       - "8088:80"
+    depends_on:
+      backend:
+        condition: service_started
     restart: always
 
   backup:

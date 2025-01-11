@@ -33,7 +33,7 @@ COPY --from=build /app/drizzle /app/drizzle
 # Install only production dependencies
 
 # Expose the port the app runs on
-EXPOSE 3001
+EXPOSE 3002
 
 # Define the command to run the app
 CMD ["node", "dist/index.js"]

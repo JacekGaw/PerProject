@@ -53,7 +53,7 @@ const InfoForm: React.FC<InfoFormStepProps> = ({
         setInputsDisabled(true);
         setButtonDisabled(true);
         const response = await axios.post(
-          "http://localhost:3002/api/company",
+          "/api/company",
           companyData
         );
         setCompanyKey(response.data.company[0].id);

@@ -94,7 +94,7 @@ export const SprintsProvider: React.FC<{ children: ReactNode }> = ({
     try {
       const dataToSend = { ...data, projectId: project!.id };
       const response = await axios.post(
-        "http://localhost:3002/api/sprint",
+        "/api/sprint",
         dataToSend
       );
       if (response.status == 200 || response.status == 201) {
@@ -128,7 +128,7 @@ export const SprintsProvider: React.FC<{ children: ReactNode }> = ({
   const deleteSprint = async (sprint: SprintType) => {
     try {
       const response = await axios.delete(
-        `http://localhost:3002/api/sprint/${sprint.id}`
+        `/api/sprint/${sprint.id}`
       );
       if (response.status == 200 || response.status == 201) {
         if (sprint.status == "Active") {
@@ -170,7 +170,7 @@ export const SprintsProvider: React.FC<{ children: ReactNode }> = ({
   ) => {
     try {
       const response = await axios.patch(
-        `http://localhost:3002/api/sprint/${sprintId}`,
+        `/api/sprint/${sprintId}`,
         sprintData
       );
       if (response.status == 200 || response.status == 201) {
@@ -207,7 +207,7 @@ export const SprintsProvider: React.FC<{ children: ReactNode }> = ({
   ) => {
     try {
       const response = await axios.patch(
-        `http://localhost:3002/api/sprint/${sprintId}`,
+        `/api/sprint/${sprintId}`,
         { status: newStatus }
       );
       if (response.status == 200 || response.status == 201) {
@@ -245,7 +245,7 @@ export const SprintsProvider: React.FC<{ children: ReactNode }> = ({
   ) => {
     try {
       const response = await axios.patch(
-        `http://localhost:3002/api/sprint/${sprintId}/${
+        `/api/sprint/${sprintId}/${
           company!.id
         }/end?tasksAction=${tasksAction}&retro=${retro}&project=${project!.id}`
       );

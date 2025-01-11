@@ -7,7 +7,6 @@ import {
 } from "react-router-dom";
 import { motion } from "framer-motion";
 import closeIcon from "../../assets/img/close.svg";
-import axios from "axios";
 import deleteIcon from "../../assets/img/delete.svg";
 import { CompanyUserType, useCompanyCtx } from "../../store/CompanyContext";
 import SubtasksList from "./SubtasksList";
@@ -17,6 +16,7 @@ import TitleComponent from "./TitleComponent";
 import EstimatedTime from "./EstimatedTime";
 import { useTasksCtx, Task, SubTask } from "../../store/TasksContext";
 import DateFormatted from "../../components/UI/DateFormatted";
+import api from "../../api/api";
 
 const DialogMotion = {
   hidden: {x: 500, opacity: 0},
@@ -233,7 +233,7 @@ export const taskLoader = async ({
     throw new Response("Missing task id", { status: 400 });
   }
   try {
-    const response = await axios.get(`http://localhost:3002/api/task/${id}`);
+    const response = await api.get(`/api/task/${id}`);
     console.log(response);
     return {
       task: response.data.data.task,
