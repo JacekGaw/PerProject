@@ -8,7 +8,7 @@ import {
   useContext,
 } from "react";
 import { useAuth } from "./AuthContext";
-import axios from "axios";
+import api from "../api/api";
 
 export interface UserObj {
   id: number;
@@ -79,7 +79,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
   const getUserInfo = async () => {
     if (user) {
       try {
-        const response = await axios.get(
+        const response = await api.get(
           `/api/users/${user.id}`
         );
         if (response.data.user[0]) {
@@ -99,7 +99,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
   const getUserBookmarks = async () => {
     try {
       if (user) {
-        const response = await axios.get(
+        const response = await api.get(
           `/api/user/${user.id}/bookmarks`
         );
         const bookmarks = response.data.data;
@@ -119,7 +119,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
       return { status: "Error", text: "User ID is required" };
     }
     try {
-      const userChanged = await axios.patch(
+      const userChanged = await api.patch(
         `/api/users/${userId}`,
         data
       );
@@ -139,7 +139,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
     userId: number | undefined
   ) => {
     try {
-      const userChanged = await axios.patch(
+      const userChanged = await api.patch(
         `/api/users/${userId}/change-password`,
         data
       );
@@ -158,7 +158,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
 
   const deleteUser = async (userId: number | undefined) => {
     try {
-      const deletedUser = await axios.delete(
+      const deletedUser = await api.delete(
         `/api/users/${userId}`
       );
       if (deletedUser) {

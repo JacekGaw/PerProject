@@ -9,7 +9,7 @@ import {
 import { useAuth } from "./AuthContext";
 import { useCompanyCtx } from "./CompanyContext";
 import { Project } from "./ProjectsContext";
-import axios from "axios";
+import api from "../api/api";
 
 type TaskStatus = "To Do" | "In Progress" | "On Hold" | "Done";
 type TaskPriority = "Low" | "Medium" | "High";
@@ -108,7 +108,7 @@ export const TasksProvider: React.FC<{ children: ReactNode }> = ({
       if (!company || !user) {
         return { status: "Error", text: "Company or user is not defined" };
       } else {
-        const response = await axios.get(
+        const response = await api.get(
           `/api/dashboard/tasks/${company.id}/${user.id}`
         );
         1;
@@ -129,7 +129,7 @@ export const TasksProvider: React.FC<{ children: ReactNode }> = ({
       if (!user) {
         return { status: "Error", text: "User is not defined" };
       } else {
-        const response = await axios.get(
+        const response = await api.get(
           `/api/tasks/${user.id}?withSubtasks=true`
         );
         1;
@@ -152,7 +152,7 @@ export const TasksProvider: React.FC<{ children: ReactNode }> = ({
   ) => {
     try {
       if (!batch) {
-        const response = await axios.post(
+        const response = await api.post(
           `/api/task?type=${type}`,
           data
         );
@@ -164,7 +164,7 @@ export const TasksProvider: React.FC<{ children: ReactNode }> = ({
             setSubtasksArr((prevState) => [...prevState, response.data.data]);
         }
       } else {
-        const response = await axios.post(
+        const response = await api.post(
           "/api/subtask?batch=true",
           data
         );
@@ -185,7 +185,7 @@ export const TasksProvider: React.FC<{ children: ReactNode }> = ({
     data: Partial<Task> | Partial<SubTask>
   ) => {
     try {
-      const response = await axios.patch(
+      const response = await api.patch(
         `/api/change/${type}/${taskId}`,
         data
       );
@@ -232,7 +232,7 @@ export const TasksProvider: React.FC<{ children: ReactNode }> = ({
       if (!id) {
         return { status: "Error", text: "Did not provide task id" };
       }
-      const response = await axios.delete(
+      const response = await api.delete(
         `/api/delete/${type}/${id}`
       );
       const deletedTask = response.data.data;
@@ -257,7 +257,7 @@ export const TasksProvider: React.FC<{ children: ReactNode }> = ({
       if (!taksId) {
         return { status: "Error", text: "Did not provide task id" };
       }
-      const response = await axios.get(
+      const response = await api.get(
         `/api/subtasks/generate?task=${taksId}&project=${projectId}&company=${
           company!.id
         }`

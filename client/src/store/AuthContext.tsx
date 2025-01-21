@@ -7,7 +7,6 @@ import {
   Dispatch,
   SetStateAction,
 } from "react";
-import axios from "axios";
 import api from "../api/api";
 
 export interface UserObj {
@@ -134,7 +133,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const signup = async (newUserData: SignUpCredentials) => {
     try {
       setIsLoading(true);
-      await axios.post("/auth/signup", newUserData);
+      await api.post("/auth/signup", newUserData);
       setIsLoading(false);
       return { success: true, message: "Successfully created an user" };
     } catch (err: any) {

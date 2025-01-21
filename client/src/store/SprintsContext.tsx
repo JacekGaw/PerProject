@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 import { Task } from "./ProjectsContext";
-import axios from "axios";
+import api from "../api/api";
 import { useProjectCtx } from "./ProjectsContext";
 import { useTasksCtx } from "./TasksContext";
 import { useCompanyCtx } from "./CompanyContext";
@@ -93,7 +93,7 @@ export const SprintsProvider: React.FC<{ children: ReactNode }> = ({
   const addNewSprint = async (data: NewSprintType) => {
     try {
       const dataToSend = { ...data, projectId: project!.id };
-      const response = await axios.post(
+      const response = await api.post(
         "/api/sprint",
         dataToSend
       );
@@ -127,7 +127,7 @@ export const SprintsProvider: React.FC<{ children: ReactNode }> = ({
 
   const deleteSprint = async (sprint: SprintType) => {
     try {
-      const response = await axios.delete(
+      const response = await api.delete(
         `/api/sprint/${sprint.id}`
       );
       if (response.status == 200 || response.status == 201) {
@@ -169,7 +169,7 @@ export const SprintsProvider: React.FC<{ children: ReactNode }> = ({
     sprintData: Partial<SprintType>
   ) => {
     try {
-      const response = await axios.patch(
+      const response = await api.patch(
         `/api/sprint/${sprintId}`,
         sprintData
       );
@@ -206,7 +206,7 @@ export const SprintsProvider: React.FC<{ children: ReactNode }> = ({
     newStatus: "Active" | "Planning"
   ) => {
     try {
-      const response = await axios.patch(
+      const response = await api.patch(
         `/api/sprint/${sprintId}`,
         { status: newStatus }
       );
@@ -244,7 +244,7 @@ export const SprintsProvider: React.FC<{ children: ReactNode }> = ({
     retro: boolean
   ) => {
     try {
-      const response = await axios.patch(
+      const response = await api.patch(
         `/api/sprint/${sprintId}/${
           company!.id
         }/end?tasksAction=${tasksAction}&retro=${retro}&project=${project!.id}`

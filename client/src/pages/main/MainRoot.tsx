@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import React from "react";
 import { useLoaderData, Navigate } from "react-router-dom";
-import axios from "axios";
+import api from "../../api/api";
 
 const MainRoot: React.FC = () => {
   const data = useLoaderData() as [];
@@ -13,7 +13,7 @@ const MainRoot: React.FC = () => {
 
 export const loader = async (): Promise<[] | Error> => {
   try {
-    const response = await axios.get("/api/company");
+    const response = await api.get("/api/company");
     return response.data?.companies || [];
   } catch (err) {
     throw new Response("Failed to load companies" + err, { status: 500 });

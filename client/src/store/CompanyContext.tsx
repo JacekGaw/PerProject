@@ -6,7 +6,6 @@ import {
   useState,
 } from "react";
 import { useAuth } from "./AuthContext";
-import axios from "axios";
 import api from "../api/api";
 
 export interface CompanyUserType {
@@ -86,7 +85,7 @@ export const CompanyProvider: React.FC<{ children: ReactNode }> = ({
         return;
       }
       try {
-        const response = await axios.get(
+        const response = await api.get(
           `/api/company/user/${user.id}`
         );
         const data = response.data;
@@ -129,7 +128,7 @@ export const CompanyProvider: React.FC<{ children: ReactNode }> = ({
   const changeCompanyAISettings = async (data: AIDataType) => {
     try {
       const newSettings = {AI: data}
-      const response = await axios.patch(`/api/company/${company?.id}/settings/ai`, newSettings);
+      const response = await api.patch(`/api/company/${company?.id}/settings/ai`, newSettings);
       console.log(response)
       if(response.status == 200) {
         setCompany((company) => {
@@ -150,7 +149,7 @@ export const CompanyProvider: React.FC<{ children: ReactNode }> = ({
   const changeCompanyAIAvailability = async (changeAvailable: boolean) => {
     try {
       const newSettings = {AI: {available: changeAvailable, model: company!.settings.AI.model, apiKey: company!.settings.AI.apiKey}}
-      const response = await axios.patch(`/api/company/${company?.id}/settings/ai`, newSettings);
+      const response = await api.patch(`/api/company/${company?.id}/settings/ai`, newSettings);
       if(response.status == 200) {
         setCompany((company) => {
           const newData: CompanyType = company!;

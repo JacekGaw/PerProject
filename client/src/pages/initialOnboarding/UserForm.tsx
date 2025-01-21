@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import Button from "../../components/UI/Button";
-import axios from "axios";
+import api from "../../api/api";
 
 const userRoles = ["Developer", "Tester", "Product Owner", "Project Manager", "Other"];
 
@@ -66,13 +66,13 @@ const UserForm: React.FC<UserFormStepProps> = ({
               try {
                 setInputsDisabled(true);
                 setButtonDisabled(true);
-                const userResponse = await axios.post(
+                const userResponse = await api.post(
                   "/api/users",
                   userData
                 );
                 const createdUser = userResponse.data.user;
                 console.log(createdUser);
-                const assignmentResponse = await axios.post(
+                const assignmentResponse = await api.post(
                     `/api/users/${createdUser.id}/assign-company`,
                   {companyId: companyId}
                 )

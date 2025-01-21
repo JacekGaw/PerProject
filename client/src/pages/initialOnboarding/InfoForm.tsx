@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import Button from "../../components/UI/Button";
-import axios from "axios";
+import api from "../../api/api";
 
 interface InfoFormStepProps {
   nextAction: () => void;
@@ -52,7 +52,7 @@ const InfoForm: React.FC<InfoFormStepProps> = ({
       try {
         setInputsDisabled(true);
         setButtonDisabled(true);
-        const response = await axios.post(
+        const response = await api.post(
           "/api/company",
           companyData
         );

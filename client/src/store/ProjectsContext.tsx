@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 import { useCompanyCtx } from "./CompanyContext";
-import axios from "axios";
+import api from "../api/api";
 import { useAuth } from "./AuthContext";
 
 export const projectStatuses = [
@@ -129,7 +129,7 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
 
   const addNewProject = async (data: NewProjectType) => {
     try {
-      const response = await axios.post(
+      const response = await api.post(
         "/api/project",
         data
       );
@@ -150,7 +150,7 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
       if (!company) {
         return { status: "Error", text: "Company is not defined" };
       } else {
-        const response = await axios.get(
+        const response = await api.get(
           `/api/projects?companyId=${company.id}`
         );
         const data = response.data;
@@ -165,7 +165,7 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
 
   const changeProject = async (projectId: number, data: Partial<Project>) => {
     try {
-      const response = await axios.patch(
+      const response = await api.patch(
         `/api/project/${projectId}`,
         data
       );
@@ -185,7 +185,7 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
       if (!company || !user) {
         return { status: "Error", text: "Company or user is not defined" };
       } else {
-        const response = await axios.get(
+        const response = await api.get(
           `/api/dashboard/projects/${company.id}/${user.id}`
         );
         console.log("GETTING DASHBOARD: ", response);
@@ -212,7 +212,7 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
     }
     try {
       const url = `/api/project/bookmark/${projectId}/${userId}`
-      method === "add" ? await axios.post(url) : await axios.delete(url)
+      method === "add" ? await api.post(url) : await api.delete(url)
       return { status: "Success", text: "Added/deleted bookmark" };
     } catch (err: any) {
       console.log(err);
@@ -223,7 +223,7 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({
 
   const deleteProject = async (projectId: number) => {
     try {
-      const deletedProject = await axios.delete(
+      const deletedProject = await api.delete(
         `/api/project/${projectId}`
       );
       if (deletedProject) {

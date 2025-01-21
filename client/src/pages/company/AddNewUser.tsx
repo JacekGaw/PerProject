@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import Button from "../../components/UI/Button";
-import axios from "axios";
 import { useCompanyCtx } from "../../store/CompanyContext";
+import api from "../../api/api";
 
 const userRoles = [
   "Developer",
@@ -80,14 +80,14 @@ const AddNewUser: React.FC = () => {
         };
         try {
           setButtonDisabled(true);
-          const userResponse = await axios.post(
-            "http://localhost:3002/api/users",
+          const userResponse = await api.post(
+            "/api/users",
             userData
           );
           const createdUser = userResponse.data.user;
           console.log(createdUser);
-          await axios.post(
-            `http://localhost:3002/api/users/${createdUser.id}/assign-company`,
+          await api.post(
+            `/api/users/${createdUser.id}/assign-company`,
             { companyId: company?.id }
           );
           setResponseMessage({
