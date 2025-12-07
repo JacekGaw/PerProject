@@ -7,12 +7,12 @@ export const users = pgTable('users', {
     email: varchar('email', { length: 100 }).notNull().unique(),
     password: varchar('password', { length: 200 }).notNull(),
     createdAt: timestamp('createdAt').defaultNow(),
-    active: boolean('active').notNull().default(false),
+    active: boolean('active').notNull().default(true),
     name: varchar('name', { length: 20 }),
     surname: varchar('surname', { length: 30 }),
     phone: varchar('phone', { length: 20 }), // Changed to varchar
     role: userRoleEnum('role').notNull(),
-    admin: boolean('admin').notNull().default(false)
+    admin: boolean('admin').notNull().default(true)
 });
 
 export const projectStatusesEnum = pgEnum('projectStatuses', ["Active", "On Hold", "Completed", "Archive", "Maintaining"]);

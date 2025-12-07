@@ -1,7 +1,7 @@
 import { RequestHandler, Response } from "express";
 import { getUserByEmail, createUserInDB } from "../services/userServices.js";
 import { comparePasswords } from "../utils/passwordUtils.js";
-import jwt, { Secret } from "jsonwebtoken";
+import jwt, { SignOptions } from "jsonwebtoken";
 import "dotenv/config";
 import { CustomRequest } from "../middleware/protectedRoute.js";
 
@@ -33,14 +33,21 @@ export const logIn: RequestHandler = async (req, res) => {
     if (!passwordMatch) {
       return res.status(401).json({ message: "Wrong password for this user" });
     }
-    const JWT_ACCESS_SECRET: Secret = process.env.JWT_ACCESS_SECRET || "";
-    const JWT_REFRESH_SECRET: Secret = process.env.JWT_REFRESH_SECRET || "";
+    
+    const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET;
+    const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
+    
+    if (!JWT_ACCESS_SECRET || !JWT_REFRESH_SECRET) {
+      throw new Error("JWT secrets are not configured");
+    }
+    
     const accessToken = jwt.sign(user, JWT_ACCESS_SECRET, {
-      expiresIn: process.env.JWT_ACCESS_EXPIRATION_TIME,
-    });
+      expiresIn: process.env.JWT_ACCESS_EXPIRATION_TIME || "15m",
+    } as SignOptions);
+    
     const refreshToken = jwt.sign(user, JWT_REFRESH_SECRET, {
-      expiresIn: process.env.JWT_REFRESH_EXPIRATION_TIME,
-    });
+      expiresIn: process.env.JWT_REFRESH_EXPIRATION_TIME || "7d",
+    } as SignOptions);
 
     const { password, ...returnedUser } = user;
     return res.status(200).json({
@@ -98,7 +105,13 @@ export const refreshToken: RequestHandler = async (req, res) => {
   }
 
   try {
-    const JWT_REFRESH_SECRET: Secret = process.env.JWT_REFRESH_SECRET || "";
+    const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
+    const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET;
+    
+    if (!JWT_REFRESH_SECRET || !JWT_ACCESS_SECRET) {
+      throw new Error("JWT secrets are not configured");
+    }
+    
     const decoded = jwt.verify(
       refreshToken,
       JWT_REFRESH_SECRET
@@ -113,10 +126,9 @@ export const refreshToken: RequestHandler = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const JWT_ACCESS_SECRET: Secret = process.env.JWT_ACCESS_SECRET || "";
     const accessToken = jwt.sign(user, JWT_ACCESS_SECRET, {
-      expiresIn: process.env.JWT_ACCESS_EXPIRATION_TIME,
-    });
+      expiresIn: process.env.JWT_ACCESS_EXPIRATION_TIME || "15m",
+    } as SignOptions);
 
     return res.status(200).json({
       message: "Token refreshed successfully",

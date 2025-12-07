@@ -26,7 +26,7 @@ const SignUp: React.FC = () => {
     const repeatPassword = formData.get("password-repeat") as string;
     const name = formData.get("name") as string;
     const surname = formData.get("surname") as string;
-    if (!formData || email || password || repeatPassword || name || surname) {
+    if (!email || !password || !repeatPassword || !name || !surname) {
       setErrorMessage("Did not provided all required informations.");
       return;
     }
